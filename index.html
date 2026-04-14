@@ -771,9 +771,23 @@
         btn.style.background = '';
         btn.style.transform = '';
       }, 500);
-      learnHint.innerHTML = `不对哦，再想想！💪`;
+      // 答错后显示正确答案和下一课按钮，不卡住
+      learnState.answered = true;
+      const numpadDiv = learnVisual.querySelector('.numpad');
+      if (numpadDiv) numpadDiv.style.display = 'none';
+      learnHint.innerHTML = `不对哦，正确答案是 <strong>${learnState.practiceAnswer}</strong>，记住啦！😊`;
       learnHint.style.background = '#fff3e0';
       learnHint.style.color = '#e65100';
+      learnNextBtn.style.display = '';
+      learnNextBtn.textContent = learnState.lessonIdx < LESSONS[learnState.type].length - 1 ? '下一课 ➡️' : '🎮 去闯关！';
+      learnNextBtn.className = learnState.lessonIdx < LESSONS[learnState.type].length - 1 ? 'learn-nav-btn next' : 'learn-nav-btn start-game';
+      learnNextBtn.onclick = () => {
+        if (learnState.lessonIdx >= LESSONS[learnState.type].length - 1) {
+          enterGame();
+        } else {
+          learnNext();
+        }
+      };
     }
   }
 
