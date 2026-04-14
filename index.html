@@ -3,360 +3,142 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>🐾 动物数学岛 🌴</title>
+<title>动物数学岛</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
     background: linear-gradient(180deg, #1a237e 0%, #283593 40%, #3949ab 100%);
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: hidden;
-    user-select: none;
-    -webkit-user-select: none;
+    display: flex; flex-direction: column; align-items: center;
+    overflow-x: hidden; user-select: none; -webkit-user-select: none;
     touch-action: manipulation;
   }
-
-  .stars-bg { position: fixed; top:0;left:0;right:0;bottom:0; pointer-events:none; z-index:0; }
-  .star-particle { position:absolute; width:4px; height:4px; background:white; border-radius:50%; animation: twinkle 2s ease-in-out infinite alternate; }
-  @keyframes twinkle { 0%{opacity:0.3} 100%{opacity:1} }
-
-  .game-container { position:relative; z-index:1; width:95vw; max-width:480px; padding:10px; }
-
-  /* ====== CSS 图标系统（兼容所有浏览器） ====== */
-  .item { display: inline-block; border-radius: 50%; position: relative; vertical-align: middle; }
-  
-  /* 苹果 - 红色圆 + 绿叶 */
-  .item-apple { width: 48px; height: 48px; background: radial-gradient(circle at 30% 30%, #ff6b6b, #e53935 60%, #c62828); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-apple::before { content:''; position:absolute; top:-6px; left:50%; width:16px; height:10px; background:#4caf50; border-radius:0 0 50% 50%; transform:translateX(-50%); }
-  .item-apple::after { content:''; position:absolute; top:-12px; left:55%; width:3px; height:8px; background:#795548; border-radius:2px; }
-
-  /* 草莓 - 红色心形 */
-  .item-strawberry { width: 44px; height: 48px; background: radial-gradient(circle at 40% 35%, #ff5252, #d32f2f); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-strawberry::before { content:''; position:absolute; top:-6px; left:50%; width:14px; height:8px; background:#4caf50; border-radius:0 0 50% 50%; transform:translateX(-50%); }
-  .item-strawberry::after { content:''; position:absolute; top:60%; left:50%; width:3px; height:3px; background:#ffeb3b; border-radius:50%; transform:translateX(-50%); box-shadow: -8px -8px 0 #ffeb3b, 8px -6px 0 #ffeb3b, -6px 8px 0 #ffeb3b, 6px 10px 0 #ffeb3b; }
-
-  /* 花朵 - 粉色圆 */
-  .item-flower { width: 48px; height: 48px; background: radial-gradient(circle at 50% 50%, #ff80ab, #f06292 50%, #e91e63); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-flower::before { content:''; position:absolute; top:50%; left:50%; width:12px; height:12px; background:#ffeb3b; border-radius:50%; transform:translate(-50%,-50%); }
-
-  /* 小猫 - 橙色圆 + 耳朵 */
-  .item-cat { width: 48px; height: 48px; background: radial-gradient(circle at 40% 40%, #ffb74d, #ff9800 60%, #f57c00); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-cat::before { content:''; position:absolute; top:-8px; left:6px; width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-bottom:12px solid #ff9800; }
-  .item-cat::after { content:''; position:absolute; top:-8px; right:6px; width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-bottom:12px solid #ff9800; }
-
-  /* 小狗 - 棕色圆 + 耳朵 */
-  .item-dog { width: 48px; height: 48px; background: radial-gradient(circle at 40% 40%, #bcaaa4, #8d6e63 60%, #6d4c41); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-dog::before { content:''; position:absolute; top:35%; left:10px; width:8px; height:8px; background:#333; border-radius:50%; box-shadow:20px 0 0 #333; }
-  .item-dog::after { content:''; position:absolute; top:55%; left:50%; width:12px; height:6px; background:#333; border-radius:0 0 50% 50%; transform:translateX(-50%); }
-
-  /* 蝴蝶 - 紫色 */
-  .item-butterfly { width: 48px; height: 40px; background: transparent; }
-  .item-butterfly::before { content:''; position:absolute; top:0; left:0; width:20px; height:30px; background:radial-gradient(circle, #ce93d8, #ab47bc); border-radius:50%; }
-  .item-butterfly::after { content:''; position:absolute; top:0; right:0; width:20px; height:30px; background:radial-gradient(circle, #ce93d8, #ab47bc); border-radius:50%; }
-
-  /* 气球 - 蓝色椭圆 */
-  .item-balloon { width: 40px; height: 52px; background: radial-gradient(circle at 35% 35%, #64b5f6, #42a5f5 50%, #1e88e5); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-balloon::before { content:''; position:absolute; bottom:-12px; left:50%; width:2px; height:12px; background:#90caf9; transform:translateX(-50%); }
-  .item-balloon::after { content:''; position:absolute; top:15%; left:25%; width:10px; height:14px; background:rgba(255,255,255,0.3); border-radius:50%; }
-
-  /* 饼干 - 棕色圆 + 巧克力点 */
-  .item-cookie { width: 48px; height: 48px; background: radial-gradient(circle at 40% 40%, #d7ccc8, #d4a574 50%, #bcaaa4); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-cookie::before { content:''; position:absolute; top:30%; left:25%; width:8px; height:8px; background:#5d4037; border-radius:50%; box-shadow:16px 4px 0 #5d4037, -2px 16px 0 #5d4037, 14px 14px 0 #5d4037; }
-
-  /* 糖果 - 粉色圆 */
-  .item-candy { width: 44px; height: 44px; background: radial-gradient(circle at 35% 35%, #f48fb1, #e91e63 60%, #c2185b); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-candy::before { content:''; position:absolute; top:50%; left:50%; width:10px; height:10px; background:rgba(255,255,255,0.4); border-radius:50%; transform:translate(-50%,-50%); }
-
-  /* 小鱼 - 青色椭圆 */
-  .item-fish { width: 52px; height: 36px; background: radial-gradient(circle at 40% 50%, #4db6ac, #26a69a 50%, #00897b); border-radius: 60% 40% 40% 60%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-fish::before { content:''; position:absolute; right:-8px; top:50%; width:0; height:0; border-top:10px solid transparent; border-bottom:10px solid transparent; border-left:12px solid #26a69a; transform:translateY(-50%); }
-  .item-fish::after { content:''; position:absolute; top:30%; left:15%; width:8px; height:8px; background:#fff; border-radius:50%; box-shadow:2px 0 0 #333; }
-
-  /* 礼物 - 紫色方块 */
-  .item-gift { width: 46px; height: 46px; background: linear-gradient(135deg, #ba68c8, #9c27b0); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-gift::before { content:''; position:absolute; top:0; left:50%; width:8px; height:100%; background:#e1bee7; transform:translateX(-50%); }
-  .item-gift::after { content:''; position:absolute; top:50%; left:0; width:100%; height:8px; background:#e1bee7; transform:translateY(-50%); }
-
-  /* 披萨 - 黄色三角 */
-  .item-pizza { width: 44px; height: 48px; background: transparent; }
-  .item-pizza::before { content:''; position:absolute; top:0; left:50%; width:0; height:0; border-left:22px solid transparent; border-right:22px solid transparent; border-top:44px solid #ffcc02; transform:translateX(-50%); }
-  .item-pizza::after { content:''; position:absolute; top:35%; left:50%; width:6px; height:6px; background:#e53935; border-radius:50%; transform:translateX(-50%); box-shadow:-8px 8px 0 #e53935, 8px 8px 0 #e53935; }
-
-  /* 冰淇淋 - 粉色圆 */
-  .item-icecream { width: 40px; height: 44px; background: transparent; }
-  .item-icecream::before { content:''; position:absolute; top:0; left:50%; width:36px; height:36px; background:radial-gradient(circle at 35% 35%, #f8bbd0, #f48fb1); border-radius:50%; transform:translateX(-50%); }
-  .item-icecream::after { content:''; position:absolute; bottom:0; left:50%; width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:20px solid #d4a574; transform:translateX(-50%); }
-
-  /* 小鸡 - 黄色圆 */
-  .item-chick { width: 48px; height: 48px; background: radial-gradient(circle at 40% 40%, #fff176, #ffeb3b 50%, #fbc02d); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-chick::before { content:''; position:absolute; top:35%; left:12px; width:6px; height:6px; background:#333; border-radius:50%; box-shadow:18px 0 0 #333; }
-  .item-chick::after { content:''; position:absolute; top:50%; left:50%; width:0; height:0; border-top:6px solid transparent; border-bottom:6px solid transparent; border-left:8px solid #ff9800; transform:translate(-50%,-50%); }
-
-  /* 鸡蛋 - 淡黄椭圆 */
-  .item-egg { width: 40px; height: 50px; background: radial-gradient(circle at 40% 35%, #fff9c4, #fff176 50%, #ffee58); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
-
-  /* 兔子 - 白色圆 + 耳朵 */
-  .item-rabbit { width: 48px; height: 48px; background: radial-gradient(circle at 40% 40%, #ffffff, #f5f5f5 60%, #e0e0e0); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
-  .item-rabbit::before { content:''; position:absolute; top:-14px; left:8px; width:10px; height:18px; background:#f5f5f5; border-radius:50%; border:2px solid #e0e0e0; }
-  .item-rabbit::after { content:''; position:absolute; top:-14px; right:8px; width:10px; height:18px; background:#f5f5f5; border-radius:50%; border:2px solid #e0e0e0; }
-
-  /* 狐狸 - 橙色圆 + 耳朵 */
-  .item-fox { width: 48px; height: 48px; background: radial-gradient(circle at 40% 40%, #ffb74d, #ff9800 60%, #f57c00); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-fox::before { content:''; position:absolute; top:-10px; left:4px; width:0; height:0; border-left:7px solid transparent; border-right:7px solid transparent; border-bottom:14px solid #ff9800; }
-  .item-fox::after { content:''; position:absolute; top:-10px; right:4px; width:0; height:0; border-left:7px solid transparent; border-right:7px solid transparent; border-bottom:14px solid #ff9800; }
-
-  /* 熊猫 - 黑白圆 */
-  .item-panda { width: 48px; height: 48px; background: radial-gradient(circle at 50% 50%, #ffffff, #f5f5f5); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-panda::before { content:''; position:absolute; top:25%; left:6px; width:14px; height:10px; background:#333; border-radius:50%; box-shadow:22px 0 0 #333; }
-  .item-panda::after { content:''; position:absolute; top:50%; left:50%; width:10px; height:6px; background:#333; border-radius:0 0 50% 50%; transform:translateX(-50%); }
-
-  /* 考拉 - 灰色圆 */
-  .item-koala { width: 48px; height: 48px; background: radial-gradient(circle at 40% 40%, #bdbdbd, #9e9e9e 60%, #757575); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-koala::before { content:''; position:absolute; top:-6px; left:2px; width:12px; height:12px; background:#9e9e9e; border-radius:50%; border:2px solid #757575; }
-  .item-koala::after { content:''; position:absolute; top:-6px; right:2px; width:12px; height:12px; background:#9e9e9e; border-radius:50%; border:2px solid #757575; }
-
-  /* 狮子 - 金色圆 */
-  .item-lion { width: 48px; height: 48px; background: radial-gradient(circle at 40% 40%, #ffe082, #ffcc02 50%, #ffa000); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-lion::before { content:''; position:absolute; top:30%; left:50%; width:10px; height:10px; background:#333; border-radius:50%; transform:translateX(-50%); }
-
-  /* 老虎 - 橙色 + 条纹 */
-  .item-tiger { width: 48px; height: 48px; background: radial-gradient(circle at 40% 40%, #ffb74d, #ff9800 50%, #f57c00); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-tiger::before { content:''; position:absolute; top:0; left:0; right:0; bottom:0; background: repeating-linear-gradient(90deg, transparent, transparent 10px, #333 10px, #333 12px); border-radius:50%; opacity:0.3; }
-
-  /* 熊 - 棕色圆 */
-  .item-bear { width: 48px; height: 48px; background: radial-gradient(circle at 40% 40%, #bcaaa4, #8d6e63 60%, #6d4c41); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-bear::before { content:''; position:absolute; top:-8px; left:4px; width:12px; height:12px; background:#8d6e63; border-radius:50%; }
-  .item-bear::after { content:''; position:absolute; top:-8px; right:4px; width:12px; height:12px; background:#8d6e63; border-radius:50%; }
-
-  /* 龙 - 绿色圆 */
-  .item-dragon { width: 48px; height: 48px; background: radial-gradient(circle at 40% 40%, #81c784, #4caf50 50%, #388e3c); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-dragon::before { content:''; position:absolute; top:30%; left:50%; width:8px; height:8px; background:#fff; border-radius:50%; transform:translateX(-50%); box-shadow:0 0 0 2px #333; }
-
-  /* 独角兽 - 白色 + 角 */
-  .item-unicorn { width: 48px; height: 48px; background: radial-gradient(circle at 40% 40%, #ffffff, #f5f5f5); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
-  .item-unicorn::before { content:''; position:absolute; top:-14px; left:50%; width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent; border-bottom:16px solid #ffd740; transform:translateX(-50%); }
-
-  /* 章鱼 - 紫色圆 */
-  .item-octopus { width: 48px; height: 48px; background: radial-gradient(circle at 40% 35%, #ce93d8, #ab47bc 50%, #8e24aa); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-octopus::before { content:''; position:absolute; top:30%; left:50%; width:10px; height:10px; background:#fff; border-radius:50%; transform:translateX(-50%); box-shadow:0 0 0 2px #333; }
-
-  /* 鲨鱼 - 灰色椭圆 */
-  .item-shark { width: 52px; height: 36px; background: radial-gradient(circle at 40% 50%, #90a4ae, #78909c 50%, #607d8b); border-radius: 60% 40% 40% 60%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-shark::before { content:''; position:absolute; right:-6px; top:50%; width:0; height:0; border-top:8px solid transparent; border-bottom:8px solid transparent; border-left:10px solid #78909c; transform:translateY(-50%); }
-
-  /* 热带鱼 - 橙色 */
-  .item-tropicalfish { width: 48px; height: 36px; background: radial-gradient(circle at 40% 50%, #ff8a65, #ff7043 50%, #f4511e); border-radius: 60% 40% 40% 60%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .item-tropicalfish::before { content:''; position:absolute; right:-6px; top:50%; width:0; height:0; border-top:8px solid transparent; border-bottom:8px solid transparent; border-left:10px solid #ff7043; transform:translateY(-50%); }
-
-  /* 星星 */
-  .item-star { width: 48px; height: 48px; background: #ffd740; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
-
-  /* 皇冠 */
-  .item-crown { width: 48px; height: 40px; background: #ffd740; clip-path: polygon(0% 100%, 10% 20%, 30% 60%, 50% 0%, 70% 60%, 90% 20%, 100% 100%); }
-
-  /* 钻石 */
-  .item-diamond { width: 44px; height: 44px; background: linear-gradient(135deg, #4fc3f7, #0288d1); transform: rotate(45deg); border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-
-  /* 风/气流 */
-  .item-wind { width: 48px; height: 32px; background: transparent; }
-  .item-wind::before { content:''; position:absolute; top:50%; left:0; right:0; height:4px; background:#b0bec5; border-radius:2px; transform:translateY(-50%); }
-  .item-wind::after { content:''; position:absolute; top:30%; left:10%; width:60%; height:4px; background:#cfd8dc; border-radius:2px; }
-
-  /* 不同尺寸的图标 */
-  .item-sm { width: 24px; height: 24px; }
-  .item-sm.item-apple, .item-sm.item-cat, .item-sm.item-dog, .item-sm.item-cookie,
-  .item-sm.item-rabbit, .item-sm.item-fox, .item-sm.item-panda, .item-sm.item-koala,
-  .item-sm.item-lion, .item-sm.item-tiger, .item-sm.item-bear, .item-sm.item-dragon,
-  .item-sm.item-unicorn, .item-sm.item-octopus { width: 24px; height: 24px; }
-  .item-sm.item-strawberry, .item-sm.item-flower { width: 22px; height: 24px; }
-  .item-sm.item-butterfly { width: 24px; height: 20px; }
-  .item-sm.item-balloon { width: 20px; height: 26px; }
-  .item-sm.item-candy, .item-sm.item-chick, .item-sm.item-egg { width: 22px; height: 22px; }
-  .item-sm.item-fish, .item-sm.item-shark, .item-sm.item-tropicalfish { width: 26px; height: 18px; }
-  .item-sm.item-gift { width: 24px; height: 24px; }
-  .item-sm.item-pizza { width: 22px; height: 24px; }
-  .item-sm.item-icecream { width: 20px; height: 22px; }
-  .item-sm.item-star { width: 24px; height: 24px; }
-  .item-sm.item-crown { width: 24px; height: 20px; }
-  .item-sm.item-diamond { width: 22px; height: 22px; }
-  .item-sm.item-wind { width: 24px; height: 16px; }
-
-  .item-md { width: 40px; height: 40px; }
-  .item-md.item-apple, .item-md.item-cat, .item-md.item-dog, .item-md.item-cookie,
-  .item-md.item-rabbit, .item-md.item-fox, .item-md.item-panda, .item-md.item-koala,
-  .item-md.item-lion, .item-md.item-tiger, .item-md.item-bear, .item-md.item-dragon,
-  .item-md.item-unicorn, .item-md.item-octopus { width: 40px; height: 40px; }
-  .item-md.item-strawberry, .item-md.item-flower { width: 36px; height: 40px; }
-  .item-md.item-butterfly { width: 40px; height: 34px; }
-  .item-md.item-balloon { width: 34px; height: 44px; }
-  .item-md.item-candy, .item-md.item-chick, .item-md.item-egg { width: 36px; height: 36px; }
-  .item-md.item-fish, .item-md.item-shark, .item-md.item-tropicalfish { width: 44px; height: 30px; }
-  .item-md.item-gift { width: 38px; height: 38px; }
-  .item-md.item-pizza { width: 36px; height: 40px; }
-  .item-md.item-icecream { width: 34px; height: 36px; }
-  .item-md.item-star { width: 40px; height: 40px; }
-  .item-md.item-crown { width: 40px; height: 34px; }
-  .item-md.item-diamond { width: 36px; height: 36px; }
-  .item-md.item-wind { width: 40px; height: 26px; }
-
-  /* ====== 主页面选择 ====== */
-  .home-screen { display:flex; flex-direction:column; align-items:center; padding:30px 20px; color:white; text-align:center; }
-  .home-title { font-size:32px; margin-bottom:5px; text-shadow:2px 2px 8px rgba(0,0,0,0.3); }
-  .home-subtitle { font-size:16px; opacity:0.8; margin-bottom:30px; }
-
-  .home-card { background:rgba(255,255,255,0.12); backdrop-filter:blur(10px); border-radius:25px; padding:25px; width:100%; margin-bottom:15px; cursor:pointer; transition:transform 0.2s,background 0.2s; border:2px solid rgba(255,255,255,0.15); }
-  .home-card:active { transform:scale(0.97); background:rgba(255,255,255,0.2); }
-  .home-card .card-icon { margin-bottom:10px; display:flex; justify-content:center; gap:8px; }
-  .home-card h3 { font-size:22px; margin-bottom:5px; }
-  .home-card p { font-size:14px; opacity:0.7; }
-
-  /* ====== 学习模式 ====== */
-  .learn-screen { display:none; flex-direction:column; }
+  .stars-bg { position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0; }
+  .star-particle { position:absolute;width:4px;height:4px;background:white;border-radius:50%;animation:twinkle 2s ease-in-out infinite alternate; }
+  @keyframes twinkle { 0%{opacity:0.3}100%{opacity:1} }
+  .game-container { position:relative;z-index:1;width:95vw;max-width:480px;padding:10px; }
+  .home-screen { display:flex;flex-direction:column;align-items:center;padding:30px 20px;color:white;text-align:center; }
+  .home-title { font-size:32px;margin-bottom:5px;text-shadow:2px 2px 8px rgba(0,0,0,0.3); }
+  .home-subtitle { font-size:16px;opacity:0.8;margin-bottom:30px; }
+  .home-card { background:rgba(255,255,255,0.12);border-radius:25px;padding:25px;width:100%;margin-bottom:15px;cursor:pointer;transition:transform 0.2s,background 0.2s;border:2px solid rgba(255,255,255,0.15); }
+  .home-card:active { transform:scale(0.97);background:rgba(255,255,255,0.2); }
+  .home-card .card-row { display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;min-height:60px; }
+  .home-card h3 { font-size:22px;margin-bottom:5px; }
+  .home-card p { font-size:14px;opacity:0.7; }
+  .learn-screen { display:none;flex-direction:column; }
   .learn-screen.show { display:flex; }
-
-  .learn-header { display:flex; align-items:center; justify-content:space-between; padding:10px 15px; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); border-radius:20px; margin-bottom:15px; color:white; }
-  .learn-back { background:rgba(255,255,255,0.2); border:none; color:white; padding:8px 15px; border-radius:12px; font-size:16px; cursor:pointer; }
-
-  .learn-progress { display:flex; gap:5px; justify-content:center; margin-bottom:15px; }
-  .progress-dot { width:12px; height:12px; border-radius:50%; background:rgba(255,255,255,0.2); transition:all 0.3s; }
-  .progress-dot.active { background:#ffd740; transform:scale(1.2); }
+  .learn-header { display:flex;align-items:center;justify-content:space-between;padding:10px 15px;background:rgba(255,255,255,0.1);border-radius:20px;margin-bottom:15px;color:white; }
+  .learn-back { background:rgba(255,255,255,0.2);border:none;color:white;padding:8px 15px;border-radius:12px;font-size:16px;cursor:pointer; }
+  .learn-progress { display:flex;gap:5px;justify-content:center;margin-bottom:15px; }
+  .progress-dot { width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.2);transition:all 0.3s; }
+  .progress-dot.active { background:#ffd740;transform:scale(1.2); }
   .progress-dot.done { background:#66bb6a; }
-
-  .learn-card { background:white; border-radius:25px; padding:25px 20px; box-shadow:0 10px 40px rgba(0,0,0,0.3); min-height:350px; display:flex; flex-direction:column; align-items:center; text-align:center; }
-
-  .learn-visual { flex:1; display:flex; align-items:center; justify-content:center; min-height:180px; margin:15px 0; position:relative; }
-
-  .learn-emoji-group { display:flex; gap:6px; flex-wrap:wrap; justify-content:center; max-width:280px; }
-  .learn-emoji { display:inline-block; opacity:0; transform:scale(0); transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-  .learn-emoji.show { opacity:1; transform:scale(1); }
-
-  .learn-text { font-size:20px; color:#333; line-height:1.6; margin:10px 0; }
-  .learn-text .big { font-size:36px; font-weight:bold; color:#1565c0; }
+  .learn-card { background:white;border-radius:25px;padding:25px 20px;box-shadow:0 10px 40px rgba(0,0,0,0.3);min-height:350px;display:flex;flex-direction:column;align-items:center;text-align:center; }
+  .learn-visual { flex:1;display:flex;align-items:center;justify-content:center;min-height:180px;margin:15px 0; }
+  .learn-emoji-group { display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:280px; }
+  .learn-emoji { display:inline-flex;opacity:0;transform:scale(0);transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  .learn-emoji.show { opacity:1;transform:scale(1); }
+  .learn-text { font-size:20px;color:#333;line-height:1.6;margin:10px 0; }
+  .learn-text .big { font-size:36px;font-weight:bold;color:#1565c0; }
   .learn-text .op { color:#e53935; }
-  .learn-text .result { color:#2e7d32; font-weight:bold; }
-
-  .learn-navigate { display:flex; gap:15px; margin-top:15px; }
-  .learn-nav-btn { padding:12px 30px; border:none; border-radius:15px; font-size:18px; font-weight:bold; cursor:pointer; transition:transform 0.1s; }
+  .learn-text .result { color:#2e7d32;font-weight:bold; }
+  .learn-navigate { display:flex;gap:15px;margin-top:15px; }
+  .learn-nav-btn { padding:12px 30px;border:none;border-radius:15px;font-size:18px;font-weight:bold;cursor:pointer; }
   .learn-nav-btn:active { transform:scale(0.95); }
-  .learn-nav-btn.prev { background:#e0e0e0; color:#666; }
-  .learn-nav-btn.next { background:linear-gradient(145deg,#667eea,#764ba2); color:white; }
-  .learn-nav-btn.start-game { background:linear-gradient(145deg,#66bb6a,#2e7d32); color:white; }
-
-  /* ====== 游戏模式 ====== */
-  .game-screen { display:none; flex-direction:column; }
+  .learn-nav-btn.prev { background:#e0e0e0;color:#666; }
+  .learn-nav-btn.next { background:linear-gradient(145deg,#667eea,#764ba2);color:white; }
+  .learn-nav-btn.start-game { background:linear-gradient(145deg,#66bb6a,#2e7d32);color:white; }
+  .learn-hint { background:#fff3e0;border-radius:12px;padding:10px 15px;font-size:16px;color:#e65100;margin-top:10px; }
+  .game-screen { display:none;flex-direction:column; }
   .game-screen.show { display:flex; }
-
-  .top-bar { display:flex; justify-content:space-between; align-items:center; padding:10px 15px; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); border-radius:20px; margin-bottom:10px; color:white; font-size:16px; }
-  .top-bar .level { font-size:20px; font-weight:bold; color:#ffd740; }
-  .top-bar .xp-bar { flex:1; margin:0 10px; height:12px; background:rgba(0,0,0,0.3); border-radius:6px; overflow:hidden; }
-  .top-bar .xp-fill { height:100%; background:linear-gradient(90deg,#ffd740,#ff6f00); border-radius:6px; transition:width 0.5s ease; }
-
-  .collection-bar { display:flex; gap:5px; padding:8px 12px; background:rgba(255,255,255,0.08); backdrop-filter:blur(10px); border-radius:15px; margin-bottom:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .top-bar { display:flex;justify-content:space-between;align-items:center;padding:10px 15px;background:rgba(255,255,255,0.1);border-radius:20px;margin-bottom:10px;color:white;font-size:16px; }
+  .top-bar .level { font-size:20px;font-weight:bold;color:#ffd740; }
+  .top-bar .xp-bar { flex:1;margin:0 10px;height:12px;background:rgba(0,0,0,0.3);border-radius:6px;overflow:hidden; }
+  .top-bar .xp-fill { height:100%;background:linear-gradient(90deg,#ffd740,#ff6f00);border-radius:6px;transition:width 0.5s ease; }
+  .collection-bar { display:flex;gap:5px;padding:8px 12px;background:rgba(255,255,255,0.08);border-radius:15px;margin-bottom:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none; }
   .collection-bar::-webkit-scrollbar { display:none; }
-  .pet-slot { min-width:36px; height:36px; background:rgba(255,255,255,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center; transition:all 0.3s; }
+  .pet-slot { min-width:36px;height:36px;background:rgba(255,255,255,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;transition:all 0.3s; }
   .pet-slot.empty { opacity:0.3; }
   .pet-slot.new { animation:petBounce 0.6s ease; }
-  @keyframes petBounce { 0%{transform:scale(0)} 50%{transform:scale(1.4)} 70%{transform:scale(0.9)} 100%{transform:scale(1)} }
-
-  .question-card { background:linear-gradient(145deg,#ffffff,#f5f5f5); border-radius:25px; padding:20px; box-shadow:0 10px 40px rgba(0,0,0,0.3); margin-bottom:15px; position:relative; overflow:hidden; }
-  .question-card::before { content:''; position:absolute; top:0;left:0;right:0; height:6px; background:linear-gradient(90deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6); }
-  .scene-emoji { text-align:center; margin:10px 0; line-height:1.3; min-height:70px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:2px; }
-
-  .equation { display:flex; align-items:center; justify-content:center; gap:8px; margin:15px 0; font-size:48px; font-weight:bold; }
-  .equation .num { color:#1565c0; background:#e3f2fd; width:55px; height:55px; display:flex; align-items:center; justify-content:center; border-radius:12px; }
-  .equation .op { color:#e53935; font-size:40px; }
-  .answer-box { width:65px; height:65px; border:4px dashed #999; border-radius:15px; background:#fafafa; display:flex; align-items:center; justify-content:center; font-size:45px; color:#2e7d32; transition:all 0.3s; }
-  .answer-box.correct { border-color:#4caf50; background:#e8f5e9; animation:correctPop 0.5s ease; }
-  .answer-box.wrong { border-color:#f44336; background:#ffebee; animation:wrongShake 0.5s ease; }
-  @keyframes correctPop { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15) rotate(5deg)} }
-  @keyframes wrongShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
-
-  .numpad { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin:15px 0; }
-  .num-btn { height:58px; border:none; border-radius:14px; font-size:26px; font-weight:bold; cursor:pointer; color:white; transition:transform 0.1s; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+  @keyframes petBounce { 0%{transform:scale(0)}50%{transform:scale(1.4)}70%{transform:scale(0.9)}100%{transform:scale(1)} }
+  .question-card { background:linear-gradient(145deg,#ffffff,#f5f5f5);border-radius:25px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,0.3);margin-bottom:15px;position:relative;overflow:hidden; }
+  .question-card::before { content:'';position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6); }
+  .scene-emoji { text-align:center;margin:10px 0;line-height:1.3;min-height:70px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px; }
+  .equation { display:flex;align-items:center;justify-content:center;gap:8px;margin:15px 0;font-size:48px;font-weight:bold; }
+  .equation .num { color:#1565c0;background:#e3f2fd;width:55px;height:55px;display:flex;align-items:center;justify-content:center;border-radius:12px; }
+  .equation .op { color:#e53935;font-size:40px; }
+  .answer-box { width:65px;height:65px;border:4px dashed #999;border-radius:15px;background:#fafafa;display:flex;align-items:center;justify-content:center;font-size:45px;color:#2e7d32;transition:all 0.3s; }
+  .answer-box.correct { border-color:#4caf50;background:#e8f5e9;animation:correctPop 0.5s ease; }
+  .answer-box.wrong { border-color:#f44336;background:#ffebee;animation:wrongShake 0.5s ease; }
+  @keyframes correctPop { 0%,100%{transform:scale(1)}50%{transform:scale(1.15) rotate(5deg)} }
+  @keyframes wrongShake { 0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)} }
+  .numpad { display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:15px 0; }
+  .num-btn { height:58px;border:none;border-radius:14px;font-size:26px;font-weight:bold;cursor:pointer;color:white;transition:transform 0.1s;box-shadow:0 4px 12px rgba(0,0,0,0.2); }
   .num-btn:active { transform:scale(0.92); }
+  .combo-fire { text-align:center;font-size:20px;color:#ff6f00;min-height:28px; }
+  .feedback { text-align:center;min-height:45px;display:flex;align-items:center;justify-content:center;font-size:22px;margin:10px 0; }
+  .mode-panel { display:flex;gap:8px;justify-content:center;margin-bottom:10px; }
+  .mode-chip { padding:8px 16px;border:2px solid rgba(255,255,255,0.3);border-radius:20px;background:rgba(255,255,255,0.1);color:white;font-size:16px;cursor:pointer;transition:all 0.3s; }
+  .mode-chip.active { background:rgba(255,255,255,0.25);border-color:#ffd740;color:#ffd740; }
+  .game-back { background:rgba(255,255,255,0.2);border:none;color:white;padding:8px 15px;border-radius:12px;font-size:14px;cursor:pointer;margin-bottom:10px; }
+  .fireworks { position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:100; }
+  .firework-particle { position:absolute;width:8px;height:8px;border-radius:50%; }
+  .levelup-modal { position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity 0.3s; }
+  .levelup-modal.show { opacity:1;pointer-events:auto; }
+  .levelup-content { background:linear-gradient(145deg,#ffd740,#ff6f00);border-radius:30px;padding:30px;text-align:center;animation:levelPop 0.6s ease;max-width:80vw; }
+  @keyframes levelPop { 0%{transform:scale(0) rotate(-10deg)}60%{transform:scale(1.1) rotate(3deg)}100%{transform:scale(1) rotate(0)} }
+  .levelup-content h2 { font-size:36px;color:white;text-shadow:2px 2px 4px rgba(0,0,0,0.3); }
+  .levelup-content .new-title { font-size:24px;color:white;margin:10px 0; }
+  .levelup-btn { margin-top:20px;padding:12px 30px;border:none;border-radius:20px;background:white;color:#ff6f00;font-size:20px;font-weight:bold;cursor:pointer; }
+  .emoji-rain { position:fixed;pointer-events:none;z-index:50;animation:emojiFall 2s ease-in forwards; }
+  @keyframes emojiFall { 0%{transform:translateY(-50px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(360deg);opacity:0} }
 
-  .combo-fire { text-align:center; font-size:20px; color:#ff6f00; min-height:28px; }
-  .feedback { text-align:center; min-height:45px; display:flex; align-items:center; justify-content:center; font-size:22px; margin:10px 0; }
-
-  .mode-panel { display:flex; gap:8px; justify-content:center; margin-bottom:10px; }
-  .mode-chip { padding:8px 16px; border:2px solid rgba(255,255,255,0.3); border-radius:20px; background:rgba(255,255,255,0.1); color:white; font-size:16px; cursor:pointer; transition:all 0.3s; }
-  .mode-chip.active { background:rgba(255,255,255,0.25); border-color:#ffd740; color:#ffd740; }
-
-  .game-back { background:rgba(255,255,255,0.2); border:none; color:white; padding:8px 15px; border-radius:12px; font-size:14px; cursor:pointer; margin-bottom:10px; }
-
-  /* 烟花 */
-  .fireworks { position:fixed; top:0;left:0;right:0;bottom:0; pointer-events:none; z-index:100; }
-  .firework-particle { position:absolute; width:8px; height:8px; border-radius:50%; }
-
-  /* 升级弹窗 */
-  .levelup-modal { position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:200; opacity:0; pointer-events:none; transition:opacity 0.3s; }
-  .levelup-modal.show { opacity:1; pointer-events:auto; }
-  .levelup-content { background:linear-gradient(145deg,#ffd740,#ff6f00); border-radius:30px; padding:30px; text-align:center; animation:levelPop 0.6s ease; max-width:80vw; }
-  @keyframes levelPop { 0%{transform:scale(0) rotate(-10deg)} 60%{transform:scale(1.1) rotate(3deg)} 100%{transform:scale(1) rotate(0)} }
-  .levelup-content h2 { font-size:36px; color:white; text-shadow:2px 2px 4px rgba(0,0,0,0.3); }
-  .levelup-content .new-title { font-size:24px; color:white; margin:10px 0; }
-  .levelup-btn { margin-top:20px; padding:12px 30px; border:none; border-radius:20px; background:white; color:#ff6f00; font-size:20px; font-weight:bold; cursor:pointer; }
-
-  /* 掉落动画 */
-  .emoji-rain { position:fixed; pointer-events:none; z-index:50; animation:emojiFall 2s ease-in forwards; }
-  @keyframes emojiFall { 0%{transform:translateY(-50px) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(360deg);opacity:0} }
-
-  .learn-hint { background:#fff3e0; border-radius:12px; padding:10px 15px; font-size:16px; color:#e65100; margin-top:10px; }
+  /* ====== SVG 图标样式 ====== */
+  .gi { display:inline-block;vertical-align:middle; }
+  .gi-lg { width:56px;height:56px; }
+  .gi-md { width:48px;height:48px; }
+  .gi-sm { width:24px;height:24px; }
+  .scene-emoji .gi { width:52px;height:52px; }
+  .pet-slot .gi { width:24px;height:24px; }
 </style>
 </head>
 <body>
 
 <div class="stars-bg" id="starsBg"></div>
 <div class="fireworks" id="fireworks"></div>
-
 <div class="levelup-modal" id="levelupModal">
   <div class="levelup-content">
-    <h2 id="levelupTitle">🎉 升级啦！</h2>
+    <h2 id="levelupTitle">升级啦！</h2>
     <div class="new-title" id="levelupNewTitle"></div>
     <button class="levelup-btn" onclick="closeLevelUp()">继续玩！</button>
   </div>
 </div>
 
 <div class="game-container">
-
-  <!-- ====== 主页面 ====== -->
   <div class="home-screen" id="homeScreen">
-    <div class="home-title">🐾 动物数学岛 🌴</div>
+    <div class="home-title">动物数学岛</div>
     <div class="home-subtitle">先学习，再闯关！</div>
-
     <div class="home-card" onclick="enterLearn('add')">
-      <div class="card-icon">
-        <div class="item item-apple item-md"></div>
-        <span style="font-size:36px;color:#e53935;font-weight:bold">+</span>
-        <div class="item item-apple item-md"></div>
-      </div>
+      <div class="card-row" id="homeCardAdd"></div>
       <h3>学习加法</h3>
       <p>学会把东西合在一起</p>
     </div>
-
     <div class="home-card" onclick="enterLearn('sub')">
-      <div class="card-icon">
-        <div class="item item-cookie item-md"></div>
-        <span style="font-size:36px;color:#e53935;font-weight:bold">−</span>
-      </div>
+      <div class="card-row" id="homeCardSub"></div>
       <h3>学习减法</h3>
       <p>学会拿走还剩多少</p>
     </div>
-
     <div class="home-card" onclick="enterGame()">
-      <div class="card-icon" style="font-size:48px">🎮</div>
+      <div class="card-row" style="font-size:48px">&#127918;</div>
       <h3>闯关答题</h3>
       <p>用学到的知识来闯关吧！</p>
     </div>
   </div>
 
-  <!-- ====== 学习页面 ====== -->
   <div class="learn-screen" id="learnScreen">
     <div class="learn-header">
-      <button class="learn-back" onclick="goHome()">🏠 返回</button>
+      <button class="learn-back" onclick="goHome()">返回</button>
       <span id="learnTitle">学习加法</span>
       <span style="width:60px"></span>
     </div>
@@ -366,25 +148,24 @@
       <div class="learn-text" id="learnText"></div>
       <div class="learn-hint" id="learnHint" style="display:none"></div>
       <div class="learn-navigate">
-        <button class="learn-nav-btn prev" onclick="learnPrev()">⬅️ 上一个</button>
-        <button class="learn-nav-btn next" id="learnNextBtn" onclick="learnNext()">下一个 ➡️</button>
+        <button class="learn-nav-btn prev" onclick="learnPrev()">&#9664; 上一个</button>
+        <button class="learn-nav-btn next" id="learnNextBtn" onclick="learnNext()">下一个 &#9654;</button>
       </div>
     </div>
   </div>
 
-  <!-- ====== 游戏页面 ====== -->
   <div class="game-screen" id="gameScreen">
-    <button class="game-back" onclick="goHome()">🏠 返回</button>
+    <button class="game-back" onclick="goHome()">返回</button>
     <div class="top-bar">
       <span class="level" id="levelDisplay">Lv.1</span>
       <div class="xp-bar"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
-      <span>⭐ <span id="scoreDisplay">0</span></span>
+      <span id="scoreDisplay">0</span>
     </div>
     <div class="collection-bar" id="collectionBar"></div>
     <div class="mode-panel">
-      <button class="mode-chip active" data-mode="add">➕ 加法</button>
-      <button class="mode-chip" data-mode="sub">➖ 减法</button>
-      <button class="mode-chip" data-mode="mix">🎲 混合</button>
+      <button class="mode-chip active" data-mode="add">加法</button>
+      <button class="mode-chip" data-mode="sub">减法</button>
+      <button class="mode-chip" data-mode="mix">混合</button>
     </div>
     <div class="question-card">
       <div class="scene-emoji" id="sceneEmoji"></div>
@@ -394,555 +175,620 @@
     <div class="combo-fire" id="comboDisplay"></div>
     <div class="feedback" id="feedback"></div>
   </div>
-
 </div>
 
 <script>
-  // ====== CSS 图标映射（emoji -> CSS class） ======
-  const EMOJI_TO_CSS = {
-    '🍎': 'apple', '🍊': 'apple', '🐱': 'cat', '🐶': 'dog',
-    '🌸': 'flower', '🍓': 'strawberry', '🎈': 'balloon', '🦋': 'butterfly',
-    '🍪': 'cookie', '🍬': 'candy', '🐟': 'fish', '🎁': 'gift',
-    '🍕': 'pizza', '🍦': 'icecream', '🐥': 'chick', '🐣': 'egg',
-    '🐤': 'chick', '🐰': 'rabbit', '🦊': 'fox', '🐼': 'panda',
-    '🐨': 'koala', '🦁': 'lion', '🐯': 'tiger', '🐻': 'bear',
-    '🐲': 'dragon', '🦄': 'unicorn', '🐉': 'dragon', '🐙': 'octopus',
-    '🐠': 'tropicalfish', '🦈': 'shark', '👑': 'crown', '🌟': 'star',
-    '💎': 'diamond', '😋': 'cookie', '💨': 'wind'
-  };
+// ====== 直接内联 SVG 图标字符串 ======
+var GI = {};
+GI.apple = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="40" rx="20" ry="18" fill="#e53935"/><ellipse cx="26" cy="38" rx="6" ry="8" fill="#ef5350" opacity="0.5"/><path d="M32 22 Q34 14 40 16" stroke="#4caf50" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="38" cy="16" rx="6" ry="4" fill="#4caf50" transform="rotate(-20 38 16)"/></svg>';
+GI.strawberry = '<svg class="gi" viewBox="0 0 64 64"><path d="M32 18 C20 18 14 30 14 40 C14 52 22 60 32 60 C42 60 50 52 50 40 C50 30 44 18 32 18Z" fill="#e53935"/><circle cx="26" cy="38" r="1.5" fill="#ffeb3b" opacity="0.8"/><circle cx="34" cy="36" r="1.5" fill="#ffeb3b" opacity="0.8"/><circle cx="30" cy="44" r="1.5" fill="#ffeb3b" opacity="0.8"/><circle cx="38" cy="42" r="1.5" fill="#ffeb3b" opacity="0.8"/><path d="M32 18 L28 10 L32 14 L36 10Z" fill="#4caf50"/></svg>';
+GI.flower = '<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="24" r="8" fill="#e91e63" opacity="0.9"/><circle cx="24" cy="32" r="8" fill="#e91e63" opacity="0.9"/><circle cx="40" cy="32" r="8" fill="#e91e63" opacity="0.9"/><circle cx="26" cy="22" r="8" fill="#f06292" opacity="0.9"/><circle cx="38" cy="22" r="8" fill="#f06292" opacity="0.9"/><circle cx="32" cy="30" r="6" fill="#ffeb3b"/></svg>';
+GI.cat = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="40" rx="18" ry="16" fill="#ff9800"/><polygon points="18,28 14,14 26,24" fill="#ff9800"/><polygon points="46,28 50,14 38,24" fill="#ff9800"/><circle cx="26" cy="36" r="3" fill="#333"/><circle cx="38" cy="36" r="3" fill="#333"/><ellipse cx="32" cy="42" rx="3" ry="2" fill="#ff5722"/></svg>';
+GI.dog = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="18" ry="14" fill="#8d6e63"/><ellipse cx="18" cy="30" rx="8" ry="14" fill="#8d6e63" transform="rotate(-10 18 30)"/><ellipse cx="46" cy="30" rx="8" ry="14" fill="#8d6e63" transform="rotate(10 46 30)"/><circle cx="26" cy="38" r="3" fill="#333"/><circle cx="38" cy="38" r="3" fill="#333"/><ellipse cx="32" cy="46" rx="5" ry="3" fill="#333"/></svg>';
+GI.butterfly = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="22" cy="28" rx="14" ry="16" fill="#ab47bc" opacity="0.8"/><ellipse cx="42" cy="28" rx="14" ry="16" fill="#ab47bc" opacity="0.8"/><ellipse cx="20" cy="44" rx="10" ry="10" fill="#ce93d8" opacity="0.7"/><ellipse cx="44" cy="44" rx="10" ry="10" fill="#ce93d8" opacity="0.7"/><ellipse cx="32" cy="38" rx="2" ry="16" fill="#4a148c"/></svg>';
+GI.balloon = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="30" rx="16" ry="20" fill="#42a5f5"/><ellipse cx="28" cy="26" rx="4" ry="6" fill="#90caf9" opacity="0.5"/><polygon points="30,48 32,52 34,48" fill="#42a5f5"/><line x1="32" y1="52" x2="32" y2="62" stroke="#90caf9" stroke-width="1"/></svg>';
+GI.cookie = '<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="34" r="20" fill="#d4a574"/><circle cx="24" cy="28" r="4" fill="#5d4037"/><circle cx="36" cy="26" r="3" fill="#5d4037"/><circle cx="30" cy="40" r="3.5" fill="#5d4037"/><circle cx="40" cy="36" r="3" fill="#5d4037"/></svg>';
+GI.candy = '<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="32" r="16" fill="#e91e63"/><circle cx="28" cy="28" r="4" fill="#f48fb1" opacity="0.6"/><path d="M16 32 Q8 24 4 16" stroke="#e91e63" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M48 32 Q56 24 60 16" stroke="#e91e63" stroke-width="3" fill="none" stroke-linecap="round"/></svg>';
+GI.fish = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="30" cy="34" rx="20" ry="14" fill="#26a69a"/><polygon points="50,34 62,24 62,44" fill="#26a69a"/><circle cx="22" cy="30" r="3" fill="#333"/><circle cx="22" cy="30" r="1" fill="#fff"/></svg>';
+GI.gift = '<svg class="gi" viewBox="0 0 64 64"><rect x="14" y="30" width="36" height="26" rx="3" fill="#7b1fa2"/><rect x="12" y="26" width="40" height="8" rx="2" fill="#9c27b0"/><rect x="29" y="26" width="6" height="30" fill="#e1bee7"/><ellipse cx="26" cy="24" rx="8" ry="6" fill="#e91e63"/><ellipse cx="38" cy="24" rx="8" ry="6" fill="#e91e63"/></svg>';
+GI.pizza = '<svg class="gi" viewBox="0 0 64 64"><path d="M14 50 L32 10 L50 50Z" fill="#ffcc02"/><circle cx="28" cy="36" r="4" fill="#e53935"/><circle cx="36" cy="38" r="3" fill="#e53935"/><circle cx="32" cy="44" r="3.5" fill="#e53935"/></svg>';
+GI.icecream = '<svg class="gi" viewBox="0 0 64 64"><polygon points="24,40 40,40 32,60" fill="#d4a574"/><circle cx="32" cy="22" r="14" fill="#f48fb1"/><circle cx="32" cy="8" r="8" fill="#f48fb1"/></svg>';
+GI.chick = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="38" rx="16" ry="14" fill="#ffeb3b"/><circle cx="32" cy="24" r="12" fill="#ffeb3b"/><circle cx="28" cy="22" r="2.5" fill="#333"/><circle cx="36" cy="22" r="2.5" fill="#333"/><polygon points="30,26 34,26 32,30" fill="#ff9800"/></svg>';
+GI.egg = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="38" rx="18" ry="20" fill="#fff9c4"/><ellipse cx="32" cy="38" rx="16" ry="18" fill="#fff176"/></svg>';
+GI.rabbit = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="44" rx="18" ry="14" fill="#f5f5f5"/><ellipse cx="24" cy="14" rx="6" ry="16" fill="#f5f5f5" transform="rotate(-5 24 14)"/><ellipse cx="40" cy="14" rx="6" ry="16" fill="#f5f5f5" transform="rotate(5 40 14)"/><circle cx="26" cy="40" r="3" fill="#333"/><circle cx="38" cy="40" r="3" fill="#333"/><ellipse cx="32" cy="46" rx="2" ry="1.5" fill="#f48fb1"/></svg>';
+GI.fox = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="16" ry="12" fill="#ff9800"/><circle cx="32" cy="30" r="14" fill="#ff9800"/><polygon points="20,20 14,8 28,18" fill="#ff9800"/><polygon points="44,20 50,8 36,18" fill="#ff9800"/><circle cx="26" cy="28" r="2.5" fill="#333"/><circle cx="38" cy="28" r="2.5" fill="#333"/></svg>';
+GI.panda = '<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="36" r="18" fill="#f5f5f5"/><circle cx="18" cy="22" r="8" fill="#333"/><circle cx="46" cy="22" r="8" fill="#333"/><ellipse cx="24" cy="32" rx="7" ry="6" fill="#333"/><ellipse cx="40" cy="32" rx="7" ry="6" fill="#333"/><circle cx="24" cy="32" r="2" fill="#fff"/><circle cx="40" cy="32" r="2" fill="#fff"/><ellipse cx="32" cy="40" rx="3" ry="2" fill="#333"/></svg>';
+GI.koala = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="16" ry="14" fill="#9e9e9e"/><circle cx="32" cy="28" r="16" fill="#bdbdbd"/><circle cx="16" cy="22" r="8" fill="#9e9e9e"/><circle cx="16" cy="22" r="4" fill="#e0e0e0"/><circle cx="48" cy="22" r="8" fill="#9e9e9e"/><circle cx="48" cy="22" r="4" fill="#e0e0e0"/><ellipse cx="26" cy="26" rx="4" ry="3" fill="#333"/><ellipse cx="38" cy="26" rx="4" ry="3" fill="#333"/></svg>';
+GI.lion = '<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="32" r="20" fill="#ffcc02"/><circle cx="32" cy="34" r="14" fill="#ffe082"/><circle cx="26" cy="30" r="2.5" fill="#333"/><circle cx="38" cy="30" r="2.5" fill="#333"/><ellipse cx="32" cy="38" rx="3" ry="2" fill="#333"/></svg>';
+GI.tiger = '<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="34" r="18" fill="#ff9800"/><circle cx="32" cy="36" r="12" fill="#ffe0b2"/><circle cx="26" cy="32" r="2.5" fill="#333"/><circle cx="38" cy="32" r="2.5" fill="#333"/><ellipse cx="32" cy="40" rx="3" ry="2" fill="#333"/></svg>';
+GI.bear = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="18" ry="14" fill="#8d6e63"/><circle cx="32" cy="28" r="16" fill="#8d6e63"/><circle cx="18" cy="16" r="7" fill="#8d6e63"/><circle cx="46" cy="16" r="7" fill="#8d6e63"/><circle cx="26" cy="26" r="3" fill="#333"/><circle cx="38" cy="26" r="3" fill="#333"/><ellipse cx="32" cy="34" rx="6" ry="4" fill="#d7ccc8"/></svg>';
+GI.dragon = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="40" rx="16" ry="14" fill="#4caf50"/><circle cx="32" cy="26" r="14" fill="#4caf50"/><circle cx="26" cy="24" r="4" fill="#fff"/><circle cx="26" cy="24" r="2" fill="#333"/><circle cx="38" cy="24" r="4" fill="#fff"/><circle cx="38" cy="24" r="2" fill="#333"/></svg>';
+GI.unicorn = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="16" ry="14" fill="#f8f8f8"/><circle cx="32" cy="26" r="14" fill="#f8f8f8"/><circle cx="26" cy="24" r="3" fill="#333"/><circle cx="38" cy="24" r="3" fill="#333"/><ellipse cx="32" cy="32" rx="2" ry="1.5" fill="#f48fb1"/><polygon points="32,8 28,20 36,20" fill="#ffd740"/></svg>';
+GI.octopus = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="26" rx="18" ry="16" fill="#ab47bc"/><circle cx="24" cy="24" r="4" fill="#fff"/><circle cx="40" cy="24" r="4" fill="#fff"/><circle cx="24" cy="24" r="2" fill="#333"/><circle cx="40" cy="24" r="2" fill="#333"/></svg>';
+GI.shark = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="30" cy="34" rx="22" ry="14" fill="#78909c"/><polygon points="52,34 62,28 62,40" fill="#78909c"/><circle cx="22" cy="30" r="3" fill="#333"/></svg>';
+GI.tropicalfish = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="28" cy="34" rx="18" ry="12" fill="#ff7043"/><polygon points="46,34 58,26 58,42" fill="#ff7043"/><circle cx="20" cy="30" r="3" fill="#333"/><circle cx="20" cy="30" r="1" fill="#fff"/></svg>';
+GI.star = '<svg class="gi" viewBox="0 0 64 64"><polygon points="32,8 38,24 56,24 42,36 46,54 32,44 18,54 22,36 8,24 26,24" fill="#ffd740"/></svg>';
+GI.crown = '<svg class="gi" viewBox="0 0 64 64"><path d="M10 44 L14 20 L24 32 L32 14 L40 32 L50 20 L54 44Z" fill="#ffd740"/><rect x="10" y="44" width="44" height="8" rx="2" fill="#ffab00"/></svg>';
+GI.diamond = '<svg class="gi" viewBox="0 0 64 64"><polygon points="32,8 52,24 32,56 12,24" fill="#29b6f6"/><polygon points="32,8 52,24 32,28" fill="#4fc3f7"/></svg>';
+GI.wind = '<svg class="gi" viewBox="0 0 64 64"><path d="M8 32 Q20 20 32 32 Q44 44 56 32" stroke="#90a4ae" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M16 24 Q28 16 40 24" stroke="#b0bec5" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/></svg>';
 
-  // 生成 CSS 图标 HTML
-  function emojiToItem(emoji, sizeClass) {
-    const cssClass = EMOJI_TO_CSS[emoji];
-    if (cssClass) {
-      return `<span class="item item-${cssClass} ${sizeClass || ''}"></span>`;
+// emoji -> icon key mapping using surrogate pairs
+var EM = {};
+EM['\uD83C\uDF4E'] = 'apple'; EM['\uD83C\uDF4A'] = 'apple';
+EM['\uD83D\uDC31'] = 'cat'; EM['\uD83D\uDC36'] = 'dog';
+EM['\uD83C\uDF38'] = 'flower'; EM['\uD83C\uDF53'] = 'strawberry';
+EM['\uD83C\uDF88'] = 'balloon'; EM['\uD83E\uDD8B'] = 'butterfly';
+EM['\uD83C\uDF6A'] = 'cookie'; EM['\uD83C\uDF6C'] = 'candy';
+EM['\uD83D\uDC1F'] = 'fish'; EM['\uD83C\uDF81'] = 'gift';
+EM['\uD83C\uDF55'] = 'pizza'; EM['\uD83C\uDF66'] = 'icecream';
+EM['\uD83D\uDC25'] = 'chick'; EM['\uD83D\uDC23'] = 'egg';
+EM['\uD83D\uDC24'] = 'chick'; EM['\uD83D\uDC30'] = 'rabbit';
+EM['\uD83E\uDD8A'] = 'fox'; EM['\uD83D\uDC3C'] = 'panda';
+EM['\uD83D\uDC28'] = 'koala'; EM['\uD83E\uDD81'] = 'lion';
+EM['\uD83D\uDC2F'] = 'tiger'; EM['\uD83D\uDC3B'] = 'bear';
+EM['\uD83D\uDC32'] = 'dragon'; EM['\uD83E\uDD84'] = 'unicorn';
+EM['\uD83D\uDC09'] = 'dragon'; EM['\uD83D\uDC19'] = 'octopus';
+EM['\uD83D\uDC20'] = 'tropicalfish'; EM['\uD83E\uDD88'] = 'shark';
+EM['\uD83D\uDC51'] = 'crown'; EM['\uD83C\uDF1F'] = 'star';
+EM['\uD83D\uDC8E'] = 'diamond'; EM['\uD83D\uDE0B'] = 'cookie';
+EM['\uD83D\uDCA8'] = 'wind';
+
+function icon(key, size) {
+  var s = size || 'gi-md';
+  return '<span class="gi ' + s + '">' + (GI[key] || '') + '</span>';
+}
+
+function chToHTML(ch, size) {
+  var key = EM[ch];
+  if (key) return icon(key, size);
+  return ch;
+}
+
+function strToHTML(str, size) {
+  var r = '', chars = [...str];
+  for (var i = 0; i < chars.length; i++) {
+    if (chars[i].trim()) r += chToHTML(chars[i], size);
+  }
+  return r;
+}
+
+function renderIcons(str, size) {
+  return str.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uFE00-\uFE0F]/g, function(m) {
+    return chToHTML(m, size) || m;
+  });
+}
+
+// ====== 音效 ======
+var AudioCtx = window.AudioContext || window.webkitAudioContext;
+var audioCtx;
+function getAudioCtx() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
+function playSound(type) {
+  try {
+    var ctx = getAudioCtx();
+    if (type === 'correct') {
+      [523,659,784].forEach(function(f,i){
+        var o=ctx.createOscillator(),g=ctx.createGain();
+        o.connect(g);g.connect(ctx.destination);o.type='sine';
+        o.frequency.setValueAtTime(f,ctx.currentTime+i*0.1);
+        g.gain.setValueAtTime(0.3,ctx.currentTime+i*0.1);
+        g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+i*0.1+0.15);
+        o.start(ctx.currentTime+i*0.1);o.stop(ctx.currentTime+i*0.1+0.15);
+      });
+    } else if (type==='wrong') {
+      var o2=ctx.createOscillator(),g2=ctx.createGain();
+      o2.connect(g2);g2.connect(ctx.destination);o2.type='sawtooth';
+      o2.frequency.setValueAtTime(200,ctx.currentTime);
+      o2.frequency.setValueAtTime(150,ctx.currentTime+0.15);
+      g2.gain.setValueAtTime(0.2,ctx.currentTime);
+      g2.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.3);
+      o2.start(ctx.currentTime);o2.stop(ctx.currentTime+0.3);
+    } else if (type==='levelup') {
+      [523,587,659,698,784,880,988,1047].forEach(function(f,i){
+        var o3=ctx.createOscillator(),g3=ctx.createGain();
+        o3.connect(g3);g3.connect(ctx.destination);o3.type='sine';
+        o3.frequency.setValueAtTime(f,ctx.currentTime+i*0.1);
+        g3.gain.setValueAtTime(0.2,ctx.currentTime+i*0.1);
+        g3.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+i*0.1+0.15);
+        o3.start(ctx.currentTime+i*0.1);o3.stop(ctx.currentTime+i*0.1+0.15);
+      });
+    } else if (type==='click') {
+      var o4=ctx.createOscillator(),g4=ctx.createGain();
+      o4.connect(g4);g4.connect(ctx.destination);o4.type='sine';
+      o4.frequency.setValueAtTime(800,ctx.currentTime);
+      g4.gain.setValueAtTime(0.1,ctx.currentTime);
+      g4.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.05);
+      o4.start(ctx.currentTime);o4.stop(ctx.currentTime+0.05);
+    } else if (type==='appear') {
+      var o5=ctx.createOscillator(),g5=ctx.createGain();
+      o5.connect(g5);g5.connect(ctx.destination);o5.type='sine';
+      o5.frequency.setValueAtTime(600+Math.random()*400,ctx.currentTime);
+      g5.gain.setValueAtTime(0.15,ctx.currentTime);
+      g5.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.2);
+      o5.start(ctx.currentTime);o5.stop(ctx.currentTime+0.2);
     }
-    return `<span style="font-size:40px">${emoji}</span>`;
-  }
+  } catch(e) {}
+}
 
-  // 将 emoji 字符串转换为 HTML 图标
-  function emojiStringToItems(str, sizeClass) {
-    let result = '';
-    const chars = [...str];
-    for (const char of chars) {
-      if (char.trim()) {
-        result += emojiToItem(char, sizeClass);
-      }
+// ====== 学习数据 ======
+var LESSONS = {
+  add: [
+    { title:"什么是加法？", type:"concept", a:2, b:1,
+      text:'加法就是<span class="op">把东西合在一起</span>',
+      hint:"\uD83D\uDC46 看下面的苹果，把它们合起来！",
+      steps:[
+        { text:"小明有 <span class='big'>2</span> 个苹果", emoji:"\uD83C\uDF4E\uD83C\uDF4E" },
+        { text:"妈妈又给了 <span class='big'>1</span> 个", emoji:"\uD83C\uDF4E" },
+        { text:"合在一起数一数\u2026", emoji:"\uD83C\uDF4E\uD83C\uDF4E" },
+        { text:'<span class=\'big\'>2</span> <span class=\'op\'>+</span> <span class=\'big\'>1</span> <span class=\'op\'>=</span> <span class=\'result\'>3</span>', emoji:"\uD83C\uDF4E\uD83C\uDF4E\uD83C\uDF4E" }
+      ]
+    },
+    { title:"再来一例", type:"concept", a:3, b:2,
+      text:'3只小猫 <span class="op">加上</span> 2只小猫',
+      hint:"数一数一共有几只小猫？",
+      steps:[
+        { text:"院子里有 <span class='big'>3</span> 只小猫", emoji:"\uD83D\uDC31\uD83D\uDC31\uD83D\uDC31" },
+        { text:"又来了 <span class='big'>2</span> 只", emoji:"\uD83D\uDC31" },
+        { text:"一起数一数\u2026", emoji:"\uD83D\uDC31\uD83D\uDC31\uD83D\uDC31\uD83D\uDC31" },
+        { text:'<span class=\'big\'>3</span> <span class=\'op\'>+</span> <span class=\'big\'>2</span> <span class=\'op\'>=</span> <span class=\'result\'>5</span>', emoji:"\uD83D\uDC31\uD83D\uDC31" }
+      ]
+    },
+    { title:"你试试！", type:"practice", a:1, b:1,
+      text:'<span class=\'big\'>1</span> <span class=\'op\'>+</span> <span class=\'big\'>1</span> <span class=\'op\'>=</span> <span class=\'result\'>?</span>',
+      hint:"一个草莓加上一个草莓，一共几个？"
+    },
+    { title:"再试试！", type:"practice", a:2, b:3,
+      text:'<span class=\'big\'>2</span> <span class=\'op\'>+</span> <span class=\'big\'>3</span> <span class=\'op\'>=</span> <span class=\'result\'>?</span>',
+      hint:"数一数：\uD83C\uDF38 加上 \uD83C\uDF38\uD83C\uDF38 一共几朵？"
     }
-    return result;
-  }
-
-  // 渲染字符串中的 emoji 为图标
-  function renderWithItems(str, sizeClass) {
-    return str.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{27BF}]|[\u{FE00}-\u{FE0F}]/gu, match => {
-      return emojiToItem(match, sizeClass) || match;
-    });
-  }
-
-  // ====== 音效 ======
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  let audioCtx;
-  function getAudioCtx() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
-
-  function playSound(type) {
-    try {
-      const ctx = getAudioCtx();
-      if (type === 'correct') {
-        [523, 659, 784].forEach((f, i) => {
-          const o = ctx.createOscillator(), g = ctx.createGain();
-          o.connect(g); g.connect(ctx.destination); o.type = 'sine';
-          o.frequency.setValueAtTime(f, ctx.currentTime + i * 0.1);
-          g.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.1);
-          g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.1 + 0.15);
-          o.start(ctx.currentTime + i * 0.1); o.stop(ctx.currentTime + i * 0.1 + 0.15);
-        });
-      } else if (type === 'wrong') {
-        const o = ctx.createOscillator(), g = ctx.createGain();
-        o.connect(g); g.connect(ctx.destination); o.type = 'sawtooth';
-        o.frequency.setValueAtTime(200, ctx.currentTime);
-        o.frequency.setValueAtTime(150, ctx.currentTime + 0.15);
-        g.gain.setValueAtTime(0.2, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-        o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.3);
-      } else if (type === 'levelup') {
-        [523,587,659,698,784,880,988,1047].forEach((f, i) => {
-          const o = ctx.createOscillator(), g = ctx.createGain();
-          o.connect(g); g.connect(ctx.destination); o.type = 'sine';
-          o.frequency.setValueAtTime(f, ctx.currentTime + i * 0.1);
-          g.gain.setValueAtTime(0.2, ctx.currentTime + i * 0.1);
-          g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.1 + 0.15);
-          o.start(ctx.currentTime + i * 0.1); o.stop(ctx.currentTime + i * 0.1 + 0.15);
-        });
-      } else if (type === 'click') {
-        const o = ctx.createOscillator(), g = ctx.createGain();
-        o.connect(g); g.connect(ctx.destination); o.type = 'sine';
-        o.frequency.setValueAtTime(800, ctx.currentTime);
-        g.gain.setValueAtTime(0.1, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
-        o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.05);
-      } else if (type === 'appear') {
-        const o = ctx.createOscillator(), g = ctx.createGain();
-        o.connect(g); g.connect(ctx.destination); o.type = 'sine';
-        o.frequency.setValueAtTime(600 + Math.random() * 400, ctx.currentTime);
-        g.gain.setValueAtTime(0.15, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-        o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.2);
-      }
-    } catch(e) {}
-  }
-
-  // ====== 学习数据 ======
-  const LESSONS = {
-    add: [
-      {
-        title: "什么是加法？", type: "concept", emoji: "🍎", a: 2, b: 1,
-        text: `加法就是<span class="op">把东西合在一起</span>`,
-        hint: "👆 看下面的苹果，把它们合起来！",
-        steps: [
-          { text: "小明有 <span class='big'>2</span> 个苹果", emoji: "🍎🍎" },
-          { text: "妈妈又给了 <span class='big'>1</span> 个", emoji: "🍎" },
-          { text: "合在一起数一数…", emoji: "🍎🍎" },
-          { text: `<span class='big'>2</span> <span class='op'>+</span> <span class='big'>1</span> <span class='op'>=</span> <span class='result'>3</span>`, emoji: "🍎🍎🍎" },
-        ]
-      },
-      {
-        title: "再来一例", type: "concept", emoji: "🐱", a: 3, b: 2,
-        text: `3只小猫 <span class="op">加上</span> 2只小猫`,
-        hint: "数一数一共有几只小猫？",
-        steps: [
-          { text: "院子里有 <span class='big'>3</span> 只小猫", emoji: "🐱🐱🐱" },
-          { text: "又来了 <span class='big'>2</span> 只", emoji: "🐱" },
-          { text: "一起数一数…", emoji: "🐱🐱🐱🐱" },
-          { text: `<span class='big'>3</span> <span class='op'>+</span> <span class='big'>2</span> <span class='op'>=</span> <span class='result'>5</span>`, emoji: "🐱🐱" },
-        ]
-      },
-      {
-        title: "你试试！", type: "practice", a: 1, b: 1,
-        text: `<span class='big'>1</span> <span class='op'>+</span> <span class='big'>1</span> <span class='op'>=</span> <span class='result'>?</span>`,
-        hint: "一个草莓加上一个草莓，一共几个？",
-      },
-      {
-        title: "再试试！", type: "practice", a: 2, b: 3,
-        text: `<span class='big'>2</span> <span class='op'>+</span> <span class='big'>3</span> <span class='op'>=</span> <span class='result'>?</span>`,
-        hint: "数一数：🌸 加上 🌸🌸 一共几朵？",
-      }
-    ],
-    sub: [
-      {
-        title: "什么是减法？", type: "concept", emoji: "🍪", a: 3, b: 1,
-        text: `减法就是<span class="op">拿走一部分</span>`,
-        hint: "👆 看饼干被吃掉了几块！",
-        steps: [
-          { text: "盘子里有 <span class='big'>3</span> 块饼干", emoji: "🍪🍪" },
-          { text: "吃掉了 <span class='big'>1</span> 块", emoji: "😋" },
-          { text: "还剩多少呢？", emoji: "🍪🍪" },
-          { text: `<span class='big'>3</span> <span class='op'>-</span> <span class='big'>1</span> <span class='op'>=</span> <span class='result'>2</span>`, emoji: "🍪" },
-        ]
-      },
-      {
-        title: "再来一例", type: "concept", emoji: "🎈", a: 5, b: 2,
-        text: `5个气球 <span class="op">飞走了</span> 2个`,
-        hint: "数一数还剩几个气球？",
-        steps: [
-          { text: "手里有 <span class='big'>5</span> 个气球", emoji: "🎈🎈🎈🎈" },
-          { text: "飞走了 <span class='big'>2</span> 个", emoji: "💨💨" },
-          { text: "还剩几个呢？", emoji: "🎈🎈🎈" },
-          { text: `<span class='big'>5</span> <span class='op'>-</span> <span class='big'>2</span> <span class='op'>=</span> <span class='result'>3</span>`, emoji: "🎈🎈🎈" },
-        ]
-      },
-      {
-        title: "你试试！", type: "practice", a: 2, b: 1,
-        text: `<span class='big'>2</span> <span class='op'>-</span> <span class='big'>1</span> <span class='op'>=</span> <span class='result'>?</span>`,
-        hint: "2颗糖果吃掉1颗，还剩几颗？",
-      },
-      {
-        title: "再试试！", type: "practice", a: 4, b: 2,
-        text: `<span class='big'>4</span> <span class='op'>-</span> <span class='big'>2</span> <span class='op'>=</span> <span class='result'>?</span>`,
-        hint: "4只小鱼游走了2只，还剩几只？",
-      }
-    ]
-  };
-
-  // ====== 游戏数据 ======
-  const LEVELS = [
-    { level:1, title:'数学小宝宝', xpNeeded:5, pets:['🐥','','🐤'] },
-    { level:2, title:'算术小能手', xpNeeded:10, pets:['🐰','',''] },
-    { level:3, title:'计算小达人', xpNeeded:15, pets:['🦊','','🐨'] },
-    { level:4, title:'数学小天才', xpNeeded:20, pets:['🦁','',''] },
-    { level:5, title:'超级算术王', xpNeeded:25, pets:['🐲','','🐉'] },
-    { level:6, title:'数学大冒险家', xpNeeded:30, pets:['🐙','',''] },
-    { level:7, title:'终极数学大师', xpNeeded:50, pets:['👑','','💎'] },
-  ];
-
-  const SCENES = {
-    add: [{ emoji:'🍎' },{ emoji:'🍊' },{ emoji:'🐱' },{ emoji:'🐶' },{ emoji:'🌸' },{ emoji:'🍓' },{ emoji:'🎈' },{ emoji:'🦋' }],
-    sub: [{ emoji:'🍪' },{ emoji:'🍬' },{ emoji:'🐟' },{ emoji:'🎁' },{ emoji:'🍕' },{ emoji:'🍦' }],
-  };
-
-  const PRAISES = ['太棒了！🎉','你好聪明！🧠','答对啦！✅','好厉害！💪','真棒！👏','非常好！🌟','天才！🎊','666！🔥','哇塞！😍','超厉害！🚀','棒呆了！💯','无敌了！🏆'];
-  const WRONG_MSGS = ['差一点点哦！💫','再想想～🤔','没关系！😊','接近了！🎯','加油！💪','下次一定！✨'];
-
-  // ====== 全局状态 ======
-  let gameState = { mode:'add', xp:0, level:1, totalXp:0, combo:0, maxCombo:0, collection:[], currentAnswer:null, answered:false, totalCorrect:0 };
-  let learnState = { type:'add', lessonIdx:0, stepIdx:0, answered:false };
-
-  // ====== DOM ======
-  const homeScreen = document.getElementById('homeScreen');
-  const learnScreen = document.getElementById('learnScreen');
-  const gameScreen = document.getElementById('gameScreen');
-  const learnVisual = document.getElementById('learnVisual');
-  const learnText = document.getElementById('learnText');
-  const learnHint = document.getElementById('learnHint');
-  const learnNextBtn = document.getElementById('learnNextBtn');
-  const learnProgress = document.getElementById('learnProgress');
-
-  // ====== 页面切换 ======
-  function showScreen(screen) {
-    [homeScreen, learnScreen, gameScreen].forEach(s => s.classList.remove('show'));
-    homeScreen.style.display = 'none';
-    if (screen === 'home') { homeScreen.style.display = 'block'; }
-    else { screen.classList.add('show'); }
-  }
-  function goHome() { playSound('click'); showScreen('home'); }
-
-  // ====== 学习模式 ======
-  function enterLearn(type) {
-    playSound('click');
-    learnState.type = type; learnState.lessonIdx = 0; learnState.stepIdx = 0; learnState.answered = false;
-    document.getElementById('learnTitle').textContent = type === 'add' ? '📖 学习加法' : '📖 学习减法';
-    showScreen(learnScreen);
-    renderLesson();
-  }
-
-  function renderLesson() {
-    const lessons = LESSONS[learnState.type];
-    const lesson = lessons[learnState.lessonIdx];
-    const totalSteps = lesson.steps ? lesson.steps.length : 1;
-    learnProgress.innerHTML = '';
-    for (let i = 0; i < totalSteps; i++) {
-      const dot = document.createElement('div');
-      dot.className = 'progress-dot';
-      if (i < learnState.stepIdx) dot.classList.add('done');
-      if (i === learnState.stepIdx) dot.classList.add('active');
-      learnProgress.appendChild(dot);
+  ],
+  sub: [
+    { title:"什么是减法？", type:"concept", a:3, b:1,
+      text:'减法就是<span class="op">拿走一部分</span>',
+      hint:"\uD83D\uDC46 看饼干被吃掉了几块！",
+      steps:[
+        { text:"盘子里有 <span class='big'>3</span> 块饼干", emoji:"\uD83C\uDF6A\uD83C\uDF6A" },
+        { text:"吃掉了 <span class='big'>1</span> 块", emoji:"\uD83D\uDE0B" },
+        { text:"还剩多少呢？", emoji:"\uD83C\uDF6A\uD83C\uDF6A" },
+        { text:'<span class=\'big\'>3</span> <span class=\'op\'>-</span> <span class=\'big\'>1</span> <span class=\'op\'>=</span> <span class=\'result\'>2</span>', emoji:"\uD83C\uDF6A" }
+      ]
+    },
+    { title:"再来一例", type:"concept", a:5, b:2,
+      text:'5个气球 <span class="op">飞走了</span> 2个',
+      hint:"数一数还剩几个气球？",
+      steps:[
+        { text:"手里有 <span class='big'>5</span> 个气球", emoji:"\uD83C\uDF88\uD83C\uDF88\uD83C\uDF88\uD83C\uDF88" },
+        { text:"飞走了 <span class='big'>2</span> 个", emoji:"\uD83D\uDCA8\uD83D\uDCA8" },
+        { text:"还剩几个呢？", emoji:"\uD83C\uDF88\uD83C\uDF88\uD83C\uDF88" },
+        { text:'<span class=\'big\'>5</span> <span class=\'op\'>-</span> <span class=\'big\'>2</span> <span class=\'op\'>=</span> <span class=\'result\'>3</span>', emoji:"\uD83C\uDF88\uD83C\uDF88" }
+      ]
+    },
+    { title:"你试试！", type:"practice", a:2, b:1,
+      text:'<span class=\'big\'>2</span> <span class=\'op\'>-</span> <span class=\'big\'>1</span> <span class=\'op\'>=</span> <span class=\'result\'>?</span>',
+      hint:"2颗糖果吃掉1颗，还剩几颗？"
+    },
+    { title:"再试试！", type:"practice", a:4, b:2,
+      text:'<span class=\'big\'>4</span> <span class=\'op\'>-</span> <span class=\'big\'>2</span> <span class=\'op\'>=</span> <span class=\'result\'>?</span>',
+      hint:"4只小鱼游走了2只，还剩几只？"
     }
-    if (lesson.type === 'concept') renderConceptStep(lesson);
-    else renderPracticeStep(lesson);
-  }
+  ]
+};
 
-  function renderConceptStep(lesson) {
-    const step = lesson.steps[learnState.stepIdx];
-    const isLast = learnState.stepIdx >= lesson.steps.length - 1;
-    learnVisual.innerHTML = '';
-    const emojiGroup = document.createElement('div');
-    emojiGroup.className = 'learn-emoji-group';
-    const chars = [...step.emoji];
-    for (let i = 0; i < chars.length; i++) {
-      const span = document.createElement('span');
-      span.className = 'learn-emoji';
-      span.innerHTML = emojiToItem(chars[i], 'item-md');
-      emojiGroup.appendChild(span);
-      setTimeout(() => { span.classList.add('show'); playSound('appear'); }, i * 300);
-    }
-    learnVisual.appendChild(emojiGroup);
-    learnText.innerHTML = step.text;
-    learnHint.style.display = lesson.hint && learnState.stepIdx === 0 ? 'block' : 'none';
-    if (lesson.hint && learnState.stepIdx === 0) learnHint.innerHTML = renderWithItems(lesson.hint, 'item-sm');
-    learnNextBtn.textContent = isLast ? '下一课 ➡️' : '下一个 ➡️';
-    learnNextBtn.className = 'learn-nav-btn next';
-    learnNextBtn.onclick = learnNext;
-  }
+// ====== 游戏数据 ======
+var LEVELS = [
+  { level:1, title:'数学小宝宝', xpNeeded:5, pets:['chick','','chick'] },
+  { level:2, title:'算术小能手', xpNeeded:10, pets:['rabbit','',''] },
+  { level:3, title:'计算小达人', xpNeeded:15, pets:['fox','','koala'] },
+  { level:4, title:'数学小天才', xpNeeded:20, pets:['lion','',''] },
+  { level:5, title:'超级算术王', xpNeeded:25, pets:['dragon','','dragon'] },
+  { level:6, title:'数学大冒险家', xpNeeded:30, pets:['octopus','',''] },
+  { level:7, title:'终极数学大师', xpNeeded:50, pets:['crown','','diamond'] },
+];
 
-  function renderPracticeStep(lesson) {
-    learnState.answered = false;
-    const answer = lesson.a + (learnState.type === 'add' ? lesson.b : -lesson.b);
-    learnState.practiceAnswer = answer;
-    learnVisual.innerHTML = '';
-    const hintDiv = document.createElement('div');
-    hintDiv.style.cssText = 'font-size:35px; text-align:center; line-height:1.6;';
-    if (learnState.type === 'add') {
-      const emojis = ['🍓','','','',''][learnState.lessonIdx % 5];
-      hintDiv.innerHTML = emojiStringToItems(emojis.repeat(lesson.a), 'item-md') + ' <span style="font-size:30px">➕</span> ' + emojiStringToItems(emojis.repeat(lesson.b), 'item-md');
-    } else {
-      const emojis = ['🍬','','',''][learnState.lessonIdx % 4];
-      hintDiv.innerHTML = emojiStringToItems(emojis.repeat(lesson.a), 'item-md');
-    }
-    learnVisual.appendChild(hintDiv);
-    learnText.innerHTML = lesson.text;
+var SCENES = {
+  add: ['apple','apple','cat','dog','flower','strawberry','balloon','butterfly'],
+  sub: ['cookie','candy','fish','gift','pizza','icecream']
+};
+
+var PRAISES = ['太棒了！','你好聪明！','答对啦！','好厉害！','真棒！','非常好！','天才！','666！','哇塞！','超厉害！','棒呆了！','无敌了！'];
+var WRONG_MSGS = ['差一点点哦！','再想想～','没关系！','接近了！','加油！','下次一定！'];
+
+// ====== 状态 ======
+var gameState = { mode:'add', xp:0, level:1, totalXp:0, combo:0, maxCombo:0, collection:[], currentAnswer:null, answered:false, totalCorrect:0 };
+var learnState = { type:'add', lessonIdx:0, stepIdx:0, answered:false };
+
+var homeScreen = document.getElementById('homeScreen');
+var learnScreen = document.getElementById('learnScreen');
+var gameScreen = document.getElementById('gameScreen');
+var learnVisual = document.getElementById('learnVisual');
+var learnText = document.getElementById('learnText');
+var learnHint = document.getElementById('learnHint');
+var learnNextBtn = document.getElementById('learnNextBtn');
+var learnProgress = document.getElementById('learnProgress');
+
+// ====== 页面切换 ======
+function showScreen(screen) {
+  homeScreen.style.display = 'none';
+  learnScreen.classList.remove('show');
+  gameScreen.classList.remove('show');
+  if (screen === 'home') homeScreen.style.display = 'block';
+  else screen.classList.add('show');
+}
+function goHome() { playSound('click'); showScreen('home'); }
+
+// ====== 初始化首页 ======
+function initHome() {
+  document.getElementById('homeCardAdd').innerHTML = icon('apple','gi-md') + ' <span style="font-size:32px;color:#e53935;font-weight:bold">+</span> ' + icon('apple','gi-md');
+  document.getElementById('homeCardSub').innerHTML = icon('cookie','gi-md') + ' <span style="font-size:32px;color:#e53935;font-weight:bold">-</span>';
+}
+
+// ====== 学习模式 ======
+function enterLearn(type) {
+  playSound('click');
+  learnState.type = type; learnState.lessonIdx = 0; learnState.stepIdx = 0; learnState.answered = false;
+  document.getElementById('learnTitle').textContent = type === 'add' ? '学习加法' : '学习减法';
+  showScreen(learnScreen);
+  renderLesson();
+}
+
+function renderLesson() {
+  var lessons = LESSONS[learnState.type];
+  var lesson = lessons[learnState.lessonIdx];
+  var totalSteps = lesson.steps ? lesson.steps.length : 1;
+  learnProgress.innerHTML = '';
+  for (var i = 0; i < totalSteps; i++) {
+    var dot = document.createElement('div');
+    dot.className = 'progress-dot';
+    if (i < learnState.stepIdx) dot.classList.add('done');
+    if (i === learnState.stepIdx) dot.classList.add('active');
+    learnProgress.appendChild(dot);
+  }
+  if (lesson.type === 'concept') renderConceptStep(lesson);
+  else renderPracticeStep(lesson);
+}
+
+function renderConceptStep(lesson) {
+  var step = lesson.steps[learnState.stepIdx];
+  var isLast = learnState.stepIdx >= lesson.steps.length - 1;
+  learnVisual.innerHTML = '';
+  var group = document.createElement('div');
+  group.className = 'learn-emoji-group';
+  var chars = [...step.emoji];
+  for (var i = 0; i < chars.length; i++) {
+    var span = document.createElement('span');
+    span.className = 'learn-emoji';
+    span.innerHTML = chToHTML(chars[i], 'gi-lg');
+    group.appendChild(span);
+    (function(s, idx) {
+      setTimeout(function() { s.classList.add('show'); playSound('appear'); }, idx * 300);
+    })(span, i);
+  }
+  learnVisual.appendChild(group);
+  learnText.innerHTML = step.text;
+  if (lesson.hint && learnState.stepIdx === 0) {
     learnHint.style.display = 'block';
-    learnHint.innerHTML = renderWithItems(lesson.hint, 'item-sm');
-    const numpadDiv = document.createElement('div');
-    numpadDiv.className = 'numpad';
-    numpadDiv.style.marginTop = '15px';
-    const colors = ['#ff6b6b','#ffa726','#ffee58','#66bb6a','#42a5f5','#ab47bc','#26c6da','#ef5350','#ffa726','#ffee58','#66bb6a'];
-    for (let i = 0; i <= 10; i++) {
-      const btn = document.createElement('button');
-      btn.className = 'num-btn';
-      btn.textContent = i;
-      btn.style.height = '50px';
-      btn.style.fontSize = '22px';
-      btn.style.background = `linear-gradient(145deg, ${colors[i]}, ${darken(colors[i])})`;
-      btn.onclick = () => checkLearnAnswer(i, lesson, btn);
-      numpadDiv.appendChild(btn);
-    }
-    learnVisual.appendChild(numpadDiv);
-    learnNextBtn.style.display = 'none';
+    learnHint.innerHTML = renderIcons(lesson.hint, 'gi-sm');
+  } else {
+    learnHint.style.display = 'none';
   }
+  learnNextBtn.textContent = isLast ? '下一课' : '下一个';
+  learnNextBtn.className = 'learn-nav-btn next';
+  learnNextBtn.onclick = learnNext;
+}
 
-  function checkLearnAnswer(num, lesson, btn) {
-    if (learnState.answered) return;
-    if (num === learnState.practiceAnswer) {
-      learnState.answered = true;
-      playSound('correct');
-      btn.style.background = 'linear-gradient(145deg, #66bb6a, #2e7d32)';
-      const numpadDiv = learnVisual.querySelector('.numpad');
-      if (numpadDiv) numpadDiv.style.display = 'none';
-      const resultHtml = `<span class="result">${learnState.practiceAnswer}</span>`;
-      learnText.innerHTML = lesson.text.replace(/<span class=['"]result['"]>\?<\/span>/g, resultHtml);
-      learnHint.innerHTML = `答对了！太棒了！🎉`;
-      learnHint.style.background = '#e8f5e9';
-      learnHint.style.color = '#2e7d32';
-      learnNextBtn.style.display = '';
-      learnNextBtn.textContent = learnState.lessonIdx < LESSONS[learnState.type].length - 1 ? '下一课 ➡️' : '🎮 去闯关！';
-      learnNextBtn.className = learnState.lessonIdx < LESSONS[learnState.type].length - 1 ? 'learn-nav-btn next' : 'learn-nav-btn start-game';
-      learnNextBtn.onclick = () => {
-        if (learnState.lessonIdx >= LESSONS[learnState.type].length - 1) enterGame();
-        else learnNext();
-      };
-    } else {
-      playSound('wrong');
-      btn.style.background = 'linear-gradient(145deg, #ef5350, #c62828)';
-      btn.style.transform = 'scale(0.9)';
-      setTimeout(() => { btn.style.background = ''; btn.style.transform = ''; }, 500);
-      learnState.answered = true;
-      const numpadDiv = learnVisual.querySelector('.numpad');
-      if (numpadDiv) numpadDiv.style.display = 'none';
-      learnHint.innerHTML = `不对哦，正确答案是 <strong>${learnState.practiceAnswer}</strong>，记住啦！😊`;
-      learnHint.style.background = '#fff3e0';
-      learnHint.style.color = '#e65100';
-      learnNextBtn.style.display = '';
-      learnNextBtn.textContent = learnState.lessonIdx < LESSONS[learnState.type].length - 1 ? '下一课 ➡️' : '🎮 去闯关！';
-      learnNextBtn.className = learnState.lessonIdx < LESSONS[learnState.type].length - 1 ? 'learn-nav-btn next' : 'learn-nav-btn start-game';
-      learnNextBtn.onclick = () => {
-        if (learnState.lessonIdx >= LESSONS[learnState.type].length - 1) enterGame();
-        else learnNext();
-      };
-    }
+function renderPracticeStep(lesson) {
+  learnState.answered = false;
+  var answer = lesson.a + (learnState.type === 'add' ? lesson.b : -lesson.b);
+  learnState.practiceAnswer = answer;
+  learnVisual.innerHTML = '';
+  var hintDiv = document.createElement('div');
+  hintDiv.style.cssText = 'font-size:35px; text-align:center; line-height:1.6;';
+  if (learnState.type === 'add') {
+    var eArr = ['strawberry','','','',''][learnState.lessonIdx % 5];
+    var html = '';
+    for (var i = 0; i < lesson.a; i++) html += icon(eArr, 'gi-md');
+    html += ' <span style="font-size:30px">+</span> ';
+    for (var i = 0; i < lesson.b; i++) html += icon(eArr, 'gi-md');
+    hintDiv.innerHTML = html;
+  } else {
+    var eArr2 = ['candy','','',''][learnState.lessonIdx % 4];
+    var html2 = '';
+    for (var i = 0; i < lesson.a; i++) html2 += icon(eArr2, 'gi-md');
+    hintDiv.innerHTML = html2;
   }
-
-  function learnNext() {
-    playSound('click');
-    const lessons = LESSONS[learnState.type];
-    const lesson = lessons[learnState.lessonIdx];
-    if (lesson.type === 'concept') {
-      if (learnState.stepIdx < lesson.steps.length - 1) { learnState.stepIdx++; renderLesson(); }
-      else if (learnState.lessonIdx < lessons.length - 1) { learnState.lessonIdx++; learnState.stepIdx = 0; renderLesson(); }
-    } else {
-      if (learnState.lessonIdx < lessons.length - 1) { learnState.lessonIdx++; learnState.stepIdx = 0; learnState.answered = false; learnNextBtn.style.display = ''; renderLesson(); }
-    }
+  learnVisual.appendChild(hintDiv);
+  learnText.innerHTML = lesson.text;
+  learnHint.style.display = 'block';
+  learnHint.innerHTML = renderIcons(lesson.hint, 'gi-sm');
+  var numpadDiv = document.createElement('div');
+  numpadDiv.className = 'numpad';
+  numpadDiv.style.marginTop = '15px';
+  var colors = ['#ff6b6b','#ffa726','#ffee58','#66bb6a','#42a5f5','#ab47bc','#26c6da','#ef5350','#ffa726','#ffee58','#66bb6a'];
+  for (var i = 0; i <= 10; i++) {
+    var btn = document.createElement('button');
+    btn.className = 'num-btn';
+    btn.textContent = i;
+    btn.style.height = '50px';
+    btn.style.fontSize = '22px';
+    btn.style.background = 'linear-gradient(145deg, ' + colors[i] + ', ' + darken(colors[i]) + ')';
+    (function(n, l, b) { btn.onclick = function() { checkLearnAnswer(n, l, b); }; })(i, lesson, btn);
+    numpadDiv.appendChild(btn);
   }
+  learnVisual.appendChild(numpadDiv);
+  learnNextBtn.style.display = 'none';
+}
 
-  function learnPrev() {
-    playSound('click');
-    const lessons = LESSONS[learnState.type];
-    const lesson = lessons[learnState.lessonIdx];
-    if (lesson.type === 'concept' && learnState.stepIdx > 0) { learnState.stepIdx--; renderLesson(); }
-    else if (lesson.type === 'concept' && learnState.stepIdx === 0 && learnState.lessonIdx > 0) {
-      learnState.lessonIdx--;
-      const prevLesson = lessons[learnState.lessonIdx];
-      learnState.stepIdx = prevLesson.steps ? prevLesson.steps.length - 1 : 0;
-      learnState.answered = false; learnNextBtn.style.display = ''; renderLesson();
-    }
-    else if (lesson.type === 'practice' && learnState.lessonIdx > 0) {
-      learnState.lessonIdx--; learnState.stepIdx = 0; learnState.answered = false; learnNextBtn.style.display = ''; renderLesson();
-    }
+function checkLearnAnswer(num, lesson, btn) {
+  if (learnState.answered) return;
+  if (num === learnState.practiceAnswer) {
+    learnState.answered = true;
+    playSound('correct');
+    btn.style.background = 'linear-gradient(145deg, #66bb6a, #2e7d32)';
+    var np = learnVisual.querySelector('.numpad');
+    if (np) np.style.display = 'none';
+    learnText.innerHTML = lesson.text.replace(/\?/g, '<span class="result">' + learnState.practiceAnswer + '</span>');
+    learnHint.innerHTML = '答对了！太棒了！';
+    learnHint.style.background = '#e8f5e9';
+    learnHint.style.color = '#2e7d32';
+    learnNextBtn.style.display = '';
+    learnNextBtn.textContent = learnState.lessonIdx < LESSONS[learnState.type].length - 1 ? '下一课' : '去闯关！';
+    learnNextBtn.className = learnState.lessonIdx < LESSONS[learnState.type].length - 1 ? 'learn-nav-btn next' : 'learn-nav-btn start-game';
+    learnNextBtn.onclick = function() {
+      if (learnState.lessonIdx >= LESSONS[learnState.type].length - 1) enterGame();
+      else learnNext();
+    };
+  } else {
+    playSound('wrong');
+    btn.style.background = 'linear-gradient(145deg, #ef5350, #c62828)';
+    btn.style.transform = 'scale(0.9)';
+    setTimeout(function() { btn.style.background = ''; btn.style.transform = ''; }, 500);
+    learnState.answered = true;
+    var np2 = learnVisual.querySelector('.numpad');
+    if (np2) np2.style.display = 'none';
+    learnHint.innerHTML = '不对哦，正确答案是 <strong>' + learnState.practiceAnswer + '</strong>，记住啦！';
+    learnHint.style.background = '#fff3e0';
+    learnHint.style.color = '#e65100';
+    learnNextBtn.style.display = '';
+    learnNextBtn.textContent = learnState.lessonIdx < LESSONS[learnState.type].length - 1 ? '下一课' : '去闯关！';
+    learnNextBtn.className = learnState.lessonIdx < LESSONS[learnState.type].length - 1 ? 'learn-nav-btn next' : 'learn-nav-btn start-game';
+    learnNextBtn.onclick = function() {
+      if (learnState.lessonIdx >= LESSONS[learnState.type].length - 1) enterGame();
+      else learnNext();
+    };
   }
+}
 
-  // ====== 游戏模式 ======
-  function enterGame() { playSound('click'); showScreen(gameScreen); initGame(); }
+function learnNext() {
+  playSound('click');
+  var lessons = LESSONS[learnState.type];
+  var lesson = lessons[learnState.lessonIdx];
+  if (lesson.type === 'concept') {
+    if (learnState.stepIdx < lesson.steps.length - 1) { learnState.stepIdx++; renderLesson(); }
+    else if (learnState.lessonIdx < lessons.length - 1) { learnState.lessonIdx++; learnState.stepIdx = 0; renderLesson(); }
+  } else {
+    if (learnState.lessonIdx < lessons.length - 1) { learnState.lessonIdx++; learnState.stepIdx = 0; learnState.answered = false; learnNextBtn.style.display = ''; renderLesson(); }
+  }
+}
 
-  function initGame() {
-    initStars(); initNumpad(); initCollectionBar(); generateQuestion(); updateDisplay();
-    const modeChips = document.querySelectorAll('.mode-chip');
-    modeChips.forEach(btn => {
-      const newBtn = btn.cloneNode(true);
-      btn.parentNode.replaceChild(newBtn, btn);
-      newBtn.onclick = () => {
+function learnPrev() {
+  playSound('click');
+  var lessons = LESSONS[learnState.type];
+  var lesson = lessons[learnState.lessonIdx];
+  if (lesson.type === 'concept' && learnState.stepIdx > 0) { learnState.stepIdx--; renderLesson(); }
+  else if (lesson.type === 'concept' && learnState.stepIdx === 0 && learnState.lessonIdx > 0) {
+    learnState.lessonIdx--;
+    var prev = lessons[learnState.lessonIdx];
+    learnState.stepIdx = prev.steps ? prev.steps.length - 1 : 0;
+    learnState.answered = false; learnNextBtn.style.display = ''; renderLesson();
+  }
+  else if (lesson.type === 'practice' && learnState.lessonIdx > 0) {
+    learnState.lessonIdx--; learnState.stepIdx = 0; learnState.answered = false; learnNextBtn.style.display = ''; renderLesson();
+  }
+}
+
+// ====== 游戏模式 ======
+function enterGame() { playSound('click'); showScreen(gameScreen); initGame(); }
+
+function initGame() {
+  initStars(); initNumpad(); initCollectionBar(); generateQuestion(); updateDisplay();
+  var chips = document.querySelectorAll('.mode-chip');
+  for (var i = 0; i < chips.length; i++) {
+    (function(btn) {
+      var nb = btn.cloneNode(true);
+      btn.parentNode.replaceChild(nb, btn);
+      nb.onclick = function() {
         playSound('click');
-        document.querySelectorAll('.mode-chip').forEach(b => b.classList.remove('active'));
-        newBtn.classList.add('active');
-        gameState.mode = newBtn.dataset.mode;
+        document.querySelectorAll('.mode-chip').forEach(function(b){b.classList.remove('active');});
+        nb.classList.add('active');
+        gameState.mode = nb.dataset.mode;
         gameState.combo = 0;
         document.getElementById('comboDisplay').textContent = '';
         generateQuestion();
       };
-    });
+    })(chips[i]);
   }
+}
 
-  function initStars() {
-    const container = document.getElementById('starsBg');
-    if (container.children.length > 0) return;
-    for (let i = 0; i < 30; i++) {
-      const star = document.createElement('div');
-      star.className = 'star-particle';
-      star.style.left = Math.random() * 100 + '%';
-      star.style.top = Math.random() * 100 + '%';
-      star.style.animationDelay = Math.random() * 2 + 's';
-      container.appendChild(star);
+function initStars() {
+  var c = document.getElementById('starsBg');
+  if (c.children.length > 0) return;
+  for (var i = 0; i < 30; i++) {
+    var s = document.createElement('div');
+    s.className = 'star-particle';
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.animationDelay = Math.random()*2+'s';
+    c.appendChild(s);
+  }
+}
+
+function initNumpad() {
+  var el = document.getElementById('numpad');
+  if (el.children.length > 0) return;
+  var colors = ['#ff6b6b','#ffa726','#ffee58','#66bb6a','#42a5f5','#ab47bc','#26c6da','#ef5350','#ffa726','#ffee58','#66bb6a'];
+  for (var i = 0; i <= 10; i++) {
+    var btn = document.createElement('button');
+    btn.className = 'num-btn';
+    btn.textContent = i;
+    btn.style.background = 'linear-gradient(145deg, ' + colors[i] + ', ' + darken(colors[i]) + ')';
+    (function(n){ btn.onclick = function(){ checkAnswer(n); }; })(i);
+    el.appendChild(btn);
+  }
+}
+
+function darken(c) { return c.replace(/[a-f0-9]{2}$/gi, function(m){return Math.max(0,parseInt(m,16)-40).toString(16).padStart(2,'0');}); }
+
+function initCollectionBar() {
+  var el = document.getElementById('collectionBar');
+  el.innerHTML = '';
+  for (var i = 0; i < gameState.collection.length; i++) {
+    var slot = document.createElement('div');
+    slot.className = 'pet-slot';
+    slot.innerHTML = icon(gameState.collection[i], 'gi-sm');
+    el.appendChild(slot);
+  }
+  for (var j = gameState.collection.length; j < Math.min(20, gameState.collection.length+3); j++) {
+    var slot2 = document.createElement('div');
+    slot2.className = 'pet-slot empty';
+    slot2.textContent = '?';
+    el.appendChild(slot2);
+  }
+}
+
+function generateQuestion() {
+  gameState.answered = false;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').style.color = '';
+  var mode = gameState.mode;
+  if (mode === 'mix') mode = Math.random() < 0.5 ? 'add' : 'sub';
+  var maxNum = gameState.level >= 5 ? 10 : gameState.level >= 3 ? 8 : 5;
+  var a, b, answer, op;
+  if (mode === 'add') { a = Math.floor(Math.random()*(maxNum+1)); b = Math.floor(Math.random()*(maxNum+1-a)); answer = a+b; op = '+'; }
+  else { a = Math.floor(Math.random()*(maxNum+1)); b = Math.floor(Math.random()*(a+1)); answer = a-b; op = '-'; }
+  gameState.currentAnswer = answer;
+  var sceneList = SCENES[mode];
+  var sceneKey = sceneList[Math.floor(Math.random()*sceneList.length)];
+  var iconStr = icon(sceneKey, 'gi-md');
+  if (op === '+') {
+    var html = '';
+    for (var i = 0; i < a; i++) html += iconStr;
+    html += ' <span style="font-size:36px">+</span> ';
+    for (var i = 0; i < b; i++) html += iconStr;
+    document.getElementById('sceneEmoji').innerHTML = html;
+  } else {
+    var remaining = a - b;
+    var html2 = '';
+    for (var i = 0; i < remaining; i++) html2 += iconStr;
+    if (b > 0) {
+      var crossed = '';
+      for (var i = 0; i < b; i++) crossed += iconStr;
+      html2 += '<span style="opacity:0.35;text-decoration:line-through">' + crossed + '</span>' + icon('wind', 'gi-sm');
     }
+    document.getElementById('sceneEmoji').innerHTML = html2;
   }
+  document.getElementById('equation').innerHTML = '<div class="num">'+a+'</div><div class="op">'+op+'</div><div class="num">'+b+'</div><div class="equals">=</div><div class="answer-box" id="answerBox">?</div>';
+}
 
-  function initNumpad() {
-    const numpadEl = document.getElementById('numpad');
-    if (numpadEl.children.length > 0) return;
-    for (let i = 0; i <= 10; i++) {
-      const btn = document.createElement('button');
-      btn.className = 'num-btn';
-      btn.textContent = i;
-      const colors = ['#ff6b6b','#ffa726','#ffee58','#66bb6a','#42a5f5','#ab47bc','#26c6da','#ef5350','#ffa726','#ffee58','#66bb6a'];
-      btn.style.background = `linear-gradient(145deg, ${colors[i]}, ${darken(colors[i])})`;
-      btn.onclick = () => checkAnswer(i);
-      numpadEl.appendChild(btn);
+function checkAnswer(num) {
+  if (gameState.answered) return;
+  gameState.answered = true;
+  var box = document.getElementById('answerBox');
+  box.textContent = num;
+  if (num === gameState.currentAnswer) {
+    gameState.totalCorrect++; gameState.combo++;
+    if (gameState.combo > gameState.maxCombo) gameState.maxCombo = gameState.combo;
+    box.classList.add('correct'); playSound('correct');
+    var xpGain = 1 + Math.floor(gameState.combo / 3);
+    gameState.xp += xpGain; gameState.totalXp += xpGain;
+    document.getElementById('feedback').textContent = PRAISES[Math.floor(Math.random()*PRAISES.length)];
+    document.getElementById('feedback').style.color = '#4caf50';
+    if (gameState.combo >= 3) document.getElementById('comboDisplay').textContent = '连击 x' + gameState.combo + '！';
+    var levelData = LEVELS.find(function(l){return l.level===gameState.level;}) || LEVELS[LEVELS.length-1];
+    if (gameState.totalCorrect % 3 === 0) {
+      var pet = levelData.pets[Math.floor(Math.random()*levelData.pets.length)];
+      gameState.collection.push(pet);
+      setTimeout(function(){ spawnEmojiRain(pet); }, 300);
     }
+    if (gameState.combo >= 5) createFireworks();
+    updateDisplay();
+    var nextLevel = LEVELS.find(function(l){return l.level===gameState.level+1;});
+    var curLevel = LEVELS.find(function(l){return l.level===gameState.level;}) || LEVELS[0];
+    if (gameState.xp >= curLevel.xpNeeded && nextLevel) { gameState.level++; gameState.xp = 0; setTimeout(function(){ showLevelUp(nextLevel); }, 800); }
+    setTimeout(generateQuestion, 1500);
+  } else {
+    gameState.combo = 0;
+    document.getElementById('comboDisplay').textContent = '';
+    box.classList.add('wrong'); playSound('wrong');
+    document.getElementById('feedback').textContent = WRONG_MSGS[Math.floor(Math.random()*WRONG_MSGS.length)] + ' 答案是 ' + gameState.currentAnswer;
+    document.getElementById('feedback').style.color = '#f44336';
+    updateDisplay();
+    setTimeout(function(){
+      box.classList.remove('wrong'); gameState.answered = false; box.textContent = '?';
+      document.getElementById('feedback').textContent = '再试试看！';
+      document.getElementById('feedback').style.color = '#ff9800';
+    }, 2500);
   }
+}
 
-  function darken(c) { return c.replace(/[a-f0-9]{2}$/gi, m => Math.max(0, parseInt(m, 16) - 40).toString(16).padStart(2, '0')); }
+function updateDisplay() {
+  var cur = LEVELS.find(function(l){return l.level===gameState.level;}) || LEVELS[0];
+  document.getElementById('xpFill').style.width = Math.min(100, (gameState.xp / cur.xpNeeded) * 100) + '%';
+  document.getElementById('levelDisplay').textContent = 'Lv.' + gameState.level;
+  document.getElementById('scoreDisplay').textContent = gameState.totalXp;
+  initCollectionBar();
+}
 
-  function initCollectionBar() {
-    const el = document.getElementById('collectionBar');
-    el.innerHTML = '';
-    gameState.collection.forEach(pet => {
-      const slot = document.createElement('div');
-      slot.className = 'pet-slot';
-      slot.innerHTML = emojiToItem(pet, 'item-sm');
-      el.appendChild(slot);
-    });
-    for (let i = gameState.collection.length; i < Math.min(20, gameState.collection.length + 3); i++) {
-      const slot = document.createElement('div');
-      slot.className = 'pet-slot empty';
-      slot.textContent = '❓';
-      el.appendChild(slot);
-    }
-  }
+function showLevelUp(lv) {
+  playSound('levelup');
+  document.getElementById('levelupTitle').textContent = '升级到 Lv.' + lv.level + '！';
+  document.getElementById('levelupNewTitle').textContent = '称号：' + lv.title;
+  document.getElementById('levelupModal').classList.add('show');
+  createFireworks();
+}
+function closeLevelUp() { document.getElementById('levelupModal').classList.remove('show'); playSound('click'); }
 
-  function generateQuestion() {
-    gameState.answered = false;
-    document.getElementById('feedback').textContent = '';
-    document.getElementById('feedback').style.color = '';
-    let mode = gameState.mode;
-    if (mode === 'mix') mode = Math.random() < 0.5 ? 'add' : 'sub';
-    const maxNum = gameState.level >= 5 ? 10 : gameState.level >= 3 ? 8 : 5;
-    let a, b, answer, op;
-    if (mode === 'add') { a = Math.floor(Math.random() * (maxNum + 1)); b = Math.floor(Math.random() * (maxNum + 1 - a)); answer = a + b; op = '+'; }
-    else { a = Math.floor(Math.random() * (maxNum + 1)); b = Math.floor(Math.random() * (a + 1)); answer = a - b; op = '-'; }
-    gameState.currentAnswer = answer;
-    const sceneList = SCENES[mode];
-    const scene = sceneList[Math.floor(Math.random() * sceneList.length)];
-    if (op === '+') {
-      document.getElementById('sceneEmoji').innerHTML = emojiStringToItems(scene.emoji.repeat(a), 'item-md') + ' <span style="font-size:36px">➕</span> ' + emojiStringToItems(scene.emoji.repeat(b), 'item-md');
-    } else {
-      const remaining = a - b;
-      const crossedOut = b > 0 ? `<span style="opacity:0.35;text-decoration:line-through">${emojiStringToItems(scene.emoji.repeat(b), 'item-md')}</span>` + emojiToItem('💨', 'item-sm') : '';
-      document.getElementById('sceneEmoji').innerHTML = emojiStringToItems(scene.emoji.repeat(remaining), 'item-md') + crossedOut;
-    }
-    document.getElementById('equation').innerHTML = `<div class="num">${a}</div><div class="op">${op}</div><div class="num">${b}</div><div class="equals">=</div><div class="answer-box" id="answerBox">?</div>`;
-  }
-
-  function checkAnswer(num) {
-    if (gameState.answered) return;
-    gameState.answered = true;
-    const box = document.getElementById('answerBox');
-    box.textContent = num;
-    if (num === gameState.currentAnswer) {
-      gameState.totalCorrect++; gameState.combo++;
-      if (gameState.combo > gameState.maxCombo) gameState.maxCombo = gameState.combo;
-      box.classList.add('correct'); playSound('correct');
-      let xpGain = 1 + Math.floor(gameState.combo / 3);
-      gameState.xp += xpGain; gameState.totalXp += xpGain;
-      document.getElementById('feedback').textContent = PRAISES[Math.floor(Math.random() * PRAISES.length)];
-      document.getElementById('feedback').style.color = '#4caf50';
-      if (gameState.combo >= 3) document.getElementById('comboDisplay').textContent = `🔥 连击 x${gameState.combo}！`;
-      const levelData = LEVELS.find(l => l.level === gameState.level) || LEVELS[LEVELS.length - 1];
-      if (gameState.totalCorrect % 3 === 0) {
-        const pet = levelData.pets[Math.floor(Math.random() * levelData.pets.length)];
-        gameState.collection.push(pet);
-        setTimeout(() => spawnEmojiRain(pet), 300);
-      }
-      if (gameState.combo >= 5) createFireworks();
-      updateDisplay();
-      const nextLevel = LEVELS.find(l => l.level === gameState.level + 1);
-      const curLevel = LEVELS.find(l => l.level === gameState.level) || LEVELS[0];
-      if (gameState.xp >= curLevel.xpNeeded && nextLevel) { gameState.level++; gameState.xp = 0; setTimeout(() => showLevelUp(nextLevel), 800); }
-      setTimeout(generateQuestion, 1500);
-    } else {
-      gameState.combo = 0;
-      document.getElementById('comboDisplay').textContent = '';
-      box.classList.add('wrong'); playSound('wrong');
-      document.getElementById('feedback').textContent = WRONG_MSGS[Math.floor(Math.random() * WRONG_MSGS.length)] + ` 答案是 ${gameState.currentAnswer}`;
-      document.getElementById('feedback').style.color = '#f44336';
-      updateDisplay();
-      setTimeout(() => {
-        box.classList.remove('wrong'); gameState.answered = false; box.textContent = '?';
-        document.getElementById('feedback').textContent = '再试试看！💪';
-        document.getElementById('feedback').style.color = '#ff9800';
-      }, 2500);
-    }
-  }
-
-  function updateDisplay() {
-    const cur = LEVELS.find(l => l.level === gameState.level) || LEVELS[0];
-    document.getElementById('xpFill').style.width = Math.min(100, (gameState.xp / cur.xpNeeded) * 100) + '%';
-    document.getElementById('levelDisplay').textContent = `Lv.${gameState.level}`;
-    document.getElementById('scoreDisplay').textContent = gameState.totalXp;
-    initCollectionBar();
-  }
-
-  function showLevelUp(lv) {
-    playSound('levelup');
-    document.getElementById('levelupTitle').textContent = `🎉 升级到 Lv.${lv.level}！`;
-    document.getElementById('levelupNewTitle').textContent = `称号：${lv.title}`;
-    document.getElementById('levelupModal').classList.add('show');
-    createFireworks();
-  }
-  function closeLevelUp() { document.getElementById('levelupModal').classList.remove('show'); playSound('click'); }
-
-  function createFireworks() {
-    const colors = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff6f00','#ab47bc'];
-    for (let f = 0; f < 3; f++) {
-      setTimeout(() => {
-        const cx = Math.random() * window.innerWidth;
-        const cy = Math.random() * (window.innerHeight / 2);
-        for (let i = 0; i < 15; i++) {
-          const p = document.createElement('div');
+function createFireworks() {
+  var colors = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff6f00','#ab47bc'];
+  for (var f = 0; f < 3; f++) {
+    (function(ff){
+      setTimeout(function(){
+        var cx = Math.random()*window.innerWidth;
+        var cy = Math.random()*(window.innerHeight/2);
+        for (var i = 0; i < 15; i++) {
+          var p = document.createElement('div');
           p.className = 'firework-particle';
-          p.style.left = cx + 'px'; p.style.top = cy + 'px';
-          p.style.background = colors[Math.floor(Math.random() * colors.length)];
-          const angle = (Math.PI * 2 / 15) * i;
-          const dist = 80 + Math.random() * 60;
-          p.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${Math.cos(angle)*dist}px,${Math.sin(angle)*dist}px) scale(0)`, opacity: 0 }], { duration: 1000, easing: 'ease-out', fill: 'forwards' });
+          p.style.left = cx+'px'; p.style.top = cy+'px';
+          p.style.background = colors[Math.floor(Math.random()*colors.length)];
+          var angle = (Math.PI*2/15)*i;
+          var dist = 80 + Math.random()*60;
+          p.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+Math.cos(angle)*dist+'px,'+Math.sin(angle)*dist+'px) scale(0)',opacity:0}],{duration:1000,easing:'ease-out',fill:'forwards'});
           document.getElementById('fireworks').appendChild(p);
-          setTimeout(() => p.remove(), 1000);
+          setTimeout(function(){p.remove();}, 1000);
         }
-      }, f * 300);
-    }
+      }, ff*300);
+    })(f);
   }
+}
 
-  function spawnEmojiRain(emoji) {
-    for (let i = 0; i < 8; i++) {
-      setTimeout(() => {
-        const el = document.createElement('div');
+function spawnEmojiRain(key) {
+  for (var i = 0; i < 8; i++) {
+    (function(ii){
+      setTimeout(function(){
+        var el = document.createElement('div');
         el.className = 'emoji-rain';
-        el.innerHTML = emojiToItem(emoji, 'item-md');
-        el.style.left = Math.random() * 90 + 5 + '%';
+        el.innerHTML = icon(key, 'gi-md');
+        el.style.left = Math.random()*90+5+'%';
         document.body.appendChild(el);
-        setTimeout(() => el.remove(), 2000);
-      }, i * 100);
-    }
+        setTimeout(function(){el.remove();}, 2000);
+      }, ii*100);
+    })(i);
   }
+}
 
-  showScreen('home');
-  initStars();
-  initNumpad();
+// 启动
+showScreen('home');
+initStars();
+initNumpad();
+initHome();
 </script>
 </body>
 </html>
