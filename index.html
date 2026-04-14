@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🐾 动物数学岛 🌴</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(180deg, #1a237e 0%, #283593 40%, #3949ab 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+
+  .stars-bg { position: fixed; top:0;left:0;right:0;bottom:0; pointer-events:none; z-index:0; }
+  .star-particle { position:absolute; width:4px; height:4px; background:white; border-radius:50%; animation: twinkle 2s ease-in-out infinite alternate; }
+  @keyframes twinkle { 0%{opacity:0.3} 100%{opacity:1} }
+
+  .game-container { position:relative; z-index:1; width:95vw; max-width:480px; padding:10px; }
+
+  /* ====== 主页面选择 ====== */
+  .home-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    color: white;
+    text-align: center;
+  }
+  .home-title {
+    font-size: 32px;
+    margin-bottom: 5px;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+  }
+  .home-subtitle {
+    font-size: 16px;
+    opacity: 0.8;
+    margin-bottom: 30px;
+  }
+
+  .home-card {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    border-radius: 25px;
+    padding: 25px;
+    width: 100%;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    border: 2px solid rgba(255,255,255,0.15);
+  }
+  .home-card:active { transform: scale(0.97); background: rgba(255,255,255,0.2); }
+  .home-card .icon { font-size: 50px; margin-bottom: 10px; }
+  .home-card h3 { font-size: 22px; margin-bottom: 5px; }
+  .home-card p { font-size: 14px; opacity: 0.7; }
+
+  /* ====== 学习模式 ====== */
+  .learn-screen {
+    display: none;
+    flex-direction: column;
+  }
+  .learn-screen.show { display: flex; }
+
+  .learn-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    margin-bottom: 15px;
+    color: white;
+  }
+  .learn-back {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .learn-progress {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+  .progress-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    transition: all 0.3s;
+  }
+  .progress-dot.active { background: #ffd740; transform: scale(1.2); }
+  .progress-dot.done { background: #66bb6a; }
+
+  .learn-card {
+    background: white;
+    border-radius: 25px;
+    padding: 25px 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    min-height: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .learn-visual {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+    margin: 15px 0;
+    position: relative;
+  }
+
+  .learn-emoji-group {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 250px;
+  }
+  .learn-emoji {
+    font-size: 40px;
+    display: inline-block;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .learn-emoji.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .learn-emoji.highlight {
+    animation: emojiJump 0.6s ease;
+  }
+  @keyframes emojiJump {
+    0%, 100% { transform: scale(1) translateY(0); }
+    40% { transform: scale(1.3) translateY(-15px); }
+  }
+
+  .learn-text {
+    font-size: 20px;
+    color: #333;
+    line-height: 1.6;
+    margin: 10px 0;
+  }
+  .learn-text .big { font-size: 36px; font-weight: bold; color: #1565c0; }
+  .learn-text .op { color: #e53935; }
+  .learn-text .result { color: #2e7d32; font-weight: bold; }
+
+  .learn-navigate {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+  }
+  .learn-nav-btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .learn-nav-btn:active { transform: scale(0.95); }
+  .learn-nav-btn.prev { background: #e0e0e0; color: #666; }
+  .learn-nav-btn.next { background: linear-gradient(145deg, #667eea, #764ba2); color: white; }
+  .learn-nav-btn.start-game { background: linear-gradient(145deg, #66bb6a, #2e7d32); color: white; }
+
+  /* 加法动画 - 两组东西合并 */
+  .merge-demo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .merge-group {
+    display: flex;
+    gap: 3px;
+    padding: 10px;
+    border-radius: 15px;
+    background: #f5f5f5;
+  }
+  .merge-arrow {
+    font-size: 30px;
+    color: #e53935;
+    animation: arrowPulse 1s ease-in-out infinite;
+  }
+  @keyframes arrowPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+  }
+
+  .result-box {
+    padding: 10px 20px;
+    border-radius: 15px;
+    background: #e8f5e9;
+    font-size: 28px;
+    font-weight: bold;
+    color: #2e7d32;
+  }
+
+  /* ====== 游戏模式 ====== */
+  .game-screen { display: none; flex-direction: column; }
+  .game-screen.show { display: flex; }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    margin-bottom: 10px;
+    color: white;
+    font-size: 16px;
+  }
+  .top-bar .level { font-size: 20px; font-weight: bold; color: #ffd740; }
+  .top-bar .xp-bar { flex:1; margin:0 10px; height:12px; background:rgba(0,0,0,0.3); border-radius:6px; overflow:hidden; }
+  .top-bar .xp-fill { height:100%; background:linear-gradient(90deg, #ffd740, #ff6f00); border-radius:6px; transition:width 0.5s ease; }
+
+  .collection-bar {
+    display: flex; gap:5px; padding:8px 12px; background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(10px); border-radius:15px; margin-bottom:10px;
+    overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .collection-bar::-webkit-scrollbar { display:none; }
+  .pet-slot { min-width:36px; height:36px; background:rgba(255,255,255,0.1); border-radius:10px;
+    display:flex; align-items:center; justify-content:center; font-size:22px; transition:all 0.3s; }
+  .pet-slot.empty { opacity:0.3; }
+  .pet-slot.new { animation: petBounce 0.6s ease; }
+  @keyframes petBounce { 0%{transform:scale(0)} 50%{transform:scale(1.4)} 70%{transform:scale(0.9)} 100%{transform:scale(1)} }
+
+  .question-card {
+    background:linear-gradient(145deg,#ffffff,#f5f5f5); border-radius:25px; padding:20px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.3); margin-bottom:15px; position:relative; overflow:hidden;
+  }
+  .question-card::before {
+    content:''; position:absolute; top:0;left:0;right:0; height:6px;
+    background:linear-gradient(90deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6);
+  }
+  .scene-emoji { font-size:50px; text-align:center; margin:10px 0; line-height:1.3; min-height:70px; }
+
+  .equation { display:flex; align-items:center; justify-content:center; gap:8px; margin:15px 0; font-size:48px; font-weight:bold; }
+  .equation .num { color:#1565c0; background:#e3f2fd; width:55px; height:55px; display:flex; align-items:center; justify-content:center; border-radius:12px; }
+  .equation .op { color:#e53935; font-size:40px; }
+  .answer-box { width:65px; height:65px; border:4px dashed #999; border-radius:15px; background:#fafafa;
+    display:flex; align-items:center; justify-content:center; font-size:45px; color:#2e7d32; transition:all 0.3s; }
+  .answer-box.correct { border-color:#4caf50; background:#e8f5e9; animation:correctPop 0.5s ease; }
+  .answer-box.wrong { border-color:#f44336; background:#ffebee; animation:wrongShake 0.5s ease; }
+  @keyframes correctPop { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15) rotate(5deg)} }
+  @keyframes wrongShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+
+  .numpad { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin:15px 0; }
+  .num-btn { height:58px; border:none; border-radius:14px; font-size:26px; font-weight:bold; cursor:pointer;
+    color:white; transition:transform 0.1s; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+  .num-btn:active { transform:scale(0.92); }
+
+  .combo-fire { text-align:center; font-size:20px; color:#ff6f00; min-height:28px; }
+  .feedback { text-align:center; min-height:45px; display:flex; align-items:center; justify-content:center; font-size:22px; margin:10px 0; }
+
+  .mode-panel { display:flex; gap:8px; justify-content:center; margin-bottom:10px; }
+  .mode-chip { padding:8px 16px; border:2px solid rgba(255,255,255,0.3); border-radius:20px; background:rgba(255,255,255,0.1);
+    color:white; font-size:16px; cursor:pointer; transition:all 0.3s; }
+  .mode-chip.active { background:rgba(255,255,255,0.25); border-color:#ffd740; color:#ffd740; }
+
+  .game-back {
+    background:rgba(255,255,255,0.2); border:none; color:white; padding:8px 15px;
+    border-radius:12px; font-size:14px; cursor:pointer; margin-bottom:10px;
+  }
+
+  /* 烟花 */
+  .fireworks { position:fixed; top:0;left:0;right:0;bottom:0; pointer-events:none; z-index:100; }
+  .firework-particle { position:absolute; width:8px; height:8px; border-radius:50%; }
+
+  /* 升级弹窗 */
+  .levelup-modal { position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.7);
+    display:flex; align-items:center; justify-content:center; z-index:200; opacity:0;
+    pointer-events:none; transition:opacity 0.3s; }
+  .levelup-modal.show { opacity:1; pointer-events:auto; }
+  .levelup-content { background:linear-gradient(145deg,#ffd740,#ff6f00); border-radius:30px;
+    padding:30px; text-align:center; animation:levelPop 0.6s ease; max-width:80vw; }
+  @keyframes levelPop { 0%{transform:scale(0) rotate(-10deg)} 60%{transform:scale(1.1) rotate(3deg)} 100%{transform:scale(1) rotate(0)} }
+  .levelup-content h2 { font-size:36px; color:white; text-shadow:2px 2px 4px rgba(0,0,0,0.3); }
+  .levelup-content .new-title { font-size:24px; color:white; margin:10px 0; }
+  .levelup-btn { margin-top:20px; padding:12px 30px; border:none; border-radius:20px;
+    background:white; color:#ff6f00; font-size:20px; font-weight:bold; cursor:pointer; }
+
+  /* emoji雨 */
+  .emoji-rain { position:fixed; font-size:30px; pointer-events:none; z-index:50;
+    animation:emojiFall 2s ease-in forwards; }
+  @keyframes emojiFall { 0%{transform:translateY(-50px) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(360deg);opacity:0} }
+
+  /* 学习选择 */
+  .learn-selector {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+  .learn-type-btn {
+    padding: 12px 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 15px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .learn-type-btn.active {
+    background: rgba(255,255,255,0.25);
+    border-color: #ffd740;
+    color: #ffd740;
+  }
+
+  .learn-hint {
+    background: #fff3e0;
+    border-radius: 12px;
+    padding: 10px 15px;
+    font-size: 16px;
+    color: #e65100;
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="stars-bg" id="starsBg"></div>
+<div class="fireworks" id="fireworks"></div>
+
+<div class="levelup-modal" id="levelupModal">
+  <div class="levelup-content">
+    <h2 id="levelupTitle">🎉 升级啦！</h2>
+    <div class="new-title" id="levelupNewTitle"></div>
+    <button class="levelup-btn" onclick="closeLevelUp()">继续玩！</button>
+  </div>
+</div>
+
+<div class="game-container">
+
+  <!-- ====== 主页面 ====== -->
+  <div class="home-screen" id="homeScreen">
+    <div class="home-title">🐾 动物数学岛 🌴</div>
+    <div class="home-subtitle">先学习，再闯关！</div>
+
+    <div class="home-card" onclick="enterLearn('add')">
+      <div class="icon">📖➕</div>
+      <h3>学习加法</h3>
+      <p>学会把东西合在一起</p>
+    </div>
+
+    <div class="home-card" onclick="enterLearn('sub')">
+      <div class="icon">📖➖</div>
+      <h3>学习减法</h3>
+      <p>学会拿走还剩多少</p>
+    </div>
+
+    <div class="home-card" onclick="enterGame()">
+      <div class="icon">🎮</div>
+      <h3>闯关答题</h3>
+      <p>用学到的知识来闯关吧！</p>
+    </div>
+  </div>
+
+  <!-- ====== 学习页面 ====== -->
+  <div class="learn-screen" id="learnScreen">
+    <div class="learn-header">
+      <button class="learn-back" onclick="goHome()">🏠 返回</button>
+      <span id="learnTitle">学习加法</span>
+      <span style="width:60px"></span>
+    </div>
+
+    <div class="learn-progress" id="learnProgress"></div>
+
+    <div class="learn-card">
+      <div class="learn-visual" id="learnVisual"></div>
+      <div class="learn-text" id="learnText"></div>
+      <div class="learn-hint" id="learnHint" style="display:none"></div>
+      <div class="learn-navigate">
+        <button class="learn-nav-btn prev" onclick="learnPrev()">⬅️ 上一个</button>
+        <button class="learn-nav-btn next" id="learnNextBtn" onclick="learnNext()">下一个 ➡️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== 游戏页面 ====== -->
+  <div class="game-screen" id="gameScreen">
+    <button class="game-back" onclick="goHome()">🏠 返回</button>
+    <div class="top-bar">
+      <span class="level" id="levelDisplay">Lv.1</span>
+      <div class="xp-bar"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+      <span>⭐ <span id="scoreDisplay">0</span></span>
+    </div>
+    <div class="collection-bar" id="collectionBar"></div>
+    <div class="mode-panel">
+      <button class="mode-chip active" data-mode="add">➕ 加法</button>
+      <button class="mode-chip" data-mode="sub">➖ 减法</button>
+      <button class="mode-chip" data-mode="mix">🎲 混合</button>
+    </div>
+    <div class="question-card">
+      <div class="scene-emoji" id="sceneEmoji"></div>
+      <div class="equation" id="equation"></div>
+    </div>
+    <div class="numpad" id="numpad"></div>
+    <div class="combo-fire" id="comboDisplay"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+</div>
+
+<script>
+  // ====== 音效 ======
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  let audioCtx;
+  function getAudioCtx() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
+
+  function playSound(type) {
+    try {
+      const ctx = getAudioCtx();
+      if (type === 'correct') {
+        [523, 659, 784].forEach((f, i) => {
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.connect(g); g.connect(ctx.destination);
+          o.type = 'sine'; o.frequency.setValueAtTime(f, ctx.currentTime + i * 0.1);
+          g.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.1);
+          g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.1 + 0.15);
+          o.start(ctx.currentTime + i * 0.1); o.stop(ctx.currentTime + i * 0.1 + 0.15);
+        });
+      } else if (type === 'wrong') {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination); o.type = 'sawtooth';
+        o.frequency.setValueAtTime(200, ctx.currentTime); o.frequency.setValueAtTime(150, ctx.currentTime + 0.15);
+        g.gain.setValueAtTime(0.2, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.3);
+      } else if (type === 'levelup') {
+        [523,587,659,698,784,880,988,1047].forEach((f, i) => {
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.connect(g); g.connect(ctx.destination); o.type = 'sine';
+          o.frequency.setValueAtTime(f, ctx.currentTime + i * 0.1);
+          g.gain.setValueAtTime(0.2, ctx.currentTime + i * 0.1);
+          g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.1 + 0.15);
+          o.start(ctx.currentTime + i * 0.1); o.stop(ctx.currentTime + i * 0.1 + 0.15);
+        });
+      } else if (type === 'click') {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination); o.type = 'sine';
+        o.frequency.setValueAtTime(800, ctx.currentTime);
+        g.gain.setValueAtTime(0.1, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+        o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.05);
+      } else if (type === 'appear') {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination); o.type = 'sine';
+        o.frequency.setValueAtTime(600 + Math.random() * 400, ctx.currentTime);
+        g.gain.setValueAtTime(0.15, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+        o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.2);
+      }
+    } catch(e) {}
+  }
+
+  // ====== 学习数据 ======
+  const LESSONS = {
+    add: [
+      {
+        title: "什么是加法？",
+        type: "concept",
+        emoji: "🍎",
+        a: 2, b: 1,
+        text: `加法就是<span class="op">把东西合在一起</span>`,
+        hint: "👆 看下面的苹果，把它们合起来！",
+        steps: [
+          { text: "小明有 <span class='big'>2</span> 个苹果", emoji: "🍎🍎" },
+          { text: "妈妈又给了 <span class='big'>1</span> 个", emoji: "🍎" },
+          { text: "合在一起数一数…", emoji: "🍎🍎🍎" },
+          { text: `<span class='big'>2</span> <span class='op'>+</span> <span class='big'>1</span> <span class='op'>=</span> <span class='result'>3</span>`, emoji: "🍎🍎🍎" },
+        ]
+      },
+      {
+        title: "再来一例",
+        type: "concept",
+        emoji: "🐱",
+        a: 3, b: 2,
+        text: `3只小猫 <span class="op">加上</span> 2只小猫`,
+        hint: "数一数一共有几只小猫？",
+        steps: [
+          { text: "院子里有 <span class='big'>3</span> 只小猫", emoji: "🐱🐱🐱" },
+          { text: "又来了 <span class='big'>2</span> 只", emoji: "🐱🐱" },
+          { text: "一起数一数…", emoji: "🐱🐱🐱🐱🐱" },
+          { text: `<span class='big'>3</span> <span class='op'>+</span> <span class='big'>2</span> <span class='op'>=</span> <span class='result'>5</span>`, emoji: "🐱🐱🐱🐱🐱" },
+        ]
+      },
+      {
+        title: "你试试！",
+        type: "practice",
+        a: 1, b: 1,
+        text: `<span class='big'>1</span> <span class='op'>+</span> <span class='big'>1</span> <span class='op'>=</span> <span class='result'>?</span>`,
+        hint: "一个草莓加上一个草莓，一共几个？🍓🍓",
+      },
+      {
+        title: "再试试！",
+        type: "practice",
+        a: 2, b: 3,
+        text: `<span class='big'>2</span> <span class='op'>+</span> <span class='big'>3</span> <span class='op'>=</span> <span class='result'>?</span>`,
+        hint: "数一数：🌸🌸 加上 🌸🌸🌸 一共几朵？",
+      }
+    ],
+    sub: [
+      {
+        title: "什么是减法？",
+        type: "concept",
+        emoji: "🍪",
+        a: 3, b: 1,
+        text: `减法就是<span class="op">拿走一部分</span>`,
+        hint: "👆 看饼干被吃掉了几块！",
+        steps: [
+          { text: "盘子里有 <span class='big'>3</span> 块饼干", emoji: "🍪🍪🍪" },
+          { text: "吃掉了 <span class='big'>1</span> 块", emoji: "😋" },
+          { text: "还剩多少呢？", emoji: "🍪🍪" },
+          { text: `<span class='big'>3</span> <span class='op'>-</span> <span class='big'>1</span> <span class='op'>=</span> <span class='result'>2</span>`, emoji: "🍪🍪" },
+        ]
+      },
+      {
+        title: "再来一例",
+        type: "concept",
+        emoji: "🎈",
+        a: 5, b: 2,
+        text: `5个气球 <span class="op">飞走了</span> 2个`,
+        hint: "数一数还剩几个气球？",
+        steps: [
+          { text: "手里有 <span class='big'>5</span> 个气球", emoji: "🎈🎈🎈🎈🎈" },
+          { text: "飞走了 <span class='big'>2</span> 个", emoji: "💨💨" },
+          { text: "还剩几个呢？", emoji: "🎈🎈🎈" },
+          { text: `<span class='big'>5</span> <span class='op'>-</span> <span class='big'>2</span> <span class='op'>=</span> <span class='result'>3</span>`, emoji: "🎈🎈🎈" },
+        ]
+      },
+      {
+        title: "你试试！",
+        type: "practice",
+        a: 2, b: 1,
+        text: `<span class='big'>2</span> <span class='op'>-</span> <span class='big'>1</span> <span class='op'>=</span> <span class='result'>?</span>`,
+        hint: "2颗糖果吃掉1颗，还剩几颗？🍬🍬",
+      },
+      {
+        title: "再试试！",
+        type: "practice",
+        a: 4, b: 2,
+        text: `<span class='big'>4</span> <span class='op'>-</span> <span class='big'>2</span> <span class='op'>=</span> <span class='result'>?</span>`,
+        hint: "4只小鱼游走了2只，还剩几只？🐟🐟🐟🐟",
+      }
+    ]
+  };
+
+  // ====== 游戏数据 ======
+  const LEVELS = [
+    { level:1, title:'数学小宝宝', xpNeeded:5, pets:['🐥','🐣','🐤'] },
+    { level:2, title:'算术小能手', xpNeeded:10, pets:['🐰','🐱','🐶'] },
+    { level:3, title:'计算小达人', xpNeeded:15, pets:['🦊','🐼','🐨'] },
+    { level:4, title:'数学小天才', xpNeeded:20, pets:['🦁','🐯','🐻'] },
+    { level:5, title:'超级算术王', xpNeeded:25, pets:['🐲','🦄','🐉'] },
+    { level:6, title:'数学大冒险家', xpNeeded:30, pets:['🐙','🐠','🦈'] },
+    { level:7, title:'终极数学大师', xpNeeded:50, pets:['👑','🌟','💎'] },
+  ];
+
+  const SCENES = {
+    add: [{ emoji:'🍎',text:'苹果' },{ emoji:'🍊',text:'橘子' },{ emoji:'🐱',text:'小猫' },{ emoji:'🐶',text:'小狗' },{ emoji:'🌸',text:'小花' },{ emoji:'🍓',text:'草莓' },{ emoji:'🎈',text:'气球' },{ emoji:'🦋',text:'蝴蝶' }],
+    sub: [{ emoji:'🍪',text:'饼干' },{ emoji:'🍬',text:'糖果' },{ emoji:'🐟',text:'小鱼' },{ emoji:'🎁',text:'礼物' },{ emoji:'🍕',text:'披萨' },{ emoji:'🍦',text:'冰淇淋' }],
+  };
+
+  const PRAISES = ['太棒了！🎉','你好聪明！🧠','答对啦！✅','好厉害！💪','真棒！👏','非常好！🌟','天才！🎊','666！🔥','哇塞！😍','超厉害！🚀','棒呆了！💯','无敌了！🏆'];
+  const WRONG_MSGS = ['差一点点哦！💫','再想想～🤔','没关系！😊','接近了！🎯','加油！💪','下次一定！✨'];
+
+  // ====== 全局状态 ======
+  let gameState = {
+    mode: 'add',
+    xp: 0, level: 1, totalXp: 0, combo: 0, maxCombo: 0,
+    collection: [], currentAnswer: null, answered: false, totalCorrect: 0,
+  };
+
+  let learnState = {
+    type: 'add',
+    lessonIdx: 0,
+    stepIdx: 0,
+    answered: false,
+  };
+
+  // ====== DOM ======
+  const homeScreen = document.getElementById('homeScreen');
+  const learnScreen = document.getElementById('learnScreen');
+  const gameScreen = document.getElementById('gameScreen');
+  const learnVisual = document.getElementById('learnVisual');
+  const learnText = document.getElementById('learnText');
+  const learnHint = document.getElementById('learnHint');
+  const learnNextBtn = document.getElementById('learnNextBtn');
+  const learnProgress = document.getElementById('learnProgress');
+
+  // ====== 页面切换 ======
+  function showScreen(screen) {
+    [homeScreen, learnScreen, gameScreen].forEach(s => s.classList.remove('show'));
+    homeScreen.style.display = 'none';
+    if (screen === 'home') { homeScreen.style.display = 'block'; }
+    else { screen.classList.add('show'); }
+  }
+
+  function goHome() {
+    playSound('click');
+    showScreen('home');
+  }
+
+  // ====== 学习模式 ======
+  function enterLearn(type) {
+    playSound('click');
+    learnState.type = type;
+    learnState.lessonIdx = 0;
+    learnState.stepIdx = 0;
+    learnState.answered = false;
+
+    document.getElementById('learnTitle').textContent = type === 'add' ? '📖 学习加法' : '📖 学习减法';
+    showScreen(learnScreen);
+    renderLesson();
+  }
+
+  function renderLesson() {
+    const lessons = LESSONS[learnState.type];
+    const lesson = lessons[learnState.lessonIdx];
+
+    // 进度条
+    const totalSteps = lesson.steps ? lesson.steps.length : 1;
+    learnProgress.innerHTML = '';
+    for (let i = 0; i < totalSteps; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'progress-dot';
+      if (i < learnState.stepIdx) dot.classList.add('done');
+      if (i === learnState.stepIdx) dot.classList.add('active');
+      learnProgress.appendChild(dot);
+    }
+
+    if (lesson.type === 'concept') {
+      renderConceptStep(lesson);
+    } else {
+      renderPracticeStep(lesson);
+    }
+  }
+
+  function renderConceptStep(lesson) {
+    const step = lesson.steps[learnState.stepIdx];
+    const isLast = learnState.stepIdx >= lesson.steps.length - 1;
+
+    // 视觉
+    learnVisual.innerHTML = '';
+    const emojiGroup = document.createElement('div');
+    emojiGroup.className = 'learn-emoji-group';
+    for (let i = 0; i < step.emoji.length; i++) {
+      const span = document.createElement('span');
+      span.className = 'learn-emoji';
+      span.textContent = step.emoji[i];
+      emojiGroup.appendChild(span);
+      setTimeout(() => {
+        span.classList.add('show');
+        playSound('appear');
+      }, i * 300);
+    }
+    learnVisual.appendChild(emojiGroup);
+
+    learnText.innerHTML = step.text;
+
+    learnHint.style.display = lesson.hint && learnState.stepIdx === 0 ? 'block' : 'none';
+    if (lesson.hint && learnState.stepIdx === 0) learnHint.innerHTML = lesson.hint;
+
+    // 按钮
+    learnNextBtn.textContent = isLast ? '下一课 ➡️' : '下一个 ➡️';
+    learnNextBtn.className = 'learn-nav-btn next';
+    learnNextBtn.onclick = learnNext;
+  }
+
+  function renderPracticeStep(lesson) {
+    learnState.answered = false;
+    const answer = lesson.a + (learnState.type === 'add' ? lesson.b : -lesson.b) ;
+    learnState.practiceAnswer = answer;
+
+    // 视觉 - 显示emoji提示
+    learnVisual.innerHTML = '';
+    const hintDiv = document.createElement('div');
+    hintDiv.style.cssText = 'font-size:35px; text-align:center; line-height:1.6;';
+
+    if (learnState.type === 'add') {
+      const emojis = ['🍓','🌸','🍎','🐱','🎈'][learnState.lessonIdx % 5];
+      hintDiv.innerHTML = emojis.repeat(lesson.a) + ' ➕ ' + emojis.repeat(lesson.b);
+    } else {
+      const emojis = ['🍬','🐟','🍪','🎁'][learnState.lessonIdx % 4];
+      hintDiv.innerHTML = emojis.repeat(lesson.a);
+    }
+    learnVisual.appendChild(hintDiv);
+
+    learnText.innerHTML = lesson.text;
+
+    learnHint.style.display = 'block';
+    learnHint.innerHTML = lesson.hint;
+
+    // 显示数字按钮
+    const numpadDiv = document.createElement('div');
+    numpadDiv.className = 'numpad';
+    numpadDiv.style.marginTop = '15px';
+    for (let i = 0; i <= 10; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'num-btn';
+      btn.textContent = i;
+      btn.style.height = '50px';
+      btn.style.fontSize = '22px';
+      btn.onclick = () => checkLearnAnswer(i, lesson, btn);
+      numpadDiv.appendChild(btn);
+    }
+    learnVisual.appendChild(numpadDiv);
+
+    learnNextBtn.style.display = 'none';
+  }
+
+  function checkLearnAnswer(num, lesson, btn) {
+    if (learnState.answered) return;
+
+    if (num === learnState.practiceAnswer) {
+      learnState.answered = true;
+      playSound('correct');
+      btn.style.background = 'linear-gradient(145deg, #66bb6a, #2e7d32)';
+
+      // 隐藏numpad显示结果
+      const numpadDiv = learnVisual.querySelector('.numpad');
+      if (numpadDiv) numpadDiv.style.display = 'none';
+
+      learnText.innerHTML = lesson.text.replace('?', `<span class="result">${learnState.practiceAnswer}</span>`);
+      learnHint.innerHTML = `答对了！太棒了！🎉`;
+      learnHint.style.background = '#e8f5e9';
+      learnHint.style.color = '#2e7d32';
+
+      learnNextBtn.style.display = '';
+      learnNextBtn.textContent = learnState.lessonIdx < LESSONS[learnState.type].length - 1 ? '下一课 ➡️' : '🎮 去闯关！';
+      learnNextBtn.className = learnState.lessonIdx < LESSONS[learnState.type].length - 1 ? 'learn-nav-btn next' : 'learn-nav-btn start-game';
+      learnNextBtn.onclick = () => {
+        if (learnState.lessonIdx >= LESSONS[learnState.type].length - 1) {
+          enterGame();
+        } else {
+          learnNext();
+        }
+      };
+
+    } else {
+      playSound('wrong');
+      btn.style.background = 'linear-gradient(145deg, #ef5350, #c62828)';
+      btn.style.transform = 'scale(0.9)';
+      setTimeout(() => {
+        btn.style.background = '';
+        btn.style.transform = '';
+      }, 500);
+      learnHint.innerHTML = `不对哦，再想想！💪`;
+      learnHint.style.background = '#fff3e0';
+      learnHint.style.color = '#e65100';
+    }
+  }
+
+  function learnNext() {
+    playSound('click');
+    const lessons = LESSONS[learnState.type];
+    const lesson = lessons[learnState.lessonIdx];
+
+    if (lesson.type === 'concept') {
+      if (learnState.stepIdx < lesson.steps.length - 1) {
+        learnState.stepIdx++;
+        renderLesson();
+      } else {
+        // 到下一课
+        if (learnState.lessonIdx < lessons.length - 1) {
+          learnState.lessonIdx++;
+          learnState.stepIdx = 0;
+          renderLesson();
+        }
+      }
+    } else {
+      // practice 类型，点击下一个进入下一课
+      if (learnState.lessonIdx < lessons.length - 1) {
+        learnState.lessonIdx++;
+        learnState.stepIdx = 0;
+        learnState.answered = false;
+        learnNextBtn.style.display = '';
+        renderLesson();
+      }
+    }
+  }
+
+  function learnPrev() {
+    playSound('click');
+    const lesson = LESSONS[learnState.type][learnState.lessonIdx];
+
+    if (learnState.stepIdx > 0) {
+      learnState.stepIdx--;
+      renderLesson();
+    } else if (learnState.lessonIdx > 0) {
+      learnState.lessonIdx--;
+      const prevLesson = LESSONS[learnState.type][learnState.lessonIdx];
+      learnState.stepIdx = prevLesson.steps ? prevLesson.steps.length - 1 : 0;
+      learnState.answered = false;
+      learnNextBtn.style.display = '';
+      renderLesson();
+    }
+  }
+
+  // ====== 游戏模式 ======
+  function enterGame() {
+    playSound('click');
+    showScreen(gameScreen);
+    initGame();
+  }
+
+  function initGame() {
+    initStars();
+    initNumpad();
+    initCollectionBar();
+    generateQuestion();
+    updateDisplay();
+
+    document.querySelectorAll('.mode-chip').forEach(btn => {
+      btn.onclick = () => {
+        playSound('click');
+        document.querySelectorAll('.mode-chip').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        gameState.mode = btn.dataset.mode;
+        gameState.combo = 0;
+        document.getElementById('comboDisplay').textContent = '';
+        generateQuestion();
+      };
+    });
+  }
+
+  function initStars() {
+    const container = document.getElementById('starsBg');
+    if (container.children.length > 0) return;
+    for (let i = 0; i < 30; i++) {
+      const star = document.createElement('div');
+      star.className = 'star-particle';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.animationDelay = Math.random() * 2 + 's';
+      container.appendChild(star);
+    }
+  }
+
+  function initNumpad() {
+    const numpadEl = document.getElementById('numpad');
+    if (numpadEl.children.length > 0) return;
+    for (let i = 0; i <= 10; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'num-btn';
+      btn.textContent = i;
+      const colors = ['#ff6b6b','#ffa726','#ffee58','#66bb6a','#42a5f5','#ab47bc','#26c6da','#ef5350','#ffa726','#ffee58','#66bb6a'];
+      btn.style.background = `linear-gradient(145deg, ${colors[i]}, ${darken(colors[i])})`;
+      btn.onclick = () => checkAnswer(i);
+      numpadEl.appendChild(btn);
+    }
+  }
+
+  function darken(c) {
+    return c.replace(/[a-f0-9]{2}$/gi, m => Math.max(0, parseInt(m, 16) - 40).toString(16).padStart(2, '0'));
+  }
+
+  function initCollectionBar() {
+    const el = document.getElementById('collectionBar');
+    el.innerHTML = '';
+    gameState.collection.forEach(pet => {
+      const slot = document.createElement('div');
+      slot.className = 'pet-slot';
+      slot.textContent = pet;
+      el.appendChild(slot);
+    });
+    for (let i = gameState.collection.length; i < Math.min(20, gameState.collection.length + 3); i++) {
+      const slot = document.createElement('div');
+      slot.className = 'pet-slot empty';
+      slot.textContent = '❓';
+      el.appendChild(slot);
+    }
+  }
+
+  function generateQuestion() {
+    gameState.answered = false;
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('feedback').style.color = '';
+
+    let mode = gameState.mode;
+    if (mode === 'mix') mode = Math.random() < 0.5 ? 'add' : 'sub';
+
+    const maxNum = gameState.level >= 5 ? 10 : gameState.level >= 3 ? 8 : 5;
+    let a, b, answer, op;
+
+    if (mode === 'add') {
+      a = Math.floor(Math.random() * (maxNum + 1));
+      b = Math.floor(Math.random() * (maxNum + 1 - a));
+      answer = a + b; op = '+';
+    } else {
+      a = Math.floor(Math.random() * (maxNum + 1));
+      b = Math.floor(Math.random() * (a + 1));
+      answer = a - b; op = '-';
+    }
+
+    gameState.currentAnswer = answer;
+
+    const sceneList = SCENES[mode];
+    const scene = sceneList[Math.floor(Math.random() * sceneList.length)];
+
+    if (op === '+') {
+      document.getElementById('sceneEmoji').innerHTML = `${scene.emoji.repeat(a)} ➕ ${scene.emoji.repeat(b)}`;
+    } else {
+      document.getElementById('sceneEmoji').innerHTML = `${scene.emoji.repeat(a)}`;
+    }
+
+    document.getElementById('equation').innerHTML = `
+      <div class="num">${a}</div>
+      <div class="op">${op}</div>
+      <div class="num">${b}</div>
+      <div class="equals">=</div>
+      <div class="answer-box" id="answerBox">?</div>
+    `;
+  }
+
+  function checkAnswer(num) {
+    if (gameState.answered) return;
+    gameState.answered = true;
+
+    const box = document.getElementById('answerBox');
+    box.textContent = num;
+
+    if (num === gameState.currentAnswer) {
+      gameState.totalCorrect++;
+      gameState.combo++;
+      if (gameState.combo > gameState.maxCombo) gameState.maxCombo = gameState.combo;
+
+      box.classList.add('correct');
+      playSound('correct');
+
+      let xpGain = 1 + Math.floor(gameState.combo / 3);
+      gameState.xp += xpGain;
+      gameState.totalXp += xpGain;
+
+      document.getElementById('feedback').textContent = PRAISES[Math.floor(Math.random() * PRAISES.length)];
+      document.getElementById('feedback').style.color = '#4caf50';
+
+      if (gameState.combo >= 3) {
+        document.getElementById('comboDisplay').textContent = `🔥 连击 x${gameState.combo}！`;
+      }
+
+      const levelData = LEVELS.find(l => l.level === gameState.level) || LEVELS[LEVELS.length - 1];
+      if (gameState.totalCorrect % 3 === 0) {
+        const pet = levelData.pets[Math.floor(Math.random() * levelData.pets.length)];
+        gameState.collection.push(pet);
+        setTimeout(() => spawnEmojiRain(pet), 300);
+      }
+
+      if (gameState.combo >= 5) createFireworks();
+
+      updateDisplay();
+
+      const nextLevel = LEVELS.find(l => l.level === gameState.level + 1);
+      const curLevel = LEVELS.find(l => l.level === gameState.level) || LEVELS[0];
+      if (gameState.xp >= curLevel.xpNeeded && nextLevel) {
+        gameState.level++;
+        gameState.xp = 0;
+        setTimeout(() => showLevelUp(nextLevel), 800);
+      }
+
+      setTimeout(generateQuestion, 1500);
+    } else {
+      gameState.combo = 0;
+      document.getElementById('comboDisplay').textContent = '';
+      box.classList.add('wrong');
+      playSound('wrong');
+      document.getElementById('feedback').textContent = WRONG_MSGS[Math.floor(Math.random() * WRONG_MSGS.length)] + ` 答案是 ${gameState.currentAnswer}`;
+      document.getElementById('feedback').style.color = '#f44336';
+      updateDisplay();
+      setTimeout(() => {
+        box.classList.remove('wrong');
+        gameState.answered = false;
+        box.textContent = '?';
+        document.getElementById('feedback').textContent = '再试试看！💪';
+        document.getElementById('feedback').style.color = '#ff9800';
+      }, 2500);
+    }
+  }
+
+  function updateDisplay() {
+    const cur = LEVELS.find(l => l.level === gameState.level) || LEVELS[0];
+    document.getElementById('xpFill').style.width = Math.min(100, (gameState.xp / cur.xpNeeded) * 100) + '%';
+    document.getElementById('levelDisplay').textContent = `Lv.${gameState.level}`;
+    document.getElementById('scoreDisplay').textContent = gameState.totalXp;
+    initCollectionBar();
+  }
+
+  function showLevelUp(lv) {
+    playSound('levelup');
+    document.getElementById('levelupTitle').textContent = `🎉 升级到 Lv.${lv.level}！`;
+    document.getElementById('levelupNewTitle').textContent = `称号：${lv.title}`;
+    document.getElementById('levelupModal').classList.add('show');
+    createFireworks();
+  }
+
+  function closeLevelUp() {
+    document.getElementById('levelupModal').classList.remove('show');
+    playSound('click');
+  }
+
+  function createFireworks() {
+    const colors = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff6f00','#ab47bc'];
+    for (let f = 0; f < 3; f++) {
+      setTimeout(() => {
+        const cx = Math.random() * window.innerWidth;
+        const cy = Math.random() * (window.innerHeight / 2);
+        for (let i = 0; i < 15; i++) {
+          const p = document.createElement('div');
+          p.className = 'firework-particle';
+          p.style.left = cx + 'px'; p.style.top = cy + 'px';
+          p.style.background = colors[Math.floor(Math.random() * colors.length)];
+          const angle = (Math.PI * 2 / 15) * i;
+          const dist = 80 + Math.random() * 60;
+          p.animate([
+            { transform: 'translate(0,0) scale(1)', opacity: 1 },
+            { transform: `translate(${Math.cos(angle)*dist}px,${Math.sin(angle)*dist}px) scale(0)`, opacity: 0 }
+          ], { duration: 1000, easing: 'ease-out', fill: 'forwards' });
+          document.getElementById('fireworks').appendChild(p);
+          setTimeout(() => p.remove(), 1000);
+        }
+      }, f * 300);
+    }
+  }
+
+  function spawnEmojiRain(emoji) {
+    for (let i = 0; i < 8; i++) {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'emoji-rain';
+        el.textContent = emoji;
+        el.style.left = Math.random() * 90 + 5 + '%';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 2000);
+      }, i * 100);
+    }
+  }
+
+  // 启动
+  showScreen('home');
+  initStars();
+</script>
+</body>
+</html>
