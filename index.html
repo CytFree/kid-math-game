@@ -717,12 +717,14 @@
     const numpadDiv = document.createElement('div');
     numpadDiv.className = 'numpad';
     numpadDiv.style.marginTop = '15px';
+    const colors = ['#ff6b6b','#ffa726','#ffee58','#66bb6a','#42a5f5','#ab47bc','#26c6da','#ef5350','#ffa726','#ffee58','#66bb6a'];
     for (let i = 0; i <= 10; i++) {
       const btn = document.createElement('button');
       btn.className = 'num-btn';
       btn.textContent = i;
       btn.style.height = '50px';
       btn.style.fontSize = '22px';
+      btn.style.background = `linear-gradient(145deg, ${colors[i]}, ${darken(colors[i])})`;
       btn.onclick = () => checkLearnAnswer(i, lesson, btn);
       numpadDiv.appendChild(btn);
     }
@@ -743,7 +745,9 @@
       const numpadDiv = learnVisual.querySelector('.numpad');
       if (numpadDiv) numpadDiv.style.display = 'none';
 
-      learnText.innerHTML = lesson.text.replace('?', `<span class="result">${learnState.practiceAnswer}</span>`);
+      // 安全替换：只替换 <span class='result'>?</span> 部分
+      const resultHtml = `<span class="result">${learnState.practiceAnswer}</span>`;
+      learnText.innerHTML = lesson.text.replace(/<span class=['"]result['"]>\?<\/span>/g, resultHtml);
       learnHint.innerHTML = `答对了！太棒了！🎉`;
       learnHint.style.background = '#e8f5e9';
       learnHint.style.color = '#2e7d32';
@@ -804,15 +808,26 @@
 
   function learnPrev() {
     playSound('click');
-    const lesson = LESSONS[learnState.type][learnState.lessonIdx];
+    const lessons = LESSONS[learnState.type];
+    const lesson = lessons[learnState.lessonIdx];
 
-    if (learnState.stepIdx > 0) {
+    if (lesson.type === 'concept' && learnState.stepIdx > 0) {
       learnState.stepIdx--;
       renderLesson();
-    } else if (learnState.lessonIdx > 0) {
+    } else if (lesson.type === 'concept' && learnState.stepIdx === 0) {
+      // 在 concept 的第一步，往前找
+      if (learnState.lessonIdx > 0) {
+        learnState.lessonIdx--;
+        const prevLesson = lessons[learnState.lessonIdx];
+        learnState.stepIdx = prevLesson.steps ? prevLesson.steps.length - 1 : 0;
+        learnState.answered = false;
+        learnNextBtn.style.display = '';
+        renderLesson();
+      }
+    } else if (lesson.type === 'practice' && learnState.lessonIdx > 0) {
+      // 在 practice 课，回到前一课的开头
       learnState.lessonIdx--;
-      const prevLesson = LESSONS[learnState.type][learnState.lessonIdx];
-      learnState.stepIdx = prevLesson.steps ? prevLesson.steps.length - 1 : 0;
+      learnState.stepIdx = 0;
       learnState.answered = false;
       learnNextBtn.style.display = '';
       renderLesson();
@@ -833,12 +848,16 @@
     generateQuestion();
     updateDisplay();
 
-    document.querySelectorAll('.mode-chip').forEach(btn => {
-      btn.onclick = () => {
+    // 防止重复绑定：先移除再绑定
+    const modeChips = document.querySelectorAll('.mode-chip');
+    modeChips.forEach(btn => {
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+      newBtn.onclick = () => {
         playSound('click');
         document.querySelectorAll('.mode-chip').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        gameState.mode = btn.dataset.mode;
+        newBtn.classList.add('active');
+        gameState.mode = newBtn.dataset.mode;
         gameState.combo = 0;
         document.getElementById('comboDisplay').textContent = '';
         generateQuestion();
@@ -923,7 +942,10 @@
     if (op === '+') {
       document.getElementById('sceneEmoji').innerHTML = `${scene.emoji.repeat(a)} ➕ ${scene.emoji.repeat(b)}`;
     } else {
-      document.getElementById('sceneEmoji').innerHTML = `${scene.emoji.repeat(a)}`;
+      // 减法：显示所有物品 + 飞走提示
+      const remaining = a - b;
+      const crossedOut = b > 0 ? `<span style="opacity:0.35;text-decoration:line-through">${scene.emoji.repeat(b)}</span> 💨` : '';
+      document.getElementById('sceneEmoji').innerHTML = `${scene.emoji.repeat(remaining)}${crossedOut}`;
     }
 
     document.getElementById('equation').innerHTML = `
@@ -1060,6 +1082,7 @@
   // 启动
   showScreen('home');
   initStars();
+  initNumpad();
 </script>
 </body>
 </html>
