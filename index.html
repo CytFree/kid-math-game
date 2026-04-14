@@ -3,792 +3,212 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>动物数学岛</title>
+<title>Animal Math Island</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: linear-gradient(180deg, #1a237e 0%, #283593 40%, #3949ab 100%);
-    min-height: 100vh;
-    display: flex; flex-direction: column; align-items: center;
-    overflow-x: hidden; user-select: none; -webkit-user-select: none;
-    touch-action: manipulation;
-  }
-  .stars-bg { position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0; }
-  .star-particle { position:absolute;width:4px;height:4px;background:white;border-radius:50%;animation:twinkle 2s ease-in-out infinite alternate; }
-  @keyframes twinkle { 0%{opacity:0.3}100%{opacity:1} }
-  .game-container { position:relative;z-index:1;width:95vw;max-width:480px;padding:10px; }
-  .home-screen { display:flex;flex-direction:column;align-items:center;padding:30px 20px;color:white;text-align:center; }
-  .home-title { font-size:32px;margin-bottom:5px;text-shadow:2px 2px 8px rgba(0,0,0,0.3); }
-  .home-subtitle { font-size:16px;opacity:0.8;margin-bottom:30px; }
-  .home-card { background:rgba(255,255,255,0.12);border-radius:25px;padding:25px;width:100%;margin-bottom:15px;cursor:pointer;transition:transform 0.2s,background 0.2s;border:2px solid rgba(255,255,255,0.15); }
-  .home-card:active { transform:scale(0.97);background:rgba(255,255,255,0.2); }
-  .home-card .card-row { display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;min-height:60px; }
-  .home-card h3 { font-size:22px;margin-bottom:5px; }
-  .home-card p { font-size:14px;opacity:0.7; }
-  .learn-screen { display:none;flex-direction:column; }
-  .learn-screen.show { display:flex; }
-  .learn-header { display:flex;align-items:center;justify-content:space-between;padding:10px 15px;background:rgba(255,255,255,0.1);border-radius:20px;margin-bottom:15px;color:white; }
-  .learn-back { background:rgba(255,255,255,0.2);border:none;color:white;padding:8px 15px;border-radius:12px;font-size:16px;cursor:pointer; }
-  .learn-progress { display:flex;gap:5px;justify-content:center;margin-bottom:15px; }
-  .progress-dot { width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.2);transition:all 0.3s; }
-  .progress-dot.active { background:#ffd740;transform:scale(1.2); }
-  .progress-dot.done { background:#66bb6a; }
-  .learn-card { background:white;border-radius:25px;padding:25px 20px;box-shadow:0 10px 40px rgba(0,0,0,0.3);min-height:350px;display:flex;flex-direction:column;align-items:center;text-align:center; }
-  .learn-visual { flex:1;display:flex;align-items:center;justify-content:center;min-height:180px;margin:15px 0; }
-  .learn-emoji-group { display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:280px; }
-  .learn-emoji { display:inline-flex;opacity:0;transform:scale(0);transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1); }
-  .learn-emoji.show { opacity:1;transform:scale(1); }
-  .learn-text { font-size:20px;color:#333;line-height:1.6;margin:10px 0; }
-  .learn-text .big { font-size:36px;font-weight:bold;color:#1565c0; }
-  .learn-text .op { color:#e53935; }
-  .learn-text .result { color:#2e7d32;font-weight:bold; }
-  .learn-navigate { display:flex;gap:15px;margin-top:15px; }
-  .learn-nav-btn { padding:12px 30px;border:none;border-radius:15px;font-size:18px;font-weight:bold;cursor:pointer; }
-  .learn-nav-btn:active { transform:scale(0.95); }
-  .learn-nav-btn.prev { background:#e0e0e0;color:#666; }
-  .learn-nav-btn.next { background:linear-gradient(145deg,#667eea,#764ba2);color:white; }
-  .learn-nav-btn.start-game { background:linear-gradient(145deg,#66bb6a,#2e7d32);color:white; }
-  .learn-hint { background:#fff3e0;border-radius:12px;padding:10px 15px;font-size:16px;color:#e65100;margin-top:10px; }
-  .game-screen { display:none;flex-direction:column; }
-  .game-screen.show { display:flex; }
-  .top-bar { display:flex;justify-content:space-between;align-items:center;padding:10px 15px;background:rgba(255,255,255,0.1);border-radius:20px;margin-bottom:10px;color:white;font-size:16px; }
-  .top-bar .level { font-size:20px;font-weight:bold;color:#ffd740; }
-  .top-bar .xp-bar { flex:1;margin:0 10px;height:12px;background:rgba(0,0,0,0.3);border-radius:6px;overflow:hidden; }
-  .top-bar .xp-fill { height:100%;background:linear-gradient(90deg,#ffd740,#ff6f00);border-radius:6px;transition:width 0.5s ease; }
-  .collection-bar { display:flex;gap:5px;padding:8px 12px;background:rgba(255,255,255,0.08);border-radius:15px;margin-bottom:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none; }
-  .collection-bar::-webkit-scrollbar { display:none; }
-  .pet-slot { min-width:36px;height:36px;background:rgba(255,255,255,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;transition:all 0.3s; }
-  .pet-slot.empty { opacity:0.3; }
-  .pet-slot.new { animation:petBounce 0.6s ease; }
-  @keyframes petBounce { 0%{transform:scale(0)}50%{transform:scale(1.4)}70%{transform:scale(0.9)}100%{transform:scale(1)} }
-  .question-card { background:linear-gradient(145deg,#ffffff,#f5f5f5);border-radius:25px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,0.3);margin-bottom:15px;position:relative;overflow:hidden; }
-  .question-card::before { content:'';position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6); }
-  .scene-emoji { text-align:center;margin:10px 0;line-height:1.3;min-height:70px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px; }
-  .equation { display:flex;align-items:center;justify-content:center;gap:8px;margin:15px 0;font-size:48px;font-weight:bold; }
-  .equation .num { color:#1565c0;background:#e3f2fd;width:55px;height:55px;display:flex;align-items:center;justify-content:center;border-radius:12px; }
-  .equation .op { color:#e53935;font-size:40px; }
-  .answer-box { width:65px;height:65px;border:4px dashed #999;border-radius:15px;background:#fafafa;display:flex;align-items:center;justify-content:center;font-size:45px;color:#2e7d32;transition:all 0.3s; }
-  .answer-box.correct { border-color:#4caf50;background:#e8f5e9;animation:correctPop 0.5s ease; }
-  .answer-box.wrong { border-color:#f44336;background:#ffebee;animation:wrongShake 0.5s ease; }
-  @keyframes correctPop { 0%,100%{transform:scale(1)}50%{transform:scale(1.15) rotate(5deg)} }
-  @keyframes wrongShake { 0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)} }
-  .numpad { display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:15px 0; }
-  .num-btn { height:58px;border:none;border-radius:14px;font-size:26px;font-weight:bold;cursor:pointer;color:white;transition:transform 0.1s;box-shadow:0 4px 12px rgba(0,0,0,0.2); }
-  .num-btn:active { transform:scale(0.92); }
-  .combo-fire { text-align:center;font-size:20px;color:#ff6f00;min-height:28px; }
-  .feedback { text-align:center;min-height:45px;display:flex;align-items:center;justify-content:center;font-size:22px;margin:10px 0; }
-  .mode-panel { display:flex;gap:8px;justify-content:center;margin-bottom:10px; }
-  .mode-chip { padding:8px 16px;border:2px solid rgba(255,255,255,0.3);border-radius:20px;background:rgba(255,255,255,0.1);color:white;font-size:16px;cursor:pointer;transition:all 0.3s; }
-  .mode-chip.active { background:rgba(255,255,255,0.25);border-color:#ffd740;color:#ffd740; }
-  .game-back { background:rgba(255,255,255,0.2);border:none;color:white;padding:8px 15px;border-radius:12px;font-size:14px;cursor:pointer;margin-bottom:10px; }
-  .fireworks { position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:100; }
-  .firework-particle { position:absolute;width:8px;height:8px;border-radius:50%; }
-  .levelup-modal { position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity 0.3s; }
-  .levelup-modal.show { opacity:1;pointer-events:auto; }
-  .levelup-content { background:linear-gradient(145deg,#ffd740,#ff6f00);border-radius:30px;padding:30px;text-align:center;animation:levelPop 0.6s ease;max-width:80vw; }
-  @keyframes levelPop { 0%{transform:scale(0) rotate(-10deg)}60%{transform:scale(1.1) rotate(3deg)}100%{transform:scale(1) rotate(0)} }
-  .levelup-content h2 { font-size:36px;color:white;text-shadow:2px 2px 4px rgba(0,0,0,0.3); }
-  .levelup-content .new-title { font-size:24px;color:white;margin:10px 0; }
-  .levelup-btn { margin-top:20px;padding:12px 30px;border:none;border-radius:20px;background:white;color:#ff6f00;font-size:20px;font-weight:bold;cursor:pointer; }
-  .emoji-rain { position:fixed;pointer-events:none;z-index:50;animation:emojiFall 2s ease-in forwards; }
-  @keyframes emojiFall { 0%{transform:translateY(-50px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(360deg);opacity:0} }
-
-  /* ====== SVG 图标样式 ====== */
-  .gi { display:inline-block;vertical-align:middle; }
-  .gi-lg { width:56px;height:56px; }
-  .gi-md { width:48px;height:48px; }
-  .gi-sm { width:24px;height:24px; }
-  .scene-emoji .gi { width:52px;height:52px; }
-  .pet-slot .gi { width:24px;height:24px; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:linear-gradient(180deg,#1a237e 0%,#283593 40%,#3949ab 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.stars-bg{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0}
+.star-particle{position:absolute;width:4px;height:4px;background:white;border-radius:50%;animation:twinkle 2s ease-in-out infinite alternate}
+@keyframes twinkle{0%{opacity:.3}100%{opacity:1}}
+.gc{position:relative;z-index:1;width:95vw;max-width:480px;padding:10px}
+.hs{display:flex;flex-direction:column;align-items:center;padding:30px 20px;color:white;text-align:center}
+.ht{font-size:32px;margin-bottom:5px;text-shadow:2px 2px 8px rgba(0,0,0,.3)}
+.hsu{font-size:16px;opacity:.8;margin-bottom:30px}
+.hc{background:rgba(255,255,255,.12);border-radius:25px;padding:25px;width:100%;margin-bottom:15px;cursor:pointer;transition:transform .2s,background .2s;border:2px solid rgba(255,255,255,.15)}
+.hc:active{transform:scale(.97);background:rgba(255,255,255,.2)}
+.hc .cr{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;min-height:60px}
+.hc h3{font-size:22px;margin-bottom:5px}
+.hc p{font-size:14px;opacity:.7}
+.ls{display:none;flex-direction:column}
+.ls.sh{display:flex}
+.lh{display:flex;align-items:center;justify-content:space-between;padding:10px 15px;background:rgba(255,255,255,.1);border-radius:20px;margin-bottom:15px;color:white}
+.lb{background:rgba(255,255,255,.2);border:none;color:white;padding:8px 15px;border-radius:12px;font-size:16px;cursor:pointer}
+.lp{display:flex;gap:5px;justify-content:center;margin-bottom:15px}
+.pd{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .3s}
+.pd.ac{background:#ffd740;transform:scale(1.2)}
+.pd.dn{background:#66bb6a}
+.lca{background:white;border-radius:25px;padding:25px 20px;box-shadow:0 10px 40px rgba(0,0,0,.3);min-height:350px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.lv{flex:1;display:flex;align-items:center;justify-content:center;min-height:180px;margin:15px 0}
+.lg{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:320px}
+.le{display:inline-flex;opacity:0;transform:scale(0);transition:all .4s cubic-bezier(.34,1.56,.64,1)}
+.le.sh{opacity:1;transform:scale(1)}
+.lt{font-size:20px;color:#333;line-height:1.6;margin:10px 0}
+.lt .big{font-size:36px;font-weight:bold;color:#1565c0}
+.lt .op{color:#e53935}
+.lt .res{color:#2e7d32;font-weight:bold}
+.ln{display:flex;gap:15px;margin-top:15px}
+.lnb{padding:12px 30px;border:none;border-radius:15px;font-size:18px;font-weight:bold;cursor:pointer}
+.lnb:active{transform:scale(.95)}
+.lnb.prev{background:#e0e0e0;color:#666}
+.lnb.next{background:linear-gradient(145deg,#667eea,#764ba2);color:white}
+.lnb.sg{background:linear-gradient(145deg,#66bb6a,#2e7d32);color:white}
+.lh2{background:#fff3e0;border-radius:12px;padding:10px 15px;font-size:16px;color:#e65100;margin-top:10px}
+.gs{display:none;flex-direction:column}
+.gs.sh{display:flex}
+.tb{display:flex;justify-content:space-between;align-items:center;padding:10px 15px;background:rgba(255,255,255,.1);border-radius:20px;margin-bottom:10px;color:white;font-size:16px}
+.tb .lv2{font-size:20px;font-weight:bold;color:#ffd740}
+.tb .xpb{flex:1;margin:0 10px;height:12px;background:rgba(0,0,0,.3);border-radius:6px;overflow:hidden}
+.tb .xf{height:100%;background:linear-gradient(90deg,#ffd740,#ff6f00);border-radius:6px;transition:width .5s ease}
+.cbr{display:flex;gap:5px;padding:8px 12px;background:rgba(255,255,255,.08);border-radius:15px;margin-bottom:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.cbr::-webkit-scrollbar{display:none}
+.ps{min-width:36px;height:36px;background:rgba(255,255,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.ps.em{opacity:.3}
+.ps.nw{animation:pb .6s ease}
+@keyframes pb{0%{transform:scale(0)}50%{transform:scale(1.4)}70%{transform:scale(.9)}100%{transform:scale(1)}}
+.qc{background:linear-gradient(145deg,#ffffff,#f5f5f5);border-radius:25px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,.3);margin-bottom:15px;position:relative;overflow:hidden}
+.qc::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6)}
+.se{text-align:center;margin:10px 0;line-height:1.3;min-height:70px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px}
+.eq{display:flex;align-items:center;justify-content:center;gap:8px;margin:15px 0;font-size:48px;font-weight:bold}
+.eq .nm{color:#1565c0;background:#e3f2fd;width:55px;height:55px;display:flex;align-items:center;justify-content:center;border-radius:12px}
+.eq .opr{color:#e53935;font-size:40px}
+.ab{width:65px;height:65px;border:4px dashed #999;border-radius:15px;background:#fafafa;display:flex;align-items:center;justify-content:center;font-size:45px;color:#2e7d32;transition:all .3s}
+.ab.cr{border-color:#4caf50;background:#e8f5e9;animation:cp .5s ease}
+.ab.wr{border-color:#f44336;background:#ffebee;animation:ws .5s ease}
+@keyframes cp{0%,100%{transform:scale(1)}50%{transform:scale(1.15) rotate(5deg)}}
+@keyframes ws{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.np{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:15px 0}
+.nb{height:58px;border:none;border-radius:14px;font-size:26px;font-weight:bold;cursor:pointer;color:white;transition:transform .1s;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.nb:active{transform:scale(.92)}
+.cbf{text-align:center;font-size:20px;color:#ff6f00;min-height:28px}
+.fb{text-align:center;min-height:45px;display:flex;align-items:center;justify-content:center;font-size:22px;margin:10px 0}
+.mp{display:flex;gap:8px;justify-content:center;margin-bottom:10px}
+.mch{padding:8px 16px;border:2px solid rgba(255,255,255,.3);border-radius:20px;background:rgba(255,255,255,.1);color:white;font-size:16px;cursor:pointer;transition:all .3s}
+.mch.ac{background:rgba(255,255,255,.25);border-color:#ffd740;color:#ffd740}
+.gb{background:rgba(255,255,255,.2);border:none;color:white;padding:8px 15px;border-radius:12px;font-size:14px;cursor:pointer;margin-bottom:10px}
+.fw{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:100}
+.fp{position:absolute;width:8px;height:8px;border-radius:50%}
+.lm{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
+.lm.sh{opacity:1;pointer-events:auto}
+.lmc{background:linear-gradient(145deg,#ffd740,#ff6f00);border-radius:30px;padding:30px;text-align:center;animation:lp .6s ease;max-width:80vw}
+@keyframes lp{0%{transform:scale(0) rotate(-10deg)}60%{transform:scale(1.1) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+.lmc h2{font-size:36px;color:white;text-shadow:2px 2px 4px rgba(0,0,0,.3)}
+.lmc .nt{font-size:24px;color:white;margin:10px 0}
+.lmb{margin-top:20px;padding:12px 30px;border:none;border-radius:20px;background:white;color:#ff6f00;font-size:20px;font-weight:bold;cursor:pointer}
+.er{position:fixed;pointer-events:none;z-index:50;animation:ef 2s ease-in forwards}
+@keyframes ef{0%{transform:translateY(-50px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(360deg);opacity:0}}
+.gi{display:inline-block;vertical-align:middle}
+.gl{width:56px;height:56px}
+.gm{width:48px;height:48px}
+.gs2{width:24px;height:24px}
+.se .gi{width:52px;height:52px}
+.ps .gi{width:24px;height:24px}
 </style>
 </head>
 <body>
-
 <div class="stars-bg" id="starsBg"></div>
-<div class="fireworks" id="fireworks"></div>
-<div class="levelup-modal" id="levelupModal">
-  <div class="levelup-content">
-    <h2 id="levelupTitle">升级啦！</h2>
-    <div class="new-title" id="levelupNewTitle"></div>
-    <button class="levelup-btn" onclick="closeLevelUp()">继续玩！</button>
-  </div>
+<div class="fw" id="fw"></div>
+<div class="lm" id="lm"><div class="lmc"><h2 id="lt2">Level Up!</h2><div class="nt" id="ln"></div><button class="lmb" onclick="cLU()">Keep Playing!</button></div></div>
+<div class="gc">
+<div class="hs" id="hs"><div class="ht">Animal Math Island</div><div class="hsu">Learn first, then challenge!</div>
+<div class="hc" onclick="eL('add')"><div class="cr" id="hca"></div><h3>Learn Addition</h3><p>Put things together</p></div>
+<div class="hc" onclick="eL('sub')"><div class="cr" id="hcs"></div><h3>Learn Subtraction</h3><p>How many are left</p></div>
+<div class="hc" onclick="eG()"><div class="cr" style="font-size:48px">&#127918;</div><h3>Challenge</h3><p>Use what you learned!</p></div>
 </div>
-
-<div class="game-container">
-  <div class="home-screen" id="homeScreen">
-    <div class="home-title">动物数学岛</div>
-    <div class="home-subtitle">先学习，再闯关！</div>
-    <div class="home-card" onclick="enterLearn('add')">
-      <div class="card-row" id="homeCardAdd"></div>
-      <h3>学习加法</h3>
-      <p>学会把东西合在一起</p>
-    </div>
-    <div class="home-card" onclick="enterLearn('sub')">
-      <div class="card-row" id="homeCardSub"></div>
-      <h3>学习减法</h3>
-      <p>学会拿走还剩多少</p>
-    </div>
-    <div class="home-card" onclick="enterGame()">
-      <div class="card-row" style="font-size:48px">&#127918;</div>
-      <h3>闯关答题</h3>
-      <p>用学到的知识来闯关吧！</p>
-    </div>
-  </div>
-
-  <div class="learn-screen" id="learnScreen">
-    <div class="learn-header">
-      <button class="learn-back" onclick="goHome()">返回</button>
-      <span id="learnTitle">学习加法</span>
-      <span style="width:60px"></span>
-    </div>
-    <div class="learn-progress" id="learnProgress"></div>
-    <div class="learn-card">
-      <div class="learn-visual" id="learnVisual"></div>
-      <div class="learn-text" id="learnText"></div>
-      <div class="learn-hint" id="learnHint" style="display:none"></div>
-      <div class="learn-navigate">
-        <button class="learn-nav-btn prev" onclick="learnPrev()">&#9664; 上一个</button>
-        <button class="learn-nav-btn next" id="learnNextBtn" onclick="learnNext()">下一个 &#9654;</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="game-screen" id="gameScreen">
-    <button class="game-back" onclick="goHome()">返回</button>
-    <div class="top-bar">
-      <span class="level" id="levelDisplay">Lv.1</span>
-      <div class="xp-bar"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
-      <span id="scoreDisplay">0</span>
-    </div>
-    <div class="collection-bar" id="collectionBar"></div>
-    <div class="mode-panel">
-      <button class="mode-chip active" data-mode="add">加法</button>
-      <button class="mode-chip" data-mode="sub">减法</button>
-      <button class="mode-chip" data-mode="mix">混合</button>
-    </div>
-    <div class="question-card">
-      <div class="scene-emoji" id="sceneEmoji"></div>
-      <div class="equation" id="equation"></div>
-    </div>
-    <div class="numpad" id="numpad"></div>
-    <div class="combo-fire" id="comboDisplay"></div>
-    <div class="feedback" id="feedback"></div>
-  </div>
+<div class="ls" id="ls"><div class="lh"><button class="lb" onclick="gH()">&#8592; Back</button><span id="ltt">Learn Addition</span><span style="width:60px"></span></div>
+<div class="lp" id="lp"></div>
+<div class="lca"><div class="lv" id="lv2"></div><div class="lt" id="ltx"></div><div class="lh2" id="lh" style="display:none"></div>
+<div class="ln"><button class="lnb prev" onclick="lP()">&#9664; Prev</button><button class="lnb next" id="lnb2" onclick="lN()">Next &#9654;</button></div></div></div>
+<div class="gs" id="gss"><button class="gb" onclick="gH()">&#8592; Back</button>
+<div class="tb"><span class="lv2" id="lvd">Lv.1</span><div class="xpb"><div class="xf" id="xf" style="width:0%"></div></div><span id="sd">0</span></div>
+<div class="cbr" id="cb"></div>
+<div class="mp"><button class="mch ac" data-mode="add">Addition</button><button class="mch" data-mode="sub">Subtraction</button><button class="mch" data-mode="mix">Mixed</button></div>
+<div class="qc"><div class="se" id="sme"></div><div class="eq" id="eq2"></div></div>
+<div class="np" id="np2"></div><div class="cbf" id="cf"></div><div class="fb" id="fb"></div></div>
 </div>
-
 <script>
-// ====== 直接内联 SVG 图标字符串 ======
-var GI = {};
-GI.apple = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="40" rx="20" ry="18" fill="#e53935"/><ellipse cx="26" cy="38" rx="6" ry="8" fill="#ef5350" opacity="0.5"/><path d="M32 22 Q34 14 40 16" stroke="#4caf50" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="38" cy="16" rx="6" ry="4" fill="#4caf50" transform="rotate(-20 38 16)"/></svg>';
-GI.strawberry = '<svg class="gi" viewBox="0 0 64 64"><path d="M32 18 C20 18 14 30 14 40 C14 52 22 60 32 60 C42 60 50 52 50 40 C50 30 44 18 32 18Z" fill="#e53935"/><circle cx="26" cy="38" r="1.5" fill="#ffeb3b" opacity="0.8"/><circle cx="34" cy="36" r="1.5" fill="#ffeb3b" opacity="0.8"/><circle cx="30" cy="44" r="1.5" fill="#ffeb3b" opacity="0.8"/><circle cx="38" cy="42" r="1.5" fill="#ffeb3b" opacity="0.8"/><path d="M32 18 L28 10 L32 14 L36 10Z" fill="#4caf50"/></svg>';
-GI.flower = '<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="24" r="8" fill="#e91e63" opacity="0.9"/><circle cx="24" cy="32" r="8" fill="#e91e63" opacity="0.9"/><circle cx="40" cy="32" r="8" fill="#e91e63" opacity="0.9"/><circle cx="26" cy="22" r="8" fill="#f06292" opacity="0.9"/><circle cx="38" cy="22" r="8" fill="#f06292" opacity="0.9"/><circle cx="32" cy="30" r="6" fill="#ffeb3b"/></svg>';
-GI.cat = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="40" rx="18" ry="16" fill="#ff9800"/><polygon points="18,28 14,14 26,24" fill="#ff9800"/><polygon points="46,28 50,14 38,24" fill="#ff9800"/><circle cx="26" cy="36" r="3" fill="#333"/><circle cx="38" cy="36" r="3" fill="#333"/><ellipse cx="32" cy="42" rx="3" ry="2" fill="#ff5722"/></svg>';
-GI.dog = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="18" ry="14" fill="#8d6e63"/><ellipse cx="18" cy="30" rx="8" ry="14" fill="#8d6e63" transform="rotate(-10 18 30)"/><ellipse cx="46" cy="30" rx="8" ry="14" fill="#8d6e63" transform="rotate(10 46 30)"/><circle cx="26" cy="38" r="3" fill="#333"/><circle cx="38" cy="38" r="3" fill="#333"/><ellipse cx="32" cy="46" rx="5" ry="3" fill="#333"/></svg>';
-GI.butterfly = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="22" cy="28" rx="14" ry="16" fill="#ab47bc" opacity="0.8"/><ellipse cx="42" cy="28" rx="14" ry="16" fill="#ab47bc" opacity="0.8"/><ellipse cx="20" cy="44" rx="10" ry="10" fill="#ce93d8" opacity="0.7"/><ellipse cx="44" cy="44" rx="10" ry="10" fill="#ce93d8" opacity="0.7"/><ellipse cx="32" cy="38" rx="2" ry="16" fill="#4a148c"/></svg>';
-GI.balloon = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="30" rx="16" ry="20" fill="#42a5f5"/><ellipse cx="28" cy="26" rx="4" ry="6" fill="#90caf9" opacity="0.5"/><polygon points="30,48 32,52 34,48" fill="#42a5f5"/><line x1="32" y1="52" x2="32" y2="62" stroke="#90caf9" stroke-width="1"/></svg>';
-GI.cookie = '<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="34" r="20" fill="#d4a574"/><circle cx="24" cy="28" r="4" fill="#5d4037"/><circle cx="36" cy="26" r="3" fill="#5d4037"/><circle cx="30" cy="40" r="3.5" fill="#5d4037"/><circle cx="40" cy="36" r="3" fill="#5d4037"/></svg>';
-GI.candy = '<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="32" r="16" fill="#e91e63"/><circle cx="28" cy="28" r="4" fill="#f48fb1" opacity="0.6"/><path d="M16 32 Q8 24 4 16" stroke="#e91e63" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M48 32 Q56 24 60 16" stroke="#e91e63" stroke-width="3" fill="none" stroke-linecap="round"/></svg>';
-GI.fish = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="30" cy="34" rx="20" ry="14" fill="#26a69a"/><polygon points="50,34 62,24 62,44" fill="#26a69a"/><circle cx="22" cy="30" r="3" fill="#333"/><circle cx="22" cy="30" r="1" fill="#fff"/></svg>';
-GI.gift = '<svg class="gi" viewBox="0 0 64 64"><rect x="14" y="30" width="36" height="26" rx="3" fill="#7b1fa2"/><rect x="12" y="26" width="40" height="8" rx="2" fill="#9c27b0"/><rect x="29" y="26" width="6" height="30" fill="#e1bee7"/><ellipse cx="26" cy="24" rx="8" ry="6" fill="#e91e63"/><ellipse cx="38" cy="24" rx="8" ry="6" fill="#e91e63"/></svg>';
-GI.pizza = '<svg class="gi" viewBox="0 0 64 64"><path d="M14 50 L32 10 L50 50Z" fill="#ffcc02"/><circle cx="28" cy="36" r="4" fill="#e53935"/><circle cx="36" cy="38" r="3" fill="#e53935"/><circle cx="32" cy="44" r="3.5" fill="#e53935"/></svg>';
-GI.icecream = '<svg class="gi" viewBox="0 0 64 64"><polygon points="24,40 40,40 32,60" fill="#d4a574"/><circle cx="32" cy="22" r="14" fill="#f48fb1"/><circle cx="32" cy="8" r="8" fill="#f48fb1"/></svg>';
-GI.chick = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="38" rx="16" ry="14" fill="#ffeb3b"/><circle cx="32" cy="24" r="12" fill="#ffeb3b"/><circle cx="28" cy="22" r="2.5" fill="#333"/><circle cx="36" cy="22" r="2.5" fill="#333"/><polygon points="30,26 34,26 32,30" fill="#ff9800"/></svg>';
-GI.egg = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="38" rx="18" ry="20" fill="#fff9c4"/><ellipse cx="32" cy="38" rx="16" ry="18" fill="#fff176"/></svg>';
-GI.rabbit = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="44" rx="18" ry="14" fill="#f5f5f5"/><ellipse cx="24" cy="14" rx="6" ry="16" fill="#f5f5f5" transform="rotate(-5 24 14)"/><ellipse cx="40" cy="14" rx="6" ry="16" fill="#f5f5f5" transform="rotate(5 40 14)"/><circle cx="26" cy="40" r="3" fill="#333"/><circle cx="38" cy="40" r="3" fill="#333"/><ellipse cx="32" cy="46" rx="2" ry="1.5" fill="#f48fb1"/></svg>';
-GI.fox = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="16" ry="12" fill="#ff9800"/><circle cx="32" cy="30" r="14" fill="#ff9800"/><polygon points="20,20 14,8 28,18" fill="#ff9800"/><polygon points="44,20 50,8 36,18" fill="#ff9800"/><circle cx="26" cy="28" r="2.5" fill="#333"/><circle cx="38" cy="28" r="2.5" fill="#333"/></svg>';
-GI.panda = '<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="36" r="18" fill="#f5f5f5"/><circle cx="18" cy="22" r="8" fill="#333"/><circle cx="46" cy="22" r="8" fill="#333"/><ellipse cx="24" cy="32" rx="7" ry="6" fill="#333"/><ellipse cx="40" cy="32" rx="7" ry="6" fill="#333"/><circle cx="24" cy="32" r="2" fill="#fff"/><circle cx="40" cy="32" r="2" fill="#fff"/><ellipse cx="32" cy="40" rx="3" ry="2" fill="#333"/></svg>';
-GI.koala = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="16" ry="14" fill="#9e9e9e"/><circle cx="32" cy="28" r="16" fill="#bdbdbd"/><circle cx="16" cy="22" r="8" fill="#9e9e9e"/><circle cx="16" cy="22" r="4" fill="#e0e0e0"/><circle cx="48" cy="22" r="8" fill="#9e9e9e"/><circle cx="48" cy="22" r="4" fill="#e0e0e0"/><ellipse cx="26" cy="26" rx="4" ry="3" fill="#333"/><ellipse cx="38" cy="26" rx="4" ry="3" fill="#333"/></svg>';
-GI.lion = '<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="32" r="20" fill="#ffcc02"/><circle cx="32" cy="34" r="14" fill="#ffe082"/><circle cx="26" cy="30" r="2.5" fill="#333"/><circle cx="38" cy="30" r="2.5" fill="#333"/><ellipse cx="32" cy="38" rx="3" ry="2" fill="#333"/></svg>';
-GI.tiger = '<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="34" r="18" fill="#ff9800"/><circle cx="32" cy="36" r="12" fill="#ffe0b2"/><circle cx="26" cy="32" r="2.5" fill="#333"/><circle cx="38" cy="32" r="2.5" fill="#333"/><ellipse cx="32" cy="40" rx="3" ry="2" fill="#333"/></svg>';
-GI.bear = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="18" ry="14" fill="#8d6e63"/><circle cx="32" cy="28" r="16" fill="#8d6e63"/><circle cx="18" cy="16" r="7" fill="#8d6e63"/><circle cx="46" cy="16" r="7" fill="#8d6e63"/><circle cx="26" cy="26" r="3" fill="#333"/><circle cx="38" cy="26" r="3" fill="#333"/><ellipse cx="32" cy="34" rx="6" ry="4" fill="#d7ccc8"/></svg>';
-GI.dragon = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="40" rx="16" ry="14" fill="#4caf50"/><circle cx="32" cy="26" r="14" fill="#4caf50"/><circle cx="26" cy="24" r="4" fill="#fff"/><circle cx="26" cy="24" r="2" fill="#333"/><circle cx="38" cy="24" r="4" fill="#fff"/><circle cx="38" cy="24" r="2" fill="#333"/></svg>';
-GI.unicorn = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="16" ry="14" fill="#f8f8f8"/><circle cx="32" cy="26" r="14" fill="#f8f8f8"/><circle cx="26" cy="24" r="3" fill="#333"/><circle cx="38" cy="24" r="3" fill="#333"/><ellipse cx="32" cy="32" rx="2" ry="1.5" fill="#f48fb1"/><polygon points="32,8 28,20 36,20" fill="#ffd740"/></svg>';
-GI.octopus = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="26" rx="18" ry="16" fill="#ab47bc"/><circle cx="24" cy="24" r="4" fill="#fff"/><circle cx="40" cy="24" r="4" fill="#fff"/><circle cx="24" cy="24" r="2" fill="#333"/><circle cx="40" cy="24" r="2" fill="#333"/></svg>';
-GI.shark = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="30" cy="34" rx="22" ry="14" fill="#78909c"/><polygon points="52,34 62,28 62,40" fill="#78909c"/><circle cx="22" cy="30" r="3" fill="#333"/></svg>';
-GI.tropicalfish = '<svg class="gi" viewBox="0 0 64 64"><ellipse cx="28" cy="34" rx="18" ry="12" fill="#ff7043"/><polygon points="46,34 58,26 58,42" fill="#ff7043"/><circle cx="20" cy="30" r="3" fill="#333"/><circle cx="20" cy="30" r="1" fill="#fff"/></svg>';
-GI.star = '<svg class="gi" viewBox="0 0 64 64"><polygon points="32,8 38,24 56,24 42,36 46,54 32,44 18,54 22,36 8,24 26,24" fill="#ffd740"/></svg>';
-GI.crown = '<svg class="gi" viewBox="0 0 64 64"><path d="M10 44 L14 20 L24 32 L32 14 L40 32 L50 20 L54 44Z" fill="#ffd740"/><rect x="10" y="44" width="44" height="8" rx="2" fill="#ffab00"/></svg>';
-GI.diamond = '<svg class="gi" viewBox="0 0 64 64"><polygon points="32,8 52,24 32,56 12,24" fill="#29b6f6"/><polygon points="32,8 52,24 32,28" fill="#4fc3f7"/></svg>';
-GI.wind = '<svg class="gi" viewBox="0 0 64 64"><path d="M8 32 Q20 20 32 32 Q44 44 56 32" stroke="#90a4ae" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M16 24 Q28 16 40 24" stroke="#b0bec5" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/></svg>';
-
-// emoji -> icon key mapping using surrogate pairs
-var EM = {};
-EM['\uD83C\uDF4E'] = 'apple'; EM['\uD83C\uDF4A'] = 'apple';
-EM['\uD83D\uDC31'] = 'cat'; EM['\uD83D\uDC36'] = 'dog';
-EM['\uD83C\uDF38'] = 'flower'; EM['\uD83C\uDF53'] = 'strawberry';
-EM['\uD83C\uDF88'] = 'balloon'; EM['\uD83E\uDD8B'] = 'butterfly';
-EM['\uD83C\uDF6A'] = 'cookie'; EM['\uD83C\uDF6C'] = 'candy';
-EM['\uD83D\uDC1F'] = 'fish'; EM['\uD83C\uDF81'] = 'gift';
-EM['\uD83C\uDF55'] = 'pizza'; EM['\uD83C\uDF66'] = 'icecream';
-EM['\uD83D\uDC25'] = 'chick'; EM['\uD83D\uDC23'] = 'egg';
-EM['\uD83D\uDC24'] = 'chick'; EM['\uD83D\uDC30'] = 'rabbit';
-EM['\uD83E\uDD8A'] = 'fox'; EM['\uD83D\uDC3C'] = 'panda';
-EM['\uD83D\uDC28'] = 'koala'; EM['\uD83E\uDD81'] = 'lion';
-EM['\uD83D\uDC2F'] = 'tiger'; EM['\uD83D\uDC3B'] = 'bear';
-EM['\uD83D\uDC32'] = 'dragon'; EM['\uD83E\uDD84'] = 'unicorn';
-EM['\uD83D\uDC09'] = 'dragon'; EM['\uD83D\uDC19'] = 'octopus';
-EM['\uD83D\uDC20'] = 'tropicalfish'; EM['\uD83E\uDD88'] = 'shark';
-EM['\uD83D\uDC51'] = 'crown'; EM['\uD83C\uDF1F'] = 'star';
-EM['\uD83D\uDC8E'] = 'diamond'; EM['\uD83D\uDE0B'] = 'cookie';
-EM['\uD83D\uDCA8'] = 'wind';
-
-function icon(key, size) {
-  var s = size || 'gi-md';
-  return '<span class="gi ' + s + '">' + (GI[key] || '') + '</span>';
-}
-
-function chToHTML(ch, size) {
-  var key = EM[ch];
-  if (key) return icon(key, size);
-  return ch;
-}
-
-function strToHTML(str, size) {
-  var r = '', chars = [...str];
-  for (var i = 0; i < chars.length; i++) {
-    if (chars[i].trim()) r += chToHTML(chars[i], size);
-  }
-  return r;
-}
-
-function renderIcons(str, size) {
-  return str.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uFE00-\uFE0F]/g, function(m) {
-    return chToHTML(m, size) || m;
-  });
-}
-
-// ====== 音效 ======
-var AudioCtx = window.AudioContext || window.webkitAudioContext;
-var audioCtx;
-function getAudioCtx() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
-function playSound(type) {
-  try {
-    var ctx = getAudioCtx();
-    if (type === 'correct') {
-      [523,659,784].forEach(function(f,i){
-        var o=ctx.createOscillator(),g=ctx.createGain();
-        o.connect(g);g.connect(ctx.destination);o.type='sine';
-        o.frequency.setValueAtTime(f,ctx.currentTime+i*0.1);
-        g.gain.setValueAtTime(0.3,ctx.currentTime+i*0.1);
-        g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+i*0.1+0.15);
-        o.start(ctx.currentTime+i*0.1);o.stop(ctx.currentTime+i*0.1+0.15);
-      });
-    } else if (type==='wrong') {
-      var o2=ctx.createOscillator(),g2=ctx.createGain();
-      o2.connect(g2);g2.connect(ctx.destination);o2.type='sawtooth';
-      o2.frequency.setValueAtTime(200,ctx.currentTime);
-      o2.frequency.setValueAtTime(150,ctx.currentTime+0.15);
-      g2.gain.setValueAtTime(0.2,ctx.currentTime);
-      g2.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.3);
-      o2.start(ctx.currentTime);o2.stop(ctx.currentTime+0.3);
-    } else if (type==='levelup') {
-      [523,587,659,698,784,880,988,1047].forEach(function(f,i){
-        var o3=ctx.createOscillator(),g3=ctx.createGain();
-        o3.connect(g3);g3.connect(ctx.destination);o3.type='sine';
-        o3.frequency.setValueAtTime(f,ctx.currentTime+i*0.1);
-        g3.gain.setValueAtTime(0.2,ctx.currentTime+i*0.1);
-        g3.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+i*0.1+0.15);
-        o3.start(ctx.currentTime+i*0.1);o3.stop(ctx.currentTime+i*0.1+0.15);
-      });
-    } else if (type==='click') {
-      var o4=ctx.createOscillator(),g4=ctx.createGain();
-      o4.connect(g4);g4.connect(ctx.destination);o4.type='sine';
-      o4.frequency.setValueAtTime(800,ctx.currentTime);
-      g4.gain.setValueAtTime(0.1,ctx.currentTime);
-      g4.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.05);
-      o4.start(ctx.currentTime);o4.stop(ctx.currentTime+0.05);
-    } else if (type==='appear') {
-      var o5=ctx.createOscillator(),g5=ctx.createGain();
-      o5.connect(g5);g5.connect(ctx.destination);o5.type='sine';
-      o5.frequency.setValueAtTime(600+Math.random()*400,ctx.currentTime);
-      g5.gain.setValueAtTime(0.15,ctx.currentTime);
-      g5.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.2);
-      o5.start(ctx.currentTime);o5.stop(ctx.currentTime+0.2);
-    }
-  } catch(e) {}
-}
-
-// ====== 学习数据 ======
-var LESSONS = {
-  add: [
-    { title:"什么是加法？", type:"concept", a:2, b:1,
-      text:'加法就是<span class="op">把东西合在一起</span>',
-      hint:"\uD83D\uDC46 看下面的苹果，把它们合起来！",
-      steps:[
-        { text:"小明有 <span class='big'>2</span> 个苹果", emoji:"\uD83C\uDF4E\uD83C\uDF4E" },
-        { text:"妈妈又给了 <span class='big'>1</span> 个", emoji:"\uD83C\uDF4E" },
-        { text:"合在一起数一数\u2026", emoji:"\uD83C\uDF4E\uD83C\uDF4E" },
-        { text:'<span class=\'big\'>2</span> <span class=\'op\'>+</span> <span class=\'big\'>1</span> <span class=\'op\'>=</span> <span class=\'result\'>3</span>', emoji:"\uD83C\uDF4E\uD83C\uDF4E\uD83C\uDF4E" }
-      ]
-    },
-    { title:"再来一例", type:"concept", a:3, b:2,
-      text:'3只小猫 <span class="op">加上</span> 2只小猫',
-      hint:"数一数一共有几只小猫？",
-      steps:[
-        { text:"院子里有 <span class='big'>3</span> 只小猫", emoji:"\uD83D\uDC31\uD83D\uDC31\uD83D\uDC31" },
-        { text:"又来了 <span class='big'>2</span> 只", emoji:"\uD83D\uDC31" },
-        { text:"一起数一数\u2026", emoji:"\uD83D\uDC31\uD83D\uDC31\uD83D\uDC31\uD83D\uDC31" },
-        { text:'<span class=\'big\'>3</span> <span class=\'op\'>+</span> <span class=\'big\'>2</span> <span class=\'op\'>=</span> <span class=\'result\'>5</span>', emoji:"\uD83D\uDC31\uD83D\uDC31" }
-      ]
-    },
-    { title:"你试试！", type:"practice", a:1, b:1,
-      text:'<span class=\'big\'>1</span> <span class=\'op\'>+</span> <span class=\'big\'>1</span> <span class=\'op\'>=</span> <span class=\'result\'>?</span>',
-      hint:"一个草莓加上一个草莓，一共几个？"
-    },
-    { title:"再试试！", type:"practice", a:2, b:3,
-      text:'<span class=\'big\'>2</span> <span class=\'op\'>+</span> <span class=\'big\'>3</span> <span class=\'op\'>=</span> <span class=\'result\'>?</span>',
-      hint:"数一数：\uD83C\uDF38 加上 \uD83C\uDF38\uD83C\uDF38 一共几朵？"
-    }
-  ],
-  sub: [
-    { title:"什么是减法？", type:"concept", a:3, b:1,
-      text:'减法就是<span class="op">拿走一部分</span>',
-      hint:"\uD83D\uDC46 看饼干被吃掉了几块！",
-      steps:[
-        { text:"盘子里有 <span class='big'>3</span> 块饼干", emoji:"\uD83C\uDF6A\uD83C\uDF6A" },
-        { text:"吃掉了 <span class='big'>1</span> 块", emoji:"\uD83D\uDE0B" },
-        { text:"还剩多少呢？", emoji:"\uD83C\uDF6A\uD83C\uDF6A" },
-        { text:'<span class=\'big\'>3</span> <span class=\'op\'>-</span> <span class=\'big\'>1</span> <span class=\'op\'>=</span> <span class=\'result\'>2</span>', emoji:"\uD83C\uDF6A" }
-      ]
-    },
-    { title:"再来一例", type:"concept", a:5, b:2,
-      text:'5个气球 <span class="op">飞走了</span> 2个',
-      hint:"数一数还剩几个气球？",
-      steps:[
-        { text:"手里有 <span class='big'>5</span> 个气球", emoji:"\uD83C\uDF88\uD83C\uDF88\uD83C\uDF88\uD83C\uDF88" },
-        { text:"飞走了 <span class='big'>2</span> 个", emoji:"\uD83D\uDCA8\uD83D\uDCA8" },
-        { text:"还剩几个呢？", emoji:"\uD83C\uDF88\uD83C\uDF88\uD83C\uDF88" },
-        { text:'<span class=\'big\'>5</span> <span class=\'op\'>-</span> <span class=\'big\'>2</span> <span class=\'op\'>=</span> <span class=\'result\'>3</span>', emoji:"\uD83C\uDF88\uD83C\uDF88" }
-      ]
-    },
-    { title:"你试试！", type:"practice", a:2, b:1,
-      text:'<span class=\'big\'>2</span> <span class=\'op\'>-</span> <span class=\'big\'>1</span> <span class=\'op\'>=</span> <span class=\'result\'>?</span>',
-      hint:"2颗糖果吃掉1颗，还剩几颗？"
-    },
-    { title:"再试试！", type:"practice", a:4, b:2,
-      text:'<span class=\'big\'>4</span> <span class=\'op\'>-</span> <span class=\'big\'>2</span> <span class=\'op\'>=</span> <span class=\'result\'>?</span>',
-      hint:"4只小鱼游走了2只，还剩几只？"
-    }
-  ]
-};
-
-// ====== 游戏数据 ======
-var LEVELS = [
-  { level:1, title:'数学小宝宝', xpNeeded:5, pets:['chick','','chick'] },
-  { level:2, title:'算术小能手', xpNeeded:10, pets:['rabbit','',''] },
-  { level:3, title:'计算小达人', xpNeeded:15, pets:['fox','','koala'] },
-  { level:4, title:'数学小天才', xpNeeded:20, pets:['lion','',''] },
-  { level:5, title:'超级算术王', xpNeeded:25, pets:['dragon','','dragon'] },
-  { level:6, title:'数学大冒险家', xpNeeded:30, pets:['octopus','',''] },
-  { level:7, title:'终极数学大师', xpNeeded:50, pets:['crown','','diamond'] },
-];
-
-var SCENES = {
-  add: ['apple','apple','cat','dog','flower','strawberry','balloon','butterfly'],
-  sub: ['cookie','candy','fish','gift','pizza','icecream']
-};
-
-var PRAISES = ['太棒了！','你好聪明！','答对啦！','好厉害！','真棒！','非常好！','天才！','666！','哇塞！','超厉害！','棒呆了！','无敌了！'];
-var WRONG_MSGS = ['差一点点哦！','再想想～','没关系！','接近了！','加油！','下次一定！'];
-
-// ====== 状态 ======
-var gameState = { mode:'add', xp:0, level:1, totalXp:0, combo:0, maxCombo:0, collection:[], currentAnswer:null, answered:false, totalCorrect:0 };
-var learnState = { type:'add', lessonIdx:0, stepIdx:0, answered:false };
-
-var homeScreen = document.getElementById('homeScreen');
-var learnScreen = document.getElementById('learnScreen');
-var gameScreen = document.getElementById('gameScreen');
-var learnVisual = document.getElementById('learnVisual');
-var learnText = document.getElementById('learnText');
-var learnHint = document.getElementById('learnHint');
-var learnNextBtn = document.getElementById('learnNextBtn');
-var learnProgress = document.getElementById('learnProgress');
-
-// ====== 页面切换 ======
-function showScreen(screen) {
-  homeScreen.style.display = 'none';
-  learnScreen.classList.remove('show');
-  gameScreen.classList.remove('show');
-  if (screen === 'home') homeScreen.style.display = 'block';
-  else screen.classList.add('show');
-}
-function goHome() { playSound('click'); showScreen('home'); }
-
-// ====== 初始化首页 ======
-function initHome() {
-  document.getElementById('homeCardAdd').innerHTML = icon('apple','gi-md') + ' <span style="font-size:32px;color:#e53935;font-weight:bold">+</span> ' + icon('apple','gi-md');
-  document.getElementById('homeCardSub').innerHTML = icon('cookie','gi-md') + ' <span style="font-size:32px;color:#e53935;font-weight:bold">-</span>';
-}
-
-// ====== 学习模式 ======
-function enterLearn(type) {
-  playSound('click');
-  learnState.type = type; learnState.lessonIdx = 0; learnState.stepIdx = 0; learnState.answered = false;
-  document.getElementById('learnTitle').textContent = type === 'add' ? '学习加法' : '学习减法';
-  showScreen(learnScreen);
-  renderLesson();
-}
-
-function renderLesson() {
-  var lessons = LESSONS[learnState.type];
-  var lesson = lessons[learnState.lessonIdx];
-  var totalSteps = lesson.steps ? lesson.steps.length : 1;
-  learnProgress.innerHTML = '';
-  for (var i = 0; i < totalSteps; i++) {
-    var dot = document.createElement('div');
-    dot.className = 'progress-dot';
-    if (i < learnState.stepIdx) dot.classList.add('done');
-    if (i === learnState.stepIdx) dot.classList.add('active');
-    learnProgress.appendChild(dot);
-  }
-  if (lesson.type === 'concept') renderConceptStep(lesson);
-  else renderPracticeStep(lesson);
-}
-
-function renderConceptStep(lesson) {
-  var step = lesson.steps[learnState.stepIdx];
-  var isLast = learnState.stepIdx >= lesson.steps.length - 1;
-  learnVisual.innerHTML = '';
-  var group = document.createElement('div');
-  group.className = 'learn-emoji-group';
-  var chars = [...step.emoji];
-  for (var i = 0; i < chars.length; i++) {
-    var span = document.createElement('span');
-    span.className = 'learn-emoji';
-    span.innerHTML = chToHTML(chars[i], 'gi-lg');
-    group.appendChild(span);
-    (function(s, idx) {
-      setTimeout(function() { s.classList.add('show'); playSound('appear'); }, idx * 300);
-    })(span, i);
-  }
-  learnVisual.appendChild(group);
-  learnText.innerHTML = step.text;
-  if (lesson.hint && learnState.stepIdx === 0) {
-    learnHint.style.display = 'block';
-    learnHint.innerHTML = renderIcons(lesson.hint, 'gi-sm');
-  } else {
-    learnHint.style.display = 'none';
-  }
-  learnNextBtn.textContent = isLast ? '下一课' : '下一个';
-  learnNextBtn.className = 'learn-nav-btn next';
-  learnNextBtn.onclick = learnNext;
-}
-
-function renderPracticeStep(lesson) {
-  learnState.answered = false;
-  var answer = lesson.a + (learnState.type === 'add' ? lesson.b : -lesson.b);
-  learnState.practiceAnswer = answer;
-  learnVisual.innerHTML = '';
-  var hintDiv = document.createElement('div');
-  hintDiv.style.cssText = 'font-size:35px; text-align:center; line-height:1.6;';
-  if (learnState.type === 'add') {
-    var eArr = ['strawberry','','','',''][learnState.lessonIdx % 5];
-    var html = '';
-    for (var i = 0; i < lesson.a; i++) html += icon(eArr, 'gi-md');
-    html += ' <span style="font-size:30px">+</span> ';
-    for (var i = 0; i < lesson.b; i++) html += icon(eArr, 'gi-md');
-    hintDiv.innerHTML = html;
-  } else {
-    var eArr2 = ['candy','','',''][learnState.lessonIdx % 4];
-    var html2 = '';
-    for (var i = 0; i < lesson.a; i++) html2 += icon(eArr2, 'gi-md');
-    hintDiv.innerHTML = html2;
-  }
-  learnVisual.appendChild(hintDiv);
-  learnText.innerHTML = lesson.text;
-  learnHint.style.display = 'block';
-  learnHint.innerHTML = renderIcons(lesson.hint, 'gi-sm');
-  var numpadDiv = document.createElement('div');
-  numpadDiv.className = 'numpad';
-  numpadDiv.style.marginTop = '15px';
-  var colors = ['#ff6b6b','#ffa726','#ffee58','#66bb6a','#42a5f5','#ab47bc','#26c6da','#ef5350','#ffa726','#ffee58','#66bb6a'];
-  for (var i = 0; i <= 10; i++) {
-    var btn = document.createElement('button');
-    btn.className = 'num-btn';
-    btn.textContent = i;
-    btn.style.height = '50px';
-    btn.style.fontSize = '22px';
-    btn.style.background = 'linear-gradient(145deg, ' + colors[i] + ', ' + darken(colors[i]) + ')';
-    (function(n, l, b) { btn.onclick = function() { checkLearnAnswer(n, l, b); }; })(i, lesson, btn);
-    numpadDiv.appendChild(btn);
-  }
-  learnVisual.appendChild(numpadDiv);
-  learnNextBtn.style.display = 'none';
-}
-
-function checkLearnAnswer(num, lesson, btn) {
-  if (learnState.answered) return;
-  if (num === learnState.practiceAnswer) {
-    learnState.answered = true;
-    playSound('correct');
-    btn.style.background = 'linear-gradient(145deg, #66bb6a, #2e7d32)';
-    var np = learnVisual.querySelector('.numpad');
-    if (np) np.style.display = 'none';
-    learnText.innerHTML = lesson.text.replace(/\?/g, '<span class="result">' + learnState.practiceAnswer + '</span>');
-    learnHint.innerHTML = '答对了！太棒了！';
-    learnHint.style.background = '#e8f5e9';
-    learnHint.style.color = '#2e7d32';
-    learnNextBtn.style.display = '';
-    learnNextBtn.textContent = learnState.lessonIdx < LESSONS[learnState.type].length - 1 ? '下一课' : '去闯关！';
-    learnNextBtn.className = learnState.lessonIdx < LESSONS[learnState.type].length - 1 ? 'learn-nav-btn next' : 'learn-nav-btn start-game';
-    learnNextBtn.onclick = function() {
-      if (learnState.lessonIdx >= LESSONS[learnState.type].length - 1) enterGame();
-      else learnNext();
-    };
-  } else {
-    playSound('wrong');
-    btn.style.background = 'linear-gradient(145deg, #ef5350, #c62828)';
-    btn.style.transform = 'scale(0.9)';
-    setTimeout(function() { btn.style.background = ''; btn.style.transform = ''; }, 500);
-    learnState.answered = true;
-    var np2 = learnVisual.querySelector('.numpad');
-    if (np2) np2.style.display = 'none';
-    learnHint.innerHTML = '不对哦，正确答案是 <strong>' + learnState.practiceAnswer + '</strong>，记住啦！';
-    learnHint.style.background = '#fff3e0';
-    learnHint.style.color = '#e65100';
-    learnNextBtn.style.display = '';
-    learnNextBtn.textContent = learnState.lessonIdx < LESSONS[learnState.type].length - 1 ? '下一课' : '去闯关！';
-    learnNextBtn.className = learnState.lessonIdx < LESSONS[learnState.type].length - 1 ? 'learn-nav-btn next' : 'learn-nav-btn start-game';
-    learnNextBtn.onclick = function() {
-      if (learnState.lessonIdx >= LESSONS[learnState.type].length - 1) enterGame();
-      else learnNext();
-    };
-  }
-}
-
-function learnNext() {
-  playSound('click');
-  var lessons = LESSONS[learnState.type];
-  var lesson = lessons[learnState.lessonIdx];
-  if (lesson.type === 'concept') {
-    if (learnState.stepIdx < lesson.steps.length - 1) { learnState.stepIdx++; renderLesson(); }
-    else if (learnState.lessonIdx < lessons.length - 1) { learnState.lessonIdx++; learnState.stepIdx = 0; renderLesson(); }
-  } else {
-    if (learnState.lessonIdx < lessons.length - 1) { learnState.lessonIdx++; learnState.stepIdx = 0; learnState.answered = false; learnNextBtn.style.display = ''; renderLesson(); }
-  }
-}
-
-function learnPrev() {
-  playSound('click');
-  var lessons = LESSONS[learnState.type];
-  var lesson = lessons[learnState.lessonIdx];
-  if (lesson.type === 'concept' && learnState.stepIdx > 0) { learnState.stepIdx--; renderLesson(); }
-  else if (lesson.type === 'concept' && learnState.stepIdx === 0 && learnState.lessonIdx > 0) {
-    learnState.lessonIdx--;
-    var prev = lessons[learnState.lessonIdx];
-    learnState.stepIdx = prev.steps ? prev.steps.length - 1 : 0;
-    learnState.answered = false; learnNextBtn.style.display = ''; renderLesson();
-  }
-  else if (lesson.type === 'practice' && learnState.lessonIdx > 0) {
-    learnState.lessonIdx--; learnState.stepIdx = 0; learnState.answered = false; learnNextBtn.style.display = ''; renderLesson();
-  }
-}
-
-// ====== 游戏模式 ======
-function enterGame() { playSound('click'); showScreen(gameScreen); initGame(); }
-
-function initGame() {
-  initStars(); initNumpad(); initCollectionBar(); generateQuestion(); updateDisplay();
-  var chips = document.querySelectorAll('.mode-chip');
-  for (var i = 0; i < chips.length; i++) {
-    (function(btn) {
-      var nb = btn.cloneNode(true);
-      btn.parentNode.replaceChild(nb, btn);
-      nb.onclick = function() {
-        playSound('click');
-        document.querySelectorAll('.mode-chip').forEach(function(b){b.classList.remove('active');});
-        nb.classList.add('active');
-        gameState.mode = nb.dataset.mode;
-        gameState.combo = 0;
-        document.getElementById('comboDisplay').textContent = '';
-        generateQuestion();
-      };
-    })(chips[i]);
-  }
-}
-
-function initStars() {
-  var c = document.getElementById('starsBg');
-  if (c.children.length > 0) return;
-  for (var i = 0; i < 30; i++) {
-    var s = document.createElement('div');
-    s.className = 'star-particle';
-    s.style.left = Math.random()*100+'%';
-    s.style.top = Math.random()*100+'%';
-    s.style.animationDelay = Math.random()*2+'s';
-    c.appendChild(s);
-  }
-}
-
-function initNumpad() {
-  var el = document.getElementById('numpad');
-  if (el.children.length > 0) return;
-  var colors = ['#ff6b6b','#ffa726','#ffee58','#66bb6a','#42a5f5','#ab47bc','#26c6da','#ef5350','#ffa726','#ffee58','#66bb6a'];
-  for (var i = 0; i <= 10; i++) {
-    var btn = document.createElement('button');
-    btn.className = 'num-btn';
-    btn.textContent = i;
-    btn.style.background = 'linear-gradient(145deg, ' + colors[i] + ', ' + darken(colors[i]) + ')';
-    (function(n){ btn.onclick = function(){ checkAnswer(n); }; })(i);
-    el.appendChild(btn);
-  }
-}
-
-function darken(c) { return c.replace(/[a-f0-9]{2}$/gi, function(m){return Math.max(0,parseInt(m,16)-40).toString(16).padStart(2,'0');}); }
-
-function initCollectionBar() {
-  var el = document.getElementById('collectionBar');
-  el.innerHTML = '';
-  for (var i = 0; i < gameState.collection.length; i++) {
-    var slot = document.createElement('div');
-    slot.className = 'pet-slot';
-    slot.innerHTML = icon(gameState.collection[i], 'gi-sm');
-    el.appendChild(slot);
-  }
-  for (var j = gameState.collection.length; j < Math.min(20, gameState.collection.length+3); j++) {
-    var slot2 = document.createElement('div');
-    slot2.className = 'pet-slot empty';
-    slot2.textContent = '?';
-    el.appendChild(slot2);
-  }
-}
-
-function generateQuestion() {
-  gameState.answered = false;
-  document.getElementById('feedback').textContent = '';
-  document.getElementById('feedback').style.color = '';
-  var mode = gameState.mode;
-  if (mode === 'mix') mode = Math.random() < 0.5 ? 'add' : 'sub';
-  var maxNum = gameState.level >= 5 ? 10 : gameState.level >= 3 ? 8 : 5;
-  var a, b, answer, op;
-  if (mode === 'add') { a = Math.floor(Math.random()*(maxNum+1)); b = Math.floor(Math.random()*(maxNum+1-a)); answer = a+b; op = '+'; }
-  else { a = Math.floor(Math.random()*(maxNum+1)); b = Math.floor(Math.random()*(a+1)); answer = a-b; op = '-'; }
-  gameState.currentAnswer = answer;
-  var sceneList = SCENES[mode];
-  var sceneKey = sceneList[Math.floor(Math.random()*sceneList.length)];
-  var iconStr = icon(sceneKey, 'gi-md');
-  if (op === '+') {
-    var html = '';
-    for (var i = 0; i < a; i++) html += iconStr;
-    html += ' <span style="font-size:36px">+</span> ';
-    for (var i = 0; i < b; i++) html += iconStr;
-    document.getElementById('sceneEmoji').innerHTML = html;
-  } else {
-    var remaining = a - b;
-    var html2 = '';
-    for (var i = 0; i < remaining; i++) html2 += iconStr;
-    if (b > 0) {
-      var crossed = '';
-      for (var i = 0; i < b; i++) crossed += iconStr;
-      html2 += '<span style="opacity:0.35;text-decoration:line-through">' + crossed + '</span>' + icon('wind', 'gi-sm');
-    }
-    document.getElementById('sceneEmoji').innerHTML = html2;
-  }
-  document.getElementById('equation').innerHTML = '<div class="num">'+a+'</div><div class="op">'+op+'</div><div class="num">'+b+'</div><div class="equals">=</div><div class="answer-box" id="answerBox">?</div>';
-}
-
-function checkAnswer(num) {
-  if (gameState.answered) return;
-  gameState.answered = true;
-  var box = document.getElementById('answerBox');
-  box.textContent = num;
-  if (num === gameState.currentAnswer) {
-    gameState.totalCorrect++; gameState.combo++;
-    if (gameState.combo > gameState.maxCombo) gameState.maxCombo = gameState.combo;
-    box.classList.add('correct'); playSound('correct');
-    var xpGain = 1 + Math.floor(gameState.combo / 3);
-    gameState.xp += xpGain; gameState.totalXp += xpGain;
-    document.getElementById('feedback').textContent = PRAISES[Math.floor(Math.random()*PRAISES.length)];
-    document.getElementById('feedback').style.color = '#4caf50';
-    if (gameState.combo >= 3) document.getElementById('comboDisplay').textContent = '连击 x' + gameState.combo + '！';
-    var levelData = LEVELS.find(function(l){return l.level===gameState.level;}) || LEVELS[LEVELS.length-1];
-    if (gameState.totalCorrect % 3 === 0) {
-      var pet = levelData.pets[Math.floor(Math.random()*levelData.pets.length)];
-      gameState.collection.push(pet);
-      setTimeout(function(){ spawnEmojiRain(pet); }, 300);
-    }
-    if (gameState.combo >= 5) createFireworks();
-    updateDisplay();
-    var nextLevel = LEVELS.find(function(l){return l.level===gameState.level+1;});
-    var curLevel = LEVELS.find(function(l){return l.level===gameState.level;}) || LEVELS[0];
-    if (gameState.xp >= curLevel.xpNeeded && nextLevel) { gameState.level++; gameState.xp = 0; setTimeout(function(){ showLevelUp(nextLevel); }, 800); }
-    setTimeout(generateQuestion, 1500);
-  } else {
-    gameState.combo = 0;
-    document.getElementById('comboDisplay').textContent = '';
-    box.classList.add('wrong'); playSound('wrong');
-    document.getElementById('feedback').textContent = WRONG_MSGS[Math.floor(Math.random()*WRONG_MSGS.length)] + ' 答案是 ' + gameState.currentAnswer;
-    document.getElementById('feedback').style.color = '#f44336';
-    updateDisplay();
-    setTimeout(function(){
-      box.classList.remove('wrong'); gameState.answered = false; box.textContent = '?';
-      document.getElementById('feedback').textContent = '再试试看！';
-      document.getElementById('feedback').style.color = '#ff9800';
-    }, 2500);
-  }
-}
-
-function updateDisplay() {
-  var cur = LEVELS.find(function(l){return l.level===gameState.level;}) || LEVELS[0];
-  document.getElementById('xpFill').style.width = Math.min(100, (gameState.xp / cur.xpNeeded) * 100) + '%';
-  document.getElementById('levelDisplay').textContent = 'Lv.' + gameState.level;
-  document.getElementById('scoreDisplay').textContent = gameState.totalXp;
-  initCollectionBar();
-}
-
-function showLevelUp(lv) {
-  playSound('levelup');
-  document.getElementById('levelupTitle').textContent = '升级到 Lv.' + lv.level + '！';
-  document.getElementById('levelupNewTitle').textContent = '称号：' + lv.title;
-  document.getElementById('levelupModal').classList.add('show');
-  createFireworks();
-}
-function closeLevelUp() { document.getElementById('levelupModal').classList.remove('show'); playSound('click'); }
-
-function createFireworks() {
-  var colors = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff6f00','#ab47bc'];
-  for (var f = 0; f < 3; f++) {
-    (function(ff){
-      setTimeout(function(){
-        var cx = Math.random()*window.innerWidth;
-        var cy = Math.random()*(window.innerHeight/2);
-        for (var i = 0; i < 15; i++) {
-          var p = document.createElement('div');
-          p.className = 'firework-particle';
-          p.style.left = cx+'px'; p.style.top = cy+'px';
-          p.style.background = colors[Math.floor(Math.random()*colors.length)];
-          var angle = (Math.PI*2/15)*i;
-          var dist = 80 + Math.random()*60;
-          p.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+Math.cos(angle)*dist+'px,'+Math.sin(angle)*dist+'px) scale(0)',opacity:0}],{duration:1000,easing:'ease-out',fill:'forwards'});
-          document.getElementById('fireworks').appendChild(p);
-          setTimeout(function(){p.remove();}, 1000);
-        }
-      }, ff*300);
-    })(f);
-  }
-}
-
-function spawnEmojiRain(key) {
-  for (var i = 0; i < 8; i++) {
-    (function(ii){
-      setTimeout(function(){
-        var el = document.createElement('div');
-        el.className = 'emoji-rain';
-        el.innerHTML = icon(key, 'gi-md');
-        el.style.left = Math.random()*90+5+'%';
-        document.body.appendChild(el);
-        setTimeout(function(){el.remove();}, 2000);
-      }, ii*100);
-    })(i);
-  }
-}
-
-// 启动
-showScreen('home');
-initStars();
-initNumpad();
-initHome();
+var GI={};
+GI.apple='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="40" rx="20" ry="18" fill="#e53935"/><ellipse cx="26" cy="38" rx="6" ry="8" fill="#ef5350" opacity=".5"/><path d="M32 22 Q34 14 40 16" stroke="#4caf50" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="38" cy="16" rx="6" ry="4" fill="#4caf50" transform="rotate(-20 38 16)"/></svg>';
+GI.strawberry='<svg class="gi" viewBox="0 0 64 64"><path d="M32 18C20 18 14 30 14 40C14 52 22 60 32 60C42 60 50 52 50 40C50 30 44 18 32 18Z" fill="#e53935"/><circle cx="26" cy="38" r="1.5" fill="#ffeb3b" opacity=".8"/><circle cx="34" cy="36" r="1.5" fill="#ffeb3b" opacity=".8"/><circle cx="30" cy="44" r="1.5" fill="#ffeb3b" opacity=".8"/><circle cx="38" cy="42" r="1.5" fill="#ffeb3b" opacity=".8"/><path d="M32 18L28 10L32 14L36 10Z" fill="#4caf50"/></svg>';
+GI.flower='<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="24" r="8" fill="#e91e63" opacity=".9"/><circle cx="24" cy="32" r="8" fill="#e91e63" opacity=".9"/><circle cx="40" cy="32" r="8" fill="#e91e63" opacity=".9"/><circle cx="26" cy="22" r="8" fill="#f06292" opacity=".9"/><circle cx="38" cy="22" r="8" fill="#f06292" opacity=".9"/><circle cx="32" cy="30" r="6" fill="#ffeb3b"/></svg>';
+GI.cat='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="40" rx="18" ry="16" fill="#ff9800"/><polygon points="18,28 14,14 26,24" fill="#ff9800"/><polygon points="46,28 50,14 38,24" fill="#ff9800"/><circle cx="26" cy="36" r="3" fill="#333"/><circle cx="38" cy="36" r="3" fill="#333"/><ellipse cx="32" cy="42" rx="3" ry="2" fill="#ff5722"/></svg>';
+GI.dog='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="18" ry="14" fill="#8d6e63"/><ellipse cx="18" cy="30" rx="8" ry="14" fill="#8d6e63" transform="rotate(-10 18 30)"/><ellipse cx="46" cy="30" rx="8" ry="14" fill="#8d6e63" transform="rotate(10 46 30)"/><circle cx="26" cy="38" r="3" fill="#333"/><circle cx="38" cy="38" r="3" fill="#333"/><ellipse cx="32" cy="46" rx="5" ry="3" fill="#333"/></svg>';
+GI.butterfly='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="22" cy="28" rx="14" ry="16" fill="#ab47bc" opacity=".8"/><ellipse cx="42" cy="28" rx="14" ry="16" fill="#ab47bc" opacity=".8"/><ellipse cx="20" cy="44" rx="10" ry="10" fill="#ce93d8" opacity=".7"/><ellipse cx="44" cy="44" rx="10" ry="10" fill="#ce93d8" opacity=".7"/><ellipse cx="32" cy="38" rx="2" ry="16" fill="#4a148c"/></svg>';
+GI.balloon='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="30" rx="16" ry="20" fill="#42a5f5"/><ellipse cx="28" cy="26" rx="4" ry="6" fill="#90caf9" opacity=".5"/><polygon points="30,48 32,52 34,48" fill="#42a5f5"/><line x1="32" y1="52" x2="32" y2="62" stroke="#90caf9" stroke-width="1"/></svg>';
+GI.cookie='<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="34" r="20" fill="#d4a574"/><circle cx="24" cy="28" r="4" fill="#5d4037"/><circle cx="36" cy="26" r="3" fill="#5d4037"/><circle cx="30" cy="40" r="3.5" fill="#5d4037"/><circle cx="40" cy="36" r="3" fill="#5d4037"/></svg>';
+GI.candy='<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="32" r="16" fill="#e91e63"/><circle cx="28" cy="28" r="4" fill="#f48fb1" opacity=".6"/><path d="M16 32Q8 24 4 16" stroke="#e91e63" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M48 32Q56 24 60 16" stroke="#e91e63" stroke-width="3" fill="none" stroke-linecap="round"/></svg>';
+GI.fish='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="30" cy="34" rx="20" ry="14" fill="#26a69a"/><polygon points="50,34 62,24 62,44" fill="#26a69a"/><circle cx="22" cy="30" r="3" fill="#333"/><circle cx="22" cy="30" r="1" fill="#fff"/></svg>';
+GI.gift='<svg class="gi" viewBox="0 0 64 64"><rect x="14" y="30" width="36" height="26" rx="3" fill="#7b1fa2"/><rect x="12" y="26" width="40" height="8" rx="2" fill="#9c27b0"/><rect x="29" y="26" width="6" height="30" fill="#e1bee7"/><ellipse cx="26" cy="24" rx="8" ry="6" fill="#e91e63"/><ellipse cx="38" cy="24" rx="8" ry="6" fill="#e91e63"/></svg>';
+GI.pizza='<svg class="gi" viewBox="0 0 64 64"><path d="M14 50L32 10L50 50Z" fill="#ffcc02"/><circle cx="28" cy="36" r="4" fill="#e53935"/><circle cx="36" cy="38" r="3" fill="#e53935"/><circle cx="32" cy="44" r="3.5" fill="#e53935"/></svg>';
+GI.icecream='<svg class="gi" viewBox="0 0 64 64"><polygon points="24,40 40,40 32,60" fill="#d4a574"/><circle cx="32" cy="22" r="14" fill="#f48fb1"/><circle cx="32" cy="8" r="8" fill="#f48fb1"/></svg>';
+GI.chick='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="38" rx="16" ry="14" fill="#ffeb3b"/><circle cx="32" cy="24" r="12" fill="#ffeb3b"/><circle cx="28" cy="22" r="2.5" fill="#333"/><circle cx="36" cy="22" r="2.5" fill="#333"/><polygon points="30,26 34,26 32,30" fill="#ff9800"/></svg>';
+GI.egg='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="38" rx="18" ry="20" fill="#fff9c4"/><ellipse cx="32" cy="38" rx="16" ry="18" fill="#fff176"/></svg>';
+GI.rabbit='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="44" rx="18" ry="14" fill="#f5f5f5"/><ellipse cx="24" cy="14" rx="6" ry="16" fill="#f5f5f5" transform="rotate(-5 24 14)"/><ellipse cx="40" cy="14" rx="6" ry="16" fill="#f5f5f5" transform="rotate(5 40 14)"/><circle cx="26" cy="40" r="3" fill="#333"/><circle cx="38" cy="40" r="3" fill="#333"/><ellipse cx="32" cy="46" rx="2" ry="1.5" fill="#f48fb1"/></svg>';
+GI.fox='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="16" ry="12" fill="#ff9800"/><circle cx="32" cy="30" r="14" fill="#ff9800"/><polygon points="20,20 14,8 28,18" fill="#ff9800"/><polygon points="44,20 50,8 36,18" fill="#ff9800"/><circle cx="26" cy="28" r="2.5" fill="#333"/><circle cx="38" cy="28" r="2.5" fill="#333"/></svg>';
+GI.panda='<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="36" r="18" fill="#f5f5f5"/><circle cx="18" cy="22" r="8" fill="#333"/><circle cx="46" cy="22" r="8" fill="#333"/><ellipse cx="24" cy="32" rx="7" ry="6" fill="#333"/><ellipse cx="40" cy="32" rx="7" ry="6" fill="#333"/><circle cx="24" cy="32" r="2" fill="#fff"/><circle cx="40" cy="32" r="2" fill="#fff"/><ellipse cx="32" cy="40" rx="3" ry="2" fill="#333"/></svg>';
+GI.koala='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="16" ry="14" fill="#9e9e9e"/><circle cx="32" cy="28" r="16" fill="#bdbdbd"/><circle cx="16" cy="22" r="8" fill="#9e9e9e"/><circle cx="16" cy="22" r="4" fill="#e0e0e0"/><circle cx="48" cy="22" r="8" fill="#9e9e9e"/><circle cx="48" cy="22" r="4" fill="#e0e0e0"/><ellipse cx="26" cy="26" rx="4" ry="3" fill="#333"/><ellipse cx="38" cy="26" rx="4" ry="3" fill="#333"/></svg>';
+GI.lion='<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="32" r="20" fill="#ffcc02"/><circle cx="32" cy="34" r="14" fill="#ffe082"/><circle cx="26" cy="30" r="2.5" fill="#333"/><circle cx="38" cy="30" r="2.5" fill="#333"/><ellipse cx="32" cy="38" rx="3" ry="2" fill="#333"/></svg>';
+GI.tiger='<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="34" r="18" fill="#ff9800"/><circle cx="32" cy="36" r="12" fill="#ffe0b2"/><circle cx="26" cy="32" r="2.5" fill="#333"/><circle cx="38" cy="32" r="2.5" fill="#333"/><ellipse cx="32" cy="40" rx="3" ry="2" fill="#333"/></svg>';
+GI.bear='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="18" ry="14" fill="#8d6e63"/><circle cx="32" cy="28" r="16" fill="#8d6e63"/><circle cx="18" cy="16" r="7" fill="#8d6e63"/><circle cx="46" cy="16" r="7" fill="#8d6e63"/><circle cx="26" cy="26" r="3" fill="#333"/><circle cx="38" cy="26" r="3" fill="#333"/><ellipse cx="32" cy="34" rx="6" ry="4" fill="#d7ccc8"/></svg>';
+GI.dragon='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="40" rx="16" ry="14" fill="#4caf50"/><circle cx="32" cy="26" r="14" fill="#4caf50"/><circle cx="26" cy="24" r="4" fill="#fff"/><circle cx="26" cy="24" r="2" fill="#333"/><circle cx="38" cy="24" r="4" fill="#fff"/><circle cx="38" cy="24" r="2" fill="#333"/></svg>';
+GI.unicorn='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="16" ry="14" fill="#f8f8f8"/><circle cx="32" cy="26" r="14" fill="#f8f8f8"/><circle cx="26" cy="24" r="3" fill="#333"/><circle cx="38" cy="24" r="3" fill="#333"/><ellipse cx="32" cy="32" rx="2" ry="1.5" fill="#f48fb1"/><polygon points="32,8 28,20 36,20" fill="#ffd740"/></svg>';
+GI.octopus='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="26" rx="18" ry="16" fill="#ab47bc"/><circle cx="24" cy="24" r="4" fill="#fff"/><circle cx="40" cy="24" r="4" fill="#fff"/><circle cx="24" cy="24" r="2" fill="#333"/><circle cx="40" cy="24" r="2" fill="#333"/></svg>';
+GI.shark='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="30" cy="34" rx="22" ry="14" fill="#78909c"/><polygon points="52,34 62,28 62,40" fill="#78909c"/><circle cx="22" cy="30" r="3" fill="#333"/></svg>';
+GI.tropicalfish='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="28" cy="34" rx="18" ry="12" fill="#ff7043"/><polygon points="46,34 58,26 58,42" fill="#ff7043"/><circle cx="20" cy="30" r="3" fill="#333"/><circle cx="20" cy="30" r="1" fill="#fff"/></svg>';
+GI.star='<svg class="gi" viewBox="0 0 64 64"><polygon points="32,8 38,24 56,24 42,36 46,54 32,44 18,54 22,36 8,24 26,24" fill="#ffd740"/></svg>';
+GI.crown='<svg class="gi" viewBox="0 0 64 64"><path d="M10 44L14 20L24 32L32 14L40 32L50 20L54 44Z" fill="#ffd740"/><rect x="10" y="44" width="44" height="8" rx="2" fill="#ffab00"/></svg>';
+GI.diamond='<svg class="gi" viewBox="0 0 64 64"><polygon points="32,8 52,24 32,56 12,24" fill="#29b6f6"/><polygon points="32,8 52,24 32,28" fill="#4fc3f7"/></svg>';
+GI.wind='<svg class="gi" viewBox="0 0 64 64"><path d="M8 32Q20 20 32 32Q44 44 56 32" stroke="#90a4ae" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M16 24Q28 16 40 24" stroke="#b0bec5" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/></svg>';
+var EM={};
+EM['\uD83C\uDF4E']='apple';EM['\uD83C\uDF4A']='apple';EM['\uD83D\uDC31']='cat';EM['\uD83D\uDC36']='dog';
+EM['\uD83C\uDF38']='flower';EM['\uD83C\uDF53']='strawberry';EM['\uD83C\uDF88']='balloon';EM['\uD83E\uDD8B']='butterfly';
+EM['\uD83C\uDF6A']='cookie';EM['\uD83C\uDF6C']='candy';EM['\uD83D\uDC1F']='fish';EM['\uD83C\uDF81']='gift';
+EM['\uD83C\uDF55']='pizza';EM['\uD83C\uDF66']='icecream';EM['\uD83D\uDC25']='chick';EM['\uD83D\uDC23']='egg';
+EM['\uD83D\uDC24']='chick';EM['\uD83D\uDC30']='rabbit';EM['\uD83E\uDD8A']='fox';EM['\uD83D\uDC3C']='panda';
+EM['\uD83D\uDC28']='koala';EM['\uD83E\uDD81']='lion';EM['\uD83D\uDC2F']='tiger';EM['\uD83D\uDC3B']='bear';
+EM['\uD83D\uDC32']='dragon';EM['\uD83E\uDD84']='unicorn';EM['\uD83D\uDC09']='dragon';EM['\uD83D\uDC19']='octopus';
+EM['\uD83D\uDC20']='tropicalfish';EM['\uD83E\uDD88']='shark';EM['\uD83D\uDC51']='crown';EM['\uD83C\uDF1F']='star';
+EM['\uD83D\uDC8E']='diamond';EM['\uD83D\uDE0B']='cookie';EM['\uD83D\uDCA8']='wind';EM['\uD83D\uDC46']='';
+function icon(k,s){var sz=s||'gm';return '<span class="gi '+sz+'">'+(GI[k]||'')+'</span>';}
+function c2h(ch,sz){var k=EM[ch];if(k&&GI[k])return icon(k,sz);if(k==='')return '';return ch;}
+function s2h(str,sz){var r='',c=[...str];for(var i=0;i<c.length;i++){if(c[i].trim())r+=c2h(c[i],sz);}return r;}
+function rI(str,sz){return str.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uFE00-\uFE0F]/g,function(m){return c2h(m,sz)||m;});}
+var AC=window.AudioContext||window.webkitAudioContext,ax;
+function gA(){if(!ax)ax=new AC();return ax;}
+function pS(t){try{var c=gA();if(t==='correct'){[523,659,784].forEach(function(f,i){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(f,c.currentTime+i*.1);g.gain.setValueAtTime(.3,c.currentTime+i*.1);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+i*.1+.15);o.start(c.currentTime+i*.1);o.stop(c.currentTime+i*.1+.15);});}else if(t==='wrong'){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sawtooth';o.frequency.setValueAtTime(200,c.currentTime);o.frequency.setValueAtTime(150,c.currentTime+.15);g.gain.setValueAtTime(.2,c.currentTime);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+.3);o.start(c.currentTime);o.stop(c.currentTime+.3);}else if(t==='levelup'){[523,587,659,698,784,880,988,1047].forEach(function(f,i){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(f,c.currentTime+i*.1);g.gain.setValueAtTime(.2,c.currentTime+i*.1);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+i*.1+.15);o.start(c.currentTime+i*.1);o.stop(c.currentTime+i*.1+.15);});}else if(t==='click'){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(800,c.currentTime);g.gain.setValueAtTime(.1,c.currentTime);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+.05);o.start(c.currentTime);o.stop(c.currentTime+.05);}else if(t==='appear'){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(600+Math.random()*400,c.currentTime);g.gain.setValueAtTime(.15,c.currentTime);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+.2);o.start(c.currentTime);o.stop(c.currentTime+.2);}}catch(e){}}
+var _A='\uD83C\uDF4E',_C='\uD83D\uDC31',_S='\uD83C\uDF53',_F='\uD83C\uDF38',_K='\uD83C\uDF6A',_B='\uD83C\uDF88',_W='\uD83D\uDCA8',_N='\uD83C\uDF6C',_I='\uD83D\uDC1F',_E='\uD83D\uDE0B';
+var LS={add:[
+{title:"What is Addition?",type:"concept",a:2,b:1,text:'Addition means <span class="op">putting things together</span>',hint:"\uD83D\uDC46 Look at the apples below!",steps:[{text:"Xiao Ming has <span class='big'>2</span> apples",emoji:_A+_A},{text:"Mom gives <span class='big'>1</span> more",emoji:_A},{text:"Count them all together...",emoji:_A+_A+_A},{text:'<span class=\'big\'>2</span> <span class=\'op\'>+</span> <span class=\'big\'>1</span> <span class=\'op\'>=</span> <span class=\'res\'>3</span>',emoji:_A+_A+_A}]},
+{title:"Another Example",type:"concept",a:3,b:2,text:'3 kittens <span class="op">plus</span> 2 kittens',hint:"How many kittens total?",steps:[{text:"<span class='big'>3</span> kittens in yard",emoji:_C+_C+_C},{text:"<span class='big'>2</span> more come",emoji:_C+_C},{text:"Count them all...",emoji:_C+_C+_C+_C+_C},{text:'<span class=\'big\'>3</span> <span class=\'op\'>+</span> <span class=\'big\'>2</span> <span class=\'op\'>=</span> <span class=\'res\'>5</span>',emoji:_C+_C+_C+_C+_C}]},
+{title:"Your Turn!",type:"practice",a:1,b:1,text:'<span class=\'big\'>1</span> <span class=\'op\'>+</span> <span class=\'big\'>1</span> <span class=\'op\'>=</span> <span class=\'res\'>?</span>',hint:"One strawberry + one = ?"},
+{title:"Try Again!",type:"practice",a:2,b:3,text:'<span class=\'big\'>2</span> <span class=\'op\'>+</span> <span class=\'big\'>3</span> <span class=\'op\'>=</span> <span class=\'res\'>?</span>',hint:_F+_F+" + "+_F+_F+_F+" = ?"}
+],sub:[
+{title:"What is Subtraction?",type:"concept",a:3,b:1,text:'Subtraction means <span class="op">taking some away</span>',hint:"\uD83D\uDC46 See how many eaten!",steps:[{text:"<span class='big'>3</span> cookies on plate",emoji:_K+_K+_K},{text:"Ate <span class='big'>1</span>",emoji:_E},{text:"How many left?",emoji:_K+_K},{text:'<span class=\'big\'>3</span> <span class=\'op\'>-</span> <span class=\'big\'>1</span> <span class=\'op\'>=</span> <span class=\'res\'>2</span>',emoji:_K+_K}]},
+{title:"Another Example",type:"concept",a:5,b:2,text:'5 balloons, <span class="op">2 flew away</span>',hint:"How many left?",steps:[{text:"You have <span class='big'>5</span> balloons",emoji:_B+_B+_B+_B+_B},{text:"<span class='big'>2</span> flew away",emoji:_W+_W},{text:"How many left?",emoji:_B+_B+_B},{text:'<span class=\'big\'>5</span> <span class=\'op\'>-</span> <span class=\'big\'>2</span> <span class=\'op\'>=</span> <span class=\'res\'>3</span>',emoji:_B+_B+_B}]},
+{title:"Your Turn!",type:"practice",a:2,b:1,text:'<span class=\'big\'>2</span> <span class=\'op\'>-</span> <span class=\'big\'>1</span> <span class=\'op\'>=</span> <span class=\'res\'>?</span>',hint:"2 candies, eat 1, left?"},
+{title:"Try Again!",type:"practice",a:4,b:2,text:'<span class=\'big\'>4</span> <span class=\'op\'>-</span> <span class=\'big\'>2</span> <span class=\'op\'>=</span> <span class=\'res\'>?</span>',hint:"4 fish, 2 swam away, left?"}
+]};
+var LVS=[{l:1,t:'Math Baby',x:5,p:['chick','','chick']},{l:2,t:'Counting Pro',x:10,p:['rabbit','','']},{l:3,t:'Math Whiz',x:15,p:['fox','','koala']},{l:4,t:'Math Genius',x:20,p:['lion','','']},{l:5,t:'Super Math King',x:25,p:['dragon','','dragon']},{l:6,t:'Math Explorer',x:30,p:['octopus','','']},{l:7,t:'Ultimate Master',x:50,p:['crown','','diamond']}];
+var SC={add:['apple','apple','cat','dog','flower','strawberry','balloon','butterfly'],sub:['cookie','candy','fish','gift','pizza','icecream']};
+var PR=['Awesome!','So smart!','Correct!','Amazing!','Great!','Perfect!','Genius!','Cool!','Wow!','Super!','Fantastic!','Unstoppable!'];
+var WR=['So close!','Think again~','No worries!','Almost!','Keep trying!','Next time!'];
+var G={mode:'add',xp:0,lv:1,tx:0,co:0,mx:0,cl:[],ca:null,an:false,tc:0};
+var LR={type:'add',li:0,si:0,an:false};
+var hs=document.getElementById('hs'),ls=document.getElementById('ls'),gss=document.getElementById('gss');
+var lv2=document.getElementById('lv2'),ltx=document.getElementById('ltx'),lh=document.getElementById('lh'),lnb2=document.getElementById('lnb2'),lp=document.getElementById('lp');
+function sS(s){hs.style.display='none';ls.classList.remove('sh');gss.classList.remove('sh');if(s==='home')hs.style.display='block';else s.classList.add('sh');}
+function gH(){pS('click');sS('home');}
+function iH(){document.getElementById('hca').innerHTML=icon('apple','gm')+' <span style="font-size:32px;color:#e53935;font-weight:bold">+</span> '+icon('apple','gm');document.getElementById('hcs').innerHTML=icon('cookie','gm')+' <span style="font-size:32px;color:#e53935;font-weight:bold">-</span>';}
+function eL(t){pS('click');LR.type=t;LR.li=0;LR.si=0;LR.an=false;document.getElementById('ltt').textContent=t==='add'?'Learn Addition':'Learn Subtraction';sS(ls);rL();}
+function rL(){var ls=LS[LR.type],le=ls[LR.li],ts=le.steps?le.steps.length:1;lp.innerHTML='';for(var i=0;i<ts;i++){var d=document.createElement('div');d.className='pd';if(i<LR.si)d.classList.add('dn');if(i===LR.si)d.classList.add('ac');lp.appendChild(d);}if(le.type==='concept')rCS(le);else rPS(le);}
+function rCS(le){var st=le.steps[LR.si],il=LR.si>=le.steps.length-1;lv2.innerHTML='';var g=document.createElement('div');g.className='lg';var ch=[...st.emoji];for(var i=0;i<ch.length;i++){var sp=document.createElement('span');sp.className='le';sp.innerHTML=c2h(ch[i],'gl');g.appendChild(sp);(function(s,idx){setTimeout(function(){s.classList.add('sh');pS('appear');},idx*300);})(sp,i);}lv2.appendChild(g);ltx.innerHTML=st.text;if(le.hint&&LR.si===0){lh.style.display='block';lh.innerHTML=rI(le.hint,'gs2');}else{lh.style.display='none';}lnb2.textContent=il?'Next Lesson':'Next';lnb2.className='lnb next';lnb2.onclick=lN;}
+function rPS(le){LR.an=false;var ans=le.a+(LR.type==='add'?le.b:-le.b);LR.pa=ans;lv2.innerHTML='';var h=document.createElement('div');h.style.cssText='font-size:35px;text-align:center;line-height:1.6;';if(LR.type==='add'){var ea=['strawberry','','','',''][LR.li%5],html='';for(var i=0;i<le.a;i++)html+=icon(ea,'gm');html+=' <span style="font-size:30px">+</span> ';for(var i=0;i<le.b;i++)html+=icon(ea,'gm');h.innerHTML=html;}else{var ea2=['candy','','',''][LR.li%4],html2='';for(var i=0;i<le.a;i++)html2+=icon(ea2,'gm');h.innerHTML=html2;}lv2.appendChild(h);ltx.innerHTML=le.text;lh.style.display='block';lh.innerHTML=rI(le.hint,'gs2');var np=document.createElement('div');np.className='np';np.style.marginTop='15px';var cs=['#ff6b6b','#ffa726','#ffee58','#66bb6a','#42a5f5','#ab47bc','#26c6da','#ef5350','#ffa726','#ffee58','#66bb6a'];for(var i=0;i<=10;i++){var b=document.createElement('button');b.className='nb';b.textContent=i;b.style.height='50px';b.style.fontSize='22px';b.style.background='linear-gradient(145deg,'+cs[i]+','+dk(cs[i])+')';(function(n,l,bb){b.onclick=function(){cLA(n,l,bb);};})(i,le,b);np.appendChild(b);}lv2.appendChild(np);lnb2.style.display='none';}
+function dk(c){return c.replace(/[a-f0-9]{2}$/gi,function(m){return Math.max(0,parseInt(m,16)-40).toString(16).padStart(2,'0');});}
+function cLA(num,le,btn){if(LR.an)return;if(num===LR.pa){LR.an=true;pS('correct');btn.style.background='linear-gradient(145deg,#66bb6a,#2e7d32)';var np=lv2.querySelector('.np');if(np)np.style.display='none';ltx.innerHTML=le.text.replace(/\?/g,'<span class="res">'+LR.pa+'</span>');lh.innerHTML='Correct! Great job!';lh.style.background='#e8f5e9';lh.style.color='#2e7d32';lnb2.style.display='';lnb2.textContent=LR.li<LS[LR.type].length-1?'Next Lesson':'Go Challenge!';lnb2.className=LR.li<LS[LR.type].length-1?'lnb next':'lnb sg';lnb2.onclick=function(){if(LR.li>=LS[LR.type].length-1)eG();else lN();};}else{pS('wrong');btn.style.background='linear-gradient(145deg,#ef5350,#c62828)';btn.style.transform='scale(.9)';setTimeout(function(){btn.style.background='';btn.style.transform='';},500);LR.an=true;var np2=lv2.querySelector('.np');if(np2)np2.style.display='none';lh.innerHTML='Not quite, answer is <strong>'+LR.pa+'</strong>!';lh.style.background='#fff3e0';lh.style.color='#e65100';lnb2.style.display='';lnb2.textContent=LR.li<LS[LR.type].length-1?'Next Lesson':'Go Challenge!';lnb2.className=LR.li<LS[LR.type].length-1?'lnb next':'lnb sg';lnb2.onclick=function(){if(LR.li>=LS[LR.type].length-1)eG();else lN();};}}
+function lN(){pS('click');var ls=LS[LR.type],le=ls[LR.li];if(le.type==='concept'){if(LR.si<le.steps.length-1){LR.si++;rL();}else if(LR.li<ls.length-1){LR.li++;LR.si=0;rL();}}else{if(LR.li<ls.length-1){LR.li++;LR.si=0;LR.an=false;lnb2.style.display='';rL();}}}
+function lP(){pS('click');var ls=LS[LR.type],le=ls[LR.li];if(le.type==='concept'&&LR.si>0){LR.si--;rL();}else if(le.type==='concept'&&LR.si===0&&LR.li>0){LR.li--;var p=ls[LR.li];LR.si=p.steps?p.steps.length-1:0;LR.an=false;lnb2.style.display='';rL();}else if(le.type==='practice'&&LR.li>0){LR.li--;LR.si=0;LR.an=false;lnb2.style.display='';rL();}}
+function eG(){pS('click');sS(gss);iG();}
+function iG(){iSt();iNp();iCB();gQ();uD();var ch=document.querySelectorAll('.mch');for(var i=0;i<ch.length;i++){(function(btn){var nb=btn.cloneNode(true);btn.parentNode.replaceChild(nb,btn);nb.onclick=function(){pS('click');document.querySelectorAll('.mch').forEach(function(b){b.classList.remove('ac');});nb.classList.add('ac');G.mode=nb.dataset.mode;G.co=0;document.getElementById('cf').textContent='';gQ();};})(ch[i]);}}
+function iSt(){var c=document.getElementById('starsBg');if(c.children.length>0)return;for(var i=0;i<30;i++){var s=document.createElement('div');s.className='star-particle';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.animationDelay=Math.random()*2+'s';c.appendChild(s);}}
+function iNp(){var el=document.getElementById('np2');if(el.children.length>0)return;var cs=['#ff6b6b','#ffa726','#ffee58','#66bb6a','#42a5f5','#ab47bc','#26c6da','#ef5350','#ffa726','#ffee58','#66bb6a'];for(var i=0;i<=10;i++){var b=document.createElement('button');b.className='nb';b.textContent=i;b.style.background='linear-gradient(145deg,'+cs[i]+','+dk(cs[i])+')';(function(n){b.onclick=function(){cA(n);};})(i);el.appendChild(b);}}
+function iCB(){var el=document.getElementById('cb');el.innerHTML='';for(var i=0;i<G.cl.length;i++){var s=document.createElement('div');s.className='ps';s.innerHTML=icon(G.cl[i],'gs2');el.appendChild(s);}for(var j=G.cl.length;j<Math.min(20,G.cl.length+3);j++){var s2=document.createElement('div');s2.className='ps em';s2.textContent='?';el.appendChild(s2);}}
+function gQ(){G.an=false;document.getElementById('fb').textContent='';document.getElementById('fb').style.color='';var md=G.mode;if(md==='mix')md=Math.random()<.5?'add':'sub';var mx=G.lv>=5?10:G.lv>=3?8:5;var a,b,ans,op;if(md==='add'){a=Math.floor(Math.random()*(mx+1));b=Math.floor(Math.random()*(mx+1-a));ans=a+b;op='+';}else{a=Math.floor(Math.random()*(mx+1));b=Math.floor(Math.random()*(a+1));ans=a-b;op='-';}G.ca=ans;var sl=SC[md],sk=sl[Math.floor(Math.random()*sl.length)],is=icon(sk,'gm');if(op==='+'){var h='';for(var i=0;i<a;i++)h+=is;h+=' <span style="font-size:36px">+</span> ';for(var i=0;i<b;i++)h+=is;document.getElementById('sme').innerHTML=h;}else{var r=a-b,h2='';for(var i=0;i<r;i++)h2+=is;if(b>0){var cr='';for(var i=0;i<b;i++)cr+=is;h2+='<span style="opacity:.35;text-decoration:line-through">'+cr+'</span>'+icon('wind','gs2');}document.getElementById('sme').innerHTML=h2;}document.getElementById('eq2').innerHTML='<div class="nm">'+a+'</div><div class="opr">'+op+'</div><div class="nm">'+b+'</div><div class="equals">=</div><div class="ab" id="ab2">?</div>';}
+function cA(num){if(G.an)return;G.an=true;var bx=document.getElementById('ab2');bx.textContent=num;if(num===G.ca){G.tc++;G.co++;if(G.co>G.mx)G.mx=G.co;bx.classList.add('cr');pS('correct');var xg=1+Math.floor(G.co/3);G.xp+=xg;G.tx+=xg;document.getElementById('fb').textContent=PR[Math.floor(Math.random()*PR.length)];document.getElementById('fb').style.color='#4caf50';if(G.co>=3)document.getElementById('cf').textContent='Combo x'+G.co+'!';var ld=LVS.find(function(l){return l.l===G.lv;})||LVS[LVS.length-1];if(G.tc%3===0){var pt=ld.p[Math.floor(Math.random()*ld.p.length)];G.cl.push(pt);setTimeout(function(){sER(pt);},300);}if(G.co>=5)cFW();uD();var nl=LVS.find(function(l){return l.l===G.lv+1;}),cl=LVS.find(function(l){return l.l===G.lv;})||LVS[0];if(G.xp>=cl.x&&nl){G.lv++;G.xp=0;setTimeout(function(){sLU(nl);},800);}setTimeout(gQ,1500);}else{G.co=0;document.getElementById('cf').textContent='';bx.classList.add('wr');pS('wrong');document.getElementById('fb').textContent=WR[Math.floor(Math.random()*WR.length)]+' Answer: '+G.ca;document.getElementById('fb').style.color='#f44336';uD();setTimeout(function(){bx.classList.remove('wr');G.an=false;bx.textContent='?';document.getElementById('fb').textContent='Try again!';document.getElementById('fb').style.color='#ff9800';},2500);}}
+function uD(){var c=LVS.find(function(l){return l.l===G.lv;})||LVS[0];document.getElementById('xf').style.width=Math.min(100,(G.xp/c.x)*100)+'%';document.getElementById('lvd').textContent='Lv.'+G.lv;document.getElementById('sd').textContent=G.tx;iCB();}
+function sLU(lv){pS('levelup');document.getElementById('lt2').textContent='Level Up! Lv.'+lv.l;document.getElementById('ln').textContent='Title: '+lv.t;document.getElementById('lm').classList.add('sh');cFW();}
+function cLU(){document.getElementById('lm').classList.remove('sh');pS('click');}
+function cFW(){var cs=['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff6f00','#ab47bc'];for(var f=0;f<3;f++){(function(ff){setTimeout(function(){var cx=Math.random()*window.innerWidth,cy=Math.random()*(window.innerHeight/2);for(var i=0;i<15;i++){var p=document.createElement('div');p.className='fp';p.style.left=cx+'px';p.style.top=cy+'px';p.style.background=cs[Math.floor(Math.random()*cs.length)];var a=(Math.PI*2/15)*i,d=80+Math.random()*60;p.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+Math.cos(a)*d+'px,'+Math.sin(a)*d+'px) scale(0)',opacity:0}],{duration:1e3,easing:'ease-out',fill:'forwards'});document.getElementById('fw').appendChild(p);setTimeout(function(){p.remove();},1e3);}},ff*300);})(f);}}
+function sER(key){for(var i=0;i<8;i++){(function(ii){setTimeout(function(){var el=document.createElement('div');el.className='er';el.innerHTML=icon(key,'gm');el.style.left=Math.random()*90+5+'%';document.body.appendChild(el);setTimeout(function(){el.remove();},2e3);},ii*100);})(i);}}
+sS('home');iSt();iNp();iH();
 </script>
 </body>
 </html>
