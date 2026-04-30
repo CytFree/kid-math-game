@@ -399,6 +399,11 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .emergency-btn{width:100%;padding:14px;background:linear-gradient(135deg,#F44336,#D32F2F);color:white;font-size:16px;font-weight:bold;border-radius:14px;box-shadow:0 4px 12px rgba(244,67,54,.3);margin-bottom:6px}
 .emergency-skip{width:100%;padding:10px;background:#F5F5F5;color:#888;font-size:14px;border-radius:14px}
 
+/* ===== 音效控制 ===== */
+.sound-toggle{position:fixed;top:60px;right:12px;z-index:20;background:rgba(255,255,255,.8);border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.1);transition:all .2s}
+.sound-toggle:active{transform:scale(.9)}
+.sound-toggle.muted{opacity:.5}
+
 /* ===== 响应式 ===== */
 @media(max-width:360px){
   .q-options{gap:6px}
@@ -409,6 +414,9 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 </style>
 </head>
 <body>
+
+<!-- 音效控制 -->
+<button class="sound-toggle" id="soundToggle" onclick="toggleSound()">🔊</button>
 
 <!-- 角色创建 -->
 <div class="screen" id="create-screen">
@@ -1626,6 +1634,7 @@ var currentArea=null;
 
 function enterArea(a){
   pS('pop');
+  playSceneSound('area');
   if(S.areas.indexOf(a)<0)return;
   currentArea=a;
   var screenId=a+'-screen';
@@ -1893,6 +1902,7 @@ function triggerEmergency(){
   if(emergencyActive)return;
   // 随机触发（10%概率）
   if(Math.random()>0.1)return;
+  playSceneSound('emergency');
   
   var em=EMERGENCY_TEXTS[Math.floor(Math.random()*EMERGENCY_TEXTS.length)];
   emergencyData=em;
@@ -1958,6 +1968,8 @@ function init(){
       triggerEmergency();
     }
   },30000);
+  // 播放背景音乐
+  setTimeout(playBgMusic,1000);
 }
 init();
 </script>
