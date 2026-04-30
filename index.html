@@ -291,6 +291,72 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .story-complete .sc-title{font-size:16px;font-weight:bold;color:#2E7D32;margin-bottom:4px}
 .story-complete .sc-reward{font-size:13px;color:#666}
 
+/* ===== 装饰商店 ===== */
+.deco-panel{position:fixed;top:0;left:0;right:0;bottom:0;z-index:65;display:none;justify-content:center;align-items:flex-end;padding:16px}
+.deco-panel.show{display:flex}
+.deco-bg{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.35)}
+.deco-card{position:relative;background:white;border-radius:28px 28px 0 0;padding:20px 18px 24px;width:100%;max-width:420px;max-height:80vh;overflow-y:auto;box-shadow:0 -12px 40px rgba(0,0,0,.2);animation:slideFromBottom .35s ease}
+.deco-handle{width:40px;height:4px;background:#E0E0E0;border-radius:2px;margin:0 auto 14px}
+.deco-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.deco-title{font-size:18px;font-weight:bold;color:#333}
+.deco-coins{font-size:14px;color:#FF8F00;font-weight:bold}
+.deco-close{width:32px;height:32px;border-radius:50%;background:#F5F5F5;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.deco-tabs{display:flex;gap:8px;margin-bottom:14px}
+.deco-tab{flex:1;padding:8px;border:none;border-radius:12px;font-size:13px;font-weight:bold;cursor:pointer;background:#F5F5F5;color:#888;transition:all .2s}
+.deco-tab.active{background:linear-gradient(135deg,#FF9800,#FF5722);color:white}
+.deco-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.deco-item{background:#FAFAFA;border-radius:16px;padding:12px 8px;text-align:center;transition:all .2s;cursor:pointer;border:2px solid transparent}
+.deco-item:active{transform:scale(.95)}
+.deco-item.owned{border-color:#4CAF50;background:#E8F5E9}
+.deco-item.placed{border-color:#FF9800;background:#FFF8E1}
+.deco-item .di-icon{font-size:32px;margin-bottom:4px}
+.deco-item .di-name{font-size:11px;font-weight:bold;color:#333}
+.deco-item .di-price{font-size:10px;color:#FF8F00;margin-top:2px}
+.deco-item .di-status{font-size:10px;color:#4CAF50;margin-top:2px}
+.deco-item.locked{opacity:.4;pointer-events:none}
+.deco-item.locked .di-icon{filter:grayscale(1)}
+.deco-placed-info{font-size:12px;color:#888;text-align:center;margin-top:10px;padding:10px;background:#F5F5F5;border-radius:12px}
+
+/* 装饰在岛上 */
+.deco-on-island{position:absolute;z-index:3;transition:all .5s ease;cursor:pointer;filter:drop-shadow(0 2px 6px rgba(0,0,0,.2))}
+.deco-on-island:active{transform:scale(.9)}
+.deco-on-island .deco-emoji{font-size:28px;display:block}
+.deco-on-island .deco-remove{position:absolute;top:-8px;right:-8px;width:18px;height:18px;background:#F44336;color:white;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.deco-on-island:hover .deco-remove{opacity:1}
+
+/* ===== 装饰商店 ===== */
+.deco-panel{position:fixed;top:0;left:0;right:0;bottom:0;z-index:65;display:none;justify-content:center;align-items:flex-end;padding:16px}
+.deco-panel.show{display:flex}
+.deco-bg{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.35)}
+.deco-card{position:relative;background:white;border-radius:28px 28px 0 0;padding:20px 18px 24px;width:100%;max-width:420px;max-height:80vh;overflow-y:auto;box-shadow:0 -12px 40px rgba(0,0,0,.2);animation:slideFromBottom .35s ease}
+.deco-handle{width:40px;height:4px;background:#E0E0E0;border-radius:2px;margin:0 auto 14px}
+.deco-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.deco-title{font-size:18px;font-weight:bold;color:#333}
+.deco-coins{font-size:14px;color:#FF8F00;font-weight:bold}
+.deco-close{width:32px;height:32px;border-radius:50%;background:#F5F5F5;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.deco-tabs{display:flex;gap:8px;margin-bottom:14px}
+.deco-tab{flex:1;padding:8px;border:none;border-radius:12px;font-size:13px;font-weight:bold;cursor:pointer;background:#F5F5F5;color:#888;transition:all .2s}
+.deco-tab.active{background:linear-gradient(135deg,#FF9800,#FF5722);color:white}
+.deco-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.deco-item{background:#FAFAFA;border-radius:16px;padding:12px 8px;text-align:center;transition:all .2s;cursor:pointer;border:2px solid transparent}
+.deco-item:active{transform:scale(.95)}
+.deco-item.owned{border-color:#4CAF50;background:#E8F5E9}
+.deco-item.placed{border-color:#FF9800;background:#FFF8E1}
+.deco-item .di-icon{font-size:32px;margin-bottom:4px}
+.deco-item .di-name{font-size:11px;font-weight:bold;color:#333}
+.deco-item .di-price{font-size:10px;color:#FF8F00;margin-top:2px}
+.deco-item .di-status{font-size:10px;color:#4CAF50;margin-top:2px}
+.deco-item.locked{opacity:.4;pointer-events:none}
+.deco-item.locked .di-icon{filter:grayscale(1)}
+.deco-placed-info{font-size:12px;color:#888;text-align:center;margin-top:10px;padding:10px;background:#F5F5F5;border-radius:12px}
+
+/* 装饰在岛上 */
+.deco-on-island{position:absolute;z-index:3;transition:all .5s ease;cursor:pointer;filter:drop-shadow(0 2px 6px rgba(0,0,0,.2))}
+.deco-on-island:active{transform:scale(.9)}
+.deco-on-island .deco-emoji{font-size:28px;display:block}
+.deco-on-island .deco-remove{position:absolute;top:-8px;right:-8px;width:18px;height:18px;background:#F44336;color:white;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.deco-on-island:hover .deco-remove{opacity:1}
+
 /* ===== 响应式 ===== */
 @media(max-width:360px){
   .q-options{gap:6px}
@@ -330,6 +396,7 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
     <span class="hud-pet" id="hudPet"></span>
     <button class="hud-task-btn" id="hudTaskBtn" onclick="showTaskPanel()" style="font-size:18px;background:none;border:none;cursor:pointer">📋</button>
     <button class="hud-task-btn" id="hudStoryBtn" onclick="showAvailableStory()" style="font-size:18px;background:none;border:none;cursor:pointer;display:none">📖</button>
+    <button class="hud-task-btn" id="hudDecoBtn" onclick="showDecoPanel()" style="font-size:18px;background:none;border:none;cursor:pointer">🏠</button>
   </div>
   <div class="island-scene" id="islandScene">
     <div class="sun"></div>
@@ -423,6 +490,46 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
     <button class="btn story-btn" id="stAction" onclick="doStoryTask()">开始挑战 💪</button>
     <button class="btn story-skip" onclick="closeStory()">下次再听</button>
     <div id="stComplete" style="display:none"></div>
+  </div>
+</div>
+
+<!-- 装饰商店 -->
+<div class="deco-panel" id="decoPanel" onclick="if(event.target===this)closeDecoPanel()">
+  <div class="deco-bg"></div>
+  <div class="deco-card" onclick="event.stopPropagation()">
+    <div class="deco-handle"></div>
+    <div class="deco-header">
+      <span class="deco-title">🏠 装饰商店</span>
+      <span class="deco-coins" id="decoCoins">💰0</span>
+      <button class="deco-close" onclick="closeDecoPanel()">✕</button>
+    </div>
+    <div class="deco-tabs">
+      <button class="deco-tab active" id="decoTabShop" onclick="switchDecoTab('shop')">🛒 商店</button>
+      <button class="deco-tab" id="decoTabOwned" onclick="switchDecoTab('owned')">📦 已拥有</button>
+      <button class="deco-tab" id="decoTabPlaced" onclick="switchDecoTab('placed')">📍 已放置</button>
+    </div>
+    <div class="deco-grid" id="decoGrid"></div>
+    <div class="deco-placed-info" id="decoInfo">点击装饰放置到岛上，点击已放置的装饰可移除</div>
+  </div>
+</div>
+
+<!-- 装饰商店 -->
+<div class="deco-panel" id="decoPanel" onclick="if(event.target===this)closeDecoPanel()">
+  <div class="deco-bg"></div>
+  <div class="deco-card" onclick="event.stopPropagation()">
+    <div class="deco-handle"></div>
+    <div class="deco-header">
+      <span class="deco-title">🏠 装饰商店</span>
+      <span class="deco-coins" id="decoCoins">💰0</span>
+      <button class="deco-close" onclick="closeDecoPanel()">✕</button>
+    </div>
+    <div class="deco-tabs">
+      <button class="deco-tab active" id="decoTabShop" onclick="switchDecoTab('shop')">🛒 商店</button>
+      <button class="deco-tab" id="decoTabOwned" onclick="switchDecoTab('owned')">📦 已拥有</button>
+      <button class="deco-tab" id="decoTabPlaced" onclick="switchDecoTab('placed')">📍 已放置</button>
+    </div>
+    <div class="deco-grid" id="decoGrid"></div>
+    <div class="deco-placed-info" id="decoInfo">点击装饰放置到岛上，点击已放置的装饰可移除</div>
   </div>
 </div>
 
@@ -550,7 +657,7 @@ var PT=[
 ];
 
 /* ===== 存档 ===== */
-function defState(){return{name:'小宝',avatar:'boy',xp:0,level:1,totalXp:0,coins:0,combo:0,mc:0,pets:[],companion:null,lessons:{add:0,sub:0,addChain:0,subChain:0,mix:0,bigNum:0},adventures:{},daily:{date:'',done:[],streak:0,lastDate:''},stories:{},areas:['home']}}
+function defState(){return{name:'小宝',avatar:'boy',xp:0,level:1,totalXp:0,coins:0,combo:0,mc:0,pets:[],companion:null,lessons:{add:0,sub:0,addChain:0,subChain:0,mix:0,bigNum:0},adventures:{},daily:{date:'',done:[],streak:0,lastDate:''},stories:{},decos:[],placedDecos:[],areas:['home']}}
 var S=loadS()||defState();
 function loadS(){try{var d=localStorage.getItem('mi2');return d?JSON.parse(d):null}catch(e){return null}}
 function saveS(){try{localStorage.setItem('mi2',JSON.stringify(S))}catch(e){}}
@@ -1096,6 +1203,178 @@ function getAvailableStories(){
     return true;
   });
 }
+/* ===== 装饰系统 ===== */
+var DECOS=[
+  {id:'flower_red',name:'红花',ic:'🌹',price:5,area:'home'},
+  {id:'flower_yellow',name:'黄花',ic:'🌻',price:5,area:'home'},
+  {id:'tree_pine',name:'松树',ic:'🌲',price:8,area:'home'},
+  {id:'tree_palm',name:'棕榈树',ic:'🌴',price:8,area:'home'},
+  {id:'mushroom',name:'蘑菇',ic:'🍄',price:6,area:'home'},
+  {id:'rock',name:'石头',ic:'🪨',price:4,area:'home'},
+  {id:'lantern',name:'灯笼',ic:'🏮',price:12,area:'home'},
+  {id:'fountain',name:'喷泉',ic:'⛲',price:20,area:'home'},
+  {id:'windmill',name:'风车',ic:'🎐',price:15,area:'home'},
+  {id:'campfire',name:'篝火',ic:'🔥',price:10,area:'home'},
+  {id:'balloon',name:'气球',ic:'🎈',price:8,area:'home'},
+  {id:'star',name:'星星',ic:'⭐',price:12,area:'home'},
+  {id:'rainbow',name:'彩虹',ic:'🌈',price:25,area:'home'},
+  {id:'moon',name:'月亮',ic:'🌙',price:18,area:'home'},
+  {id:'sun_decor',name:'太阳',ic:'☀️',price:15,area:'home'},
+  {id:'cloud_decor',name:'云朵',ic:'☁️',price:10,area:'home'},
+  {id:'butterfly',name:'蝴蝶',ic:'🦋',price:7,area:'home'},
+  {id:'bird',name:'小鸟',ic:'🐦',price:9,area:'home'},
+  {id:'fish',name:'小鱼',ic:'🐠',price:6,area:'home'},
+  {id:'crystal',name:'水晶',ic:'💎',price:30,area:'home'}
+];
+
+var decoTab='shop';
+
+function showDecoPanel(){
+  pS('click');
+  document.getElementById('decoCoins').textContent='💰'+S.coins;
+  renderDecoGrid();
+  document.getElementById('decoPanel').classList.add('show');
+}
+function closeDecoPanel(){
+  pS('click');
+  document.getElementById('decoPanel').classList.remove('show');
+}
+
+function switchDecoTab(tab){
+  decoTab=tab;
+  document.querySelectorAll('.deco-tab').forEach(function(t){t.classList.remove('active')});
+  document.getElementById('decoTab'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('active');
+  renderDecoGrid();
+}
+
+function renderDecoGrid(){
+  var grid=document.getElementById('decoGrid');grid.innerHTML='';
+  var owned=S.decos||[];
+  var placed=S.placedDecos||[];
+
+  if(decoTab==='shop'){
+    DECOS.forEach(function(d){
+      var isOwned=owned.indexOf(d.id)>=0;
+      var canBuy=S.coins>=d.price;
+      var item=document.createElement('div');
+      item.className='deco-item'+(isOwned?' owned':'');
+      item.innerHTML='<div class="di-icon">'+d.ic+'</div>'+
+        '<div class="di-name">'+d.name+'</div>'+
+        '<div class="di-price">'+(isOwned?'✅ 已拥有':'💰'+d.price)+'</div>';
+      if(!isOwned&&canBuy){
+        item.onclick=function(){buyDeco(d.id)};
+      }else if(!isOwned&&!canBuy){
+        item.classList.add('locked');
+      }
+      grid.appendChild(item);
+    });
+  }else if(decoTab==='owned'){
+    if(owned.length===0){
+      grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:#888;padding:20px">还没有装饰，去商店看看吧 🛒</div>';
+      return;
+    }
+    owned.forEach(function(id){
+      var d=DECOS.find(function(x){return x.id===id});if(!d)return;
+      var isPlaced=placed.indexOf(id)>=0;
+      var item=document.createElement('div');
+      item.className='deco-item'+(isPlaced?' placed':' owned');
+      item.innerHTML='<div class="di-icon">'+d.ic+'</div>'+
+        '<div class="di-name">'+d.name+'</div>'+
+        '<div class="di-status">'+(isPlaced?'📍 已放置':'📦 未放置')+'</div>';
+      item.onclick=function(){toggleDeco(id)};
+      grid.appendChild(item);
+    });
+  }else if(decoTab==='placed'){
+    if(placed.length===0){
+      grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:#888;padding:20px">还没有放置装饰，去已拥有里点击放置 📍</div>';
+      return;
+    }
+    placed.forEach(function(id){
+      var d=DECOS.find(function(x){return x.id===id});if(!d)return;
+      var item=document.createElement('div');
+      item.className='deco-item placed';
+      item.innerHTML='<div class="di-icon">'+d.ic+'</div>'+
+        '<div class="di-name">'+d.name+'</div>'+
+        '<div class="di-status">🗑️ 点击移除</div>';
+      item.onclick=function(){removeDeco(id)};
+      grid.appendChild(item);
+    });
+  }
+  document.getElementById('decoInfo').textContent='点击装饰放置到岛上，点击已放置的装饰可移除';
+}
+
+function buyDeco(id){
+  var d=DECOS.find(function(x){return x.id===id});if(!d)return;
+  if(S.coins<d.price)return;
+  if(!S.decos)S.decos=[];
+  if(S.decos.indexOf(id)>=0)return;
+  S.coins-=d.price;
+  S.decos.push(id);
+  saveS();
+  pS('pop');
+  document.getElementById('decoCoins').textContent='💰'+S.coins;
+  renderDecoGrid();
+  updIsland();
+}
+
+function toggleDeco(id){
+  if(!S.placedDecos)S.placedDecos=[];
+  var idx=S.placedDecos.indexOf(id);
+  if(idx>=0){
+    S.placedDecos.splice(idx,1);
+  }else{
+    S.placedDecos.push(id);
+  }
+  saveS();
+  pS('click');
+  renderDecoGrid();
+  renderIslandDecos();
+}
+
+function removeDeco(id){
+  if(!S.placedDecos)S.placedDecos=[];
+  var idx=S.placedDecos.indexOf(id);
+  if(idx>=0)S.placedDecos.splice(idx,1);
+  saveS();
+  pS('click');
+  renderDecoGrid();
+  renderIslandDecos();
+}
+
+function renderIslandDecos(){
+  document.querySelectorAll('.deco-on-island').forEach(function(e){e.remove()});
+  if(!S.placedDecos)return;
+  var scene=document.getElementById('islandScene');
+  S.placedDecos.forEach(function(id){
+    var d=DECOS.find(function(x){return x.id===id});if(!d)return;
+    var deco=document.createElement('div');
+    deco.className='deco-on-island';
+    deco.dataset.id=id;
+    var left=10+Math.random()*80;
+    var bottom=8+Math.random()*30;
+    deco.style.left=left+'%';
+    deco.style.bottom=bottom+'%';
+    deco.innerHTML='<span class="deco-emoji">'+d.ic+'</span>'+
+      '<span class="deco-remove" onclick="event.stopPropagation();removeDeco(\''+id+'\')">✕</span>';
+    deco.onclick=function(){
+      if(!S.placedDecos)return;
+      var idx=S.placedDecos.indexOf(id);
+      if(idx>=0){
+        S.placedDecos.splice(idx,1);
+        saveS();
+        renderIslandDecos();
+        renderDecoGrid();
+      }
+    };
+    scene.appendChild(deco);
+  });
+}
+
+function initDecoSystem(){
+  if(!S.decos)S.decos=[];
+  if(!S.placedDecos)S.placedDecos=[];
+  renderIslandDecos();
+}
 
 function showAvailableStory(){
   var avail=getAvailableStories();
@@ -1343,11 +1622,140 @@ function updateStreak(){
   }
 }
 
+/* ===== 装饰系统 ===== */
+var DECOS=[
+  {id:'flower_red',name:'红花',ic:'🌹',price:5,area:'home'},
+  {id:'flower_yellow',name:'黄花',ic:'🌻',price:5,area:'home'},
+  {id:'tree_pine',name:'松树',ic:'🌲',price:8,area:'home'},
+  {id:'tree_palm',name:'棕榈树',ic:'🌴',price:8,area:'home'},
+  {id:'mushroom',name:'蘑菇',ic:'🍄',price:6,area:'home'},
+  {id:'rock',name:'石头',ic:'🪨',price:4,area:'home'},
+  {id:'lantern',name:'灯笼',ic:'🏮',price:12,area:'home'},
+  {id:'fountain',name:'喷泉',ic:'⛲',price:20,area:'home'},
+  {id:'windmill',name:'风车',ic:'🎐',price:15,area:'home'},
+  {id:'campfire',name:'篝火',ic:'🔥',price:10,area:'home'},
+  {id:'balloon',name:'气球',ic:'🎈',price:8,area:'home'},
+  {id:'star',name:'星星',ic:'⭐',price:12,area:'home'},
+  {id:'rainbow',name:'彩虹',ic:'🌈',price:25,area:'home'},
+  {id:'moon',name:'月亮',ic:'🌙',price:18,area:'home'},
+  {id:'sun_decor',name:'太阳',ic:'☀️',price:15,area:'home'},
+  {id:'cloud_decor',name:'云朵',ic:'☁️',price:10,area:'home'},
+  {id:'butterfly',name:'蝴蝶',ic:'🦋',price:7,area:'home'},
+  {id:'bird',name:'小鸟',ic:'🐦',price:9,area:'home'},
+  {id:'fish',name:'小鱼',ic:'🐠',price:6,area:'home'},
+  {id:'crystal',name:'水晶',ic:'💎',price:30,area:'home'}
+];
+var decoTab='shop';
+
+function showDecoPanel(){
+  pS('click');
+  document.getElementById('decoCoins').textContent='💰'+S.coins;
+  renderDecoGrid();
+  document.getElementById('decoPanel').classList.add('show');
+}
+function closeDecoPanel(){
+  pS('click');
+  document.getElementById('decoPanel').classList.remove('show');
+}
+function switchDecoTab(tab){
+  decoTab=tab;
+  document.querySelectorAll('.deco-tab').forEach(function(t){t.classList.remove('active')});
+  var tabId='decoTab'+tab.charAt(0).toUpperCase()+tab.slice(1);
+  document.getElementById(tabId).classList.add('active');
+  renderDecoGrid();
+}
+function renderDecoGrid(){
+  var grid=document.getElementById('decoGrid');grid.innerHTML='';
+  var owned=S.decos||[];
+  var placed=S.placedDecos||[];
+  if(decoTab==='shop'){
+    DECOS.forEach(function(d){
+      var isOwned=owned.indexOf(d.id)>=0;
+      var canBuy=S.coins>=d.price;
+      var item=document.createElement('div');
+      item.className='deco-item'+(isOwned?' owned':'');
+      item.innerHTML='<div class="di-icon">'+d.ic+'</div><div class="di-name">'+d.name+'</div><div class="di-price">'+(isOwned?'✅ 已拥有':'💰'+d.price)+'</div>';
+      if(!isOwned&&canBuy){item.onclick=function(){buyDeco(d.id)}}
+      else if(!isOwned&&!canBuy){item.classList.add('locked')}
+      grid.appendChild(item);
+    });
+  }else if(decoTab==='owned'){
+    if(owned.length===0){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:#888;padding:20px">还没有装饰，去商店看看吧 🛒</div>';return}
+    owned.forEach(function(id){
+      var d=DECOS.find(function(x){return x.id===id});if(!d)return;
+      var isPlaced=placed.indexOf(id)>=0;
+      var item=document.createElement('div');
+      item.className='deco-item'+(isPlaced?' placed':' owned');
+      item.innerHTML='<div class="di-icon">'+d.ic+'</div><div class="di-name">'+d.name+'</div><div class="di-status">'+(isPlaced?'📍 已放置':'📦 未放置')+'</div>';
+      item.onclick=function(){toggleDeco(id)};
+      grid.appendChild(item);
+    });
+  }else if(decoTab==='placed'){
+    if(placed.length===0){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:#888;padding:20px">还没有放置装饰，去已拥有里点击放置 📍</div>';return}
+    placed.forEach(function(id){
+      var d=DECOS.find(function(x){return x.id===id});if(!d)return;
+      var item=document.createElement('div');
+      item.className='deco-item placed';
+      item.innerHTML='<div class="di-icon">'+d.ic+'</div><div class="di-name">'+d.name+'</div><div class="di-status">🗑️ 点击移除</div>';
+      item.onclick=function(){removeDeco(id)};
+      grid.appendChild(item);
+    });
+  }
+  document.getElementById('decoInfo').textContent='点击装饰放置到岛上，点击已放置的装饰可移除';
+}
+function buyDeco(id){
+  var d=DECOS.find(function(x){return x.id===id});if(!d)return;
+  if(S.coins<d.price)return;
+  if(!S.decos)S.decos=[];
+  if(S.decos.indexOf(id)>=0)return;
+  S.coins-=d.price;S.decos.push(id);saveS();
+  pS('pop');
+  document.getElementById('decoCoins').textContent='💰'+S.coins;
+  renderDecoGrid();updIsland();
+}
+function toggleDeco(id){
+  if(!S.placedDecos)S.placedDecos=[];
+  var idx=S.placedDecos.indexOf(id);
+  if(idx>=0){S.placedDecos.splice(idx,1)}else{S.placedDecos.push(id)}
+  saveS();pS('click');renderDecoGrid();renderIslandDecos();
+}
+function removeDeco(id){
+  if(!S.placedDecos)S.placedDecos=[];
+  var idx=S.placedDecos.indexOf(id);
+  if(idx>=0)S.placedDecos.splice(idx,1);
+  saveS();pS('click');renderDecoGrid();renderIslandDecos();
+}
+function renderIslandDecos(){
+  document.querySelectorAll('.deco-on-island').forEach(function(e){e.remove()});
+  if(!S.placedDecos)return;
+  var scene=document.getElementById('islandScene');
+  S.placedDecos.forEach(function(id){
+    var d=DECOS.find(function(x){return x.id===id});if(!d)return;
+    var deco=document.createElement('div');
+    deco.className='deco-on-island';deco.dataset.id=id;
+    var left=10+Math.random()*80;
+    var bottom=8+Math.random()*30;
+    deco.style.left=left+'%';deco.style.bottom=bottom+'%';
+    deco.innerHTML='<span class="deco-emoji">'+d.ic+'</span>';
+    deco.onclick=function(){
+      if(!S.placedDecos)return;
+      var idx=S.placedDecos.indexOf(id);
+      if(idx>=0){S.placedDecos.splice(idx,1);saveS();renderIslandDecos();renderDecoGrid()}
+    };
+    scene.appendChild(deco);
+  });
+}
+function initDecoSystem(){
+  if(!S.decos)S.decos=[];
+  if(!S.placedDecos)S.placedDecos=[];
+  renderIslandDecos();
+}
+
 /* ===== 初始化 ===== */
 function init(){
   initPlayerWalk();
   var saved=loadS();
-  if(saved&&saved.name){S=saved;show('island-screen');updIsland()}
+  if(saved&&saved.name){S=saved;show('island-screen');updIsland();initDecoSystem()}
   else{show('create-screen')}
 }
 init();
