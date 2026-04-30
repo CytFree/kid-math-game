@@ -271,6 +271,26 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .p-card.empty .p-icon{font-size:28px;opacity:.3}
 .p-card.companion{border:2px solid #FF9800;background:#FFF8E1}
 
+/* ===== 故事任务 ===== */
+.story-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:70;display:none;justify-content:center;align-items:center;padding:16px}
+.story-overlay.show{display:flex}
+.story-card{background:white;border-radius:28px;padding:24px 20px;width:100%;max-width:380px;box-shadow:0 16px 48px rgba(0,0,0,.25);animation:storyPop .5s ease}
+@keyframes storyPop{0%{transform:scale(.7) rotate(-3deg);opacity:0}60%{transform:scale(1.05) rotate(1deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.story-icon{font-size:52px;text-align:center;margin-bottom:10px}
+.story-title{font-size:18px;font-weight:bold;color:#333;text-align:center;margin-bottom:8px}
+.story-text{font-size:14px;line-height:1.8;color:#555;text-align:center;margin-bottom:12px;min-height:50px}
+.story-chapter{font-size:12px;color:#FF9800;font-weight:bold;text-align:center;margin-bottom:6px}
+.story-progress{display:flex;gap:6px;justify-content:center;margin-bottom:14px}
+.story-dot{width:10px;height:10px;border-radius:50%;background:#E0E0E0;transition:all .3s}
+.story-dot.done{background:#4CAF50}
+.story-dot.current{background:#FF9800;transform:scale(1.3)}
+.story-btn{width:100%;padding:14px;background:linear-gradient(135deg,#FF9800,#FF5722);color:white;font-size:16px;font-weight:bold;border-radius:14px;box-shadow:0 4px 12px rgba(255,87,34,.3);margin-bottom:6px}
+.story-skip{width:100%;padding:10px;background:#F5F5F5;color:#888;font-size:14px;border-radius:14px}
+.story-complete{background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-radius:20px;padding:20px;text-align:center;margin-top:10px}
+.story-complete .sc-icon{font-size:48px;margin-bottom:8px}
+.story-complete .sc-title{font-size:16px;font-weight:bold;color:#2E7D32;margin-bottom:4px}
+.story-complete .sc-reward{font-size:13px;color:#666}
+
 /* ===== 响应式 ===== */
 @media(max-width:360px){
   .q-options{gap:6px}
@@ -309,6 +329,7 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
     <span class="hud-coins" id="hudCoins">💰0</span>
     <span class="hud-pet" id="hudPet"></span>
     <button class="hud-task-btn" id="hudTaskBtn" onclick="showTaskPanel()" style="font-size:18px;background:none;border:none;cursor:pointer">📋</button>
+    <button class="hud-task-btn" id="hudStoryBtn" onclick="showAvailableStory()" style="font-size:18px;background:none;border:none;cursor:pointer;display:none">📖</button>
   </div>
   <div class="island-scene" id="islandScene">
     <div class="sun"></div>
@@ -388,6 +409,20 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
       <div class="summary-item"><div class="s-val" id="sLeft">0</div><div class="s-label">待完成</div></div>
       <div class="summary-item"><div class="s-val" id="sReward">0</div><div class="s-label">可获金币</div></div>
     </div>
+  </div>
+</div>
+
+<!-- 故事任务 -->
+<div class="story-overlay" id="storyOv" onclick="if(event.target===this)closeStory()">
+  <div class="story-card" onclick="event.stopPropagation()">
+    <div class="story-icon" id="stIcon">📖</div>
+    <div class="story-chapter" id="stChapter">第一章</div>
+    <div class="story-title" id="stTitle">故事标题</div>
+    <div class="story-text" id="stText">故事内容...</div>
+    <div class="story-progress" id="stProg"></div>
+    <button class="btn story-btn" id="stAction" onclick="doStoryTask()">开始挑战 💪</button>
+    <button class="btn story-skip" onclick="closeStory()">下次再听</button>
+    <div id="stComplete" style="display:none"></div>
   </div>
 </div>
 
@@ -515,7 +550,7 @@ var PT=[
 ];
 
 /* ===== 存档 ===== */
-function defState(){return{name:'小宝',avatar:'boy',xp:0,level:1,totalXp:0,coins:0,combo:0,mc:0,pets:[],companion:null,lessons:{add:0,sub:0,addChain:0,subChain:0,mix:0,bigNum:0},adventures:{},daily:{date:'',done:[],streak:0,lastDate:''},areas:['home']}}
+function defState(){return{name:'小宝',avatar:'boy',xp:0,level:1,totalXp:0,coins:0,combo:0,mc:0,pets:[],companion:null,lessons:{add:0,sub:0,addChain:0,subChain:0,mix:0,bigNum:0},adventures:{},daily:{date:'',done:[],streak:0,lastDate:''},stories:{},areas:['home']}}
 var S=loadS()||defState();
 function loadS(){try{var d=localStorage.getItem('mi2');return d?JSON.parse(d):null}catch(e){return null}}
 function saveS(){try{localStorage.setItem('mi2',JSON.stringify(S))}catch(e){}}
@@ -655,6 +690,17 @@ function updIsland(){
     var b=document.getElementById('badge-'+k);if(!b)return;
     b.textContent=S.daily.done.indexOf(k)>=0?'❤️':'❗';
   });
+  // 故事按钮
+  var storyBtn=document.getElementById('hudStoryBtn');
+  var avail=getAvailableStories();
+  if(storyBtn){
+    if(avail.length>0){
+      storyBtn.style.display='';
+      storyBtn.textContent='📖 ('+avail.length+')';
+    }else{
+      storyBtn.style.display='none';
+    }
+  }
 }
 
 /* ===== 对话 ===== */
@@ -684,6 +730,16 @@ function talk(aid){
     document.getElementById('dEmoji').textContent=an.emoji+' ❓';
     document.getElementById('dAction').style.display='';
     dlgData={done:false,aid:aid,teach:an.teach};
+  }
+  // 检查是否有可用的故事
+  var avail=getAvailableStories();
+  if(avail.length>0){
+    var stBtn=document.createElement('button');
+    stBtn.className='btn dialog-btn';
+    stBtn.style.background='linear-gradient(135deg,#FF9800,#FF5722)';
+    stBtn.textContent='📖 听故事';
+    stBtn.onclick=function(){closeDlg();showStory(avail[0].id)};
+    document.getElementById('dAction').parentNode.insertBefore(stBtn,document.getElementById('dAction').nextSibling);
   }
   document.getElementById('dialogOv').classList.add('show');
 }
@@ -785,6 +841,8 @@ function finishQ(){
     var streak=S.daily.streak||0;
     var bonus=streak>=7?3:streak>=3?2:streak>=1?1:0;
     S.coins+=bonus;S.xp+=bonus;S.totalXp+=bonus;
+  }else if(QS.mode==='story'){
+    storyNextChapter();
     updateStreak();saveS();updIsland();show('island-screen');
   }else if(QS.mode==='adv'){
     finishAdv();
@@ -924,6 +982,127 @@ var ADS=[
   {id:'honey',n:'团团的蜂蜜之旅',ic:'🍯',d:'帮团团找到蜂蜜',ul:4,aid:'bear',tm:'subChain',nodes:6,boss:6},
   {id:'maze',n:'聪聪的迷宫挑战',ic:'🧩',d:'帮聪聪走出迷宫',ul:5,aid:'fox',tm:'mix',nodes:7,boss:7},
   {id:'bamboo',n:'圆圆的竹林探险',ic:'🎋',d:'帮圆圆找到最大的竹子',ul:6,aid:'panda',tm:'bigNum',nodes:7,boss:7}
+
+/* ===== 故事任务 ===== */
+var STORIES=[
+  {id:'cat_fish',n:'小橘的小鱼失踪案',ic:'🐟',ul:2,aid:'cat',tm:'add',chapters:[
+    {t:'第一章：小鱼不见了',text:'小橘着急地说："我把3条小鱼放在桶里，回来发现少了！你能帮我算算还剩几条吗？"',nums:[3,1]},
+    {t:'第二章：找到一条',text:'小橘在草丛里找到了一条小鱼！现在桶里有2条，又加了1条，一共有几条？',nums:[2,1]},
+    {t:'第三章：妈妈帮忙',text:'鱼妈妈游来了，又带来了3条小鱼。现在有3条，加上妈妈带来的3条，一共几条？',nums:[3,3]},
+    {t:'第四章：数数看',text:'小橘开心地说："让我数数！先有2条，来了2条，又来了1条，一共几条？"',nums:[2,2,1],mode:'ac'},
+    {t:'第五章：庆祝',text:'小橘请客！有8条鱼，小猫吃了2条，狗吃了1条，还剩几条请大家吃？',nums:[8,2,1],mode:'sc'}
+  ]},
+  {id:'dog_bone',n:'旺财的骨头大冒险',ic:'🦴',ul:3,aid:'dog',tm:'sub',chapters:[
+    {t:'第一章：骨头不见了',text:'旺财哭着说："我有5根骨头，不知被谁偷走了2根！还剩几根？"',nums:[5,2]},
+    {t:'第二章：找到一根',text:'旺财在树下挖到了一根骨头！原来有3根，加上这根，现在有几根？',nums:[3,1]},
+    {t:'第三章：分给朋友',text:'旺财有6根骨头，分给小猫2根，自己还剩几根？',nums:[6,2]},
+    {t:'第四章：又丢了',text:'旺财有5根骨头，散步丢了1根，洗澡又丢了1根，还剩几根？',nums:[5,1,1],mode:'sc'},
+    {t:'第五章：宝藏',text:'旺财发现了一个宝藏！有9根骨头，给了朋友3根，又买了2根，现在有几根？',nums:[9,3,2],mode:'mix'}
+  ]},
+  {id:'rabbit_carrot',n:'跳跳的胡萝卜大赛',ic:'🥕',ul:4,aid:'rabbit',tm:'addChain',chapters:[
+    {t:'第一章：比赛开始',text:'跳跳说："我要种好多胡萝卜！先种了2排，每排3个，再种了2个，一共几个？"',nums:[3,3,2],mode:'ac'},
+    {t:'第二章：朋友帮忙',text:'好朋友来帮忙！原来有4个，朋友给了2个，又给了3个，现在有几个？',nums:[4,2,3],mode:'ac'},
+    {t:'第三章：被偷吃了',text:'跳跳有9个胡萝卜，被偷吃了2个，又被吃了3个，还剩几个？',nums:[9,2,3],mode:'sc'},
+    {t:'第四章：重新种',text:'跳跳重新种了3个，又种了2个，被吃了1个，现在有几个？',nums:[3,2,1],mode:'mix'},
+    {t:'第五章：大丰收',text:'大丰收！有5个，朋友给了3个，又给了2个，被吃了1个，一共几个？',nums:[5,3,2,1],mode:'mix'}
+  ]},
+  {id:'bear_honey',n:'团团的蜂蜜保卫战',ic:'🍯',ul:5,aid:'bear',tm:'subChain',chapters:[
+    {t:'第一章：蜂蜜少了',text:'团团伤心地说："我有10罐蜂蜜，被偷吃了3罐，又被吃了2罐，还剩几罐？"',nums:[10,3,2],mode:'sc'},
+    {t:'第二章：找到一些',text:'团团在树洞里找到了2罐蜂蜜！原来有5罐，加上这2罐，现在有几罐？',nums:[5,2]},
+    {t:'第三章：分给朋友',text:'团团有7罐蜂蜜，分给小兔2罐，分给小猫1罐，自己还剩几罐？',nums:[7,2,1],mode:'sc'},
+    {t:'第四章：蜜蜂来了',text:'蜜蜂送来了3罐蜂蜜！团团有4罐，加上3罐，被吃了1罐，现在有几罐？',nums:[4,3,1],mode:'mix'},
+    {t:'第五章：蜂蜜派对',text:'团团办蜂蜜派对！有8罐，用了2罐做蛋糕，用了1罐做饼干，还剩几罐？',nums:[8,2,1],mode:'sc'}
+  ]}
+];
+var storySt={id:'',chapter:0,active:false,answers:[]};
+
+function showStory(stId){
+  var st=STORIES.find(function(x){return x.id===stId});if(!st)return;
+  if(S.level<st.ul)return;
+  var key='story_'+stId;
+  if(S.stories&&S.stories[key]&&S.stories[key].done)return;
+  storySt={id:stId,chapter:0,active:true,answers:[]};
+  renderStoryChapter(st);
+  document.getElementById('storyOv').classList.add('show');
+}
+
+function renderStoryChapter(st){
+  if(!st)st=STORIES.find(function(x){return x.id===storySt.id});
+  if(!st||storySt.chapter>=st.chapters.length){finishStory(st);return;}
+  var ch=st.chapters[storySt.chapter];
+  document.getElementById('stIcon').textContent=st.ic;
+  document.getElementById('stChapter').textContent=ch.t;
+  document.getElementById('stTitle').textContent=st.n;
+  document.getElementById('stText').textContent=ch.text;
+  document.getElementById('stComplete').style.display='none';
+  document.getElementById('stAction').style.display='';
+  document.getElementById('stAction').textContent='开始挑战 💪';
+  document.getElementById('stAction').onclick=doStoryTask;
+  var prog=document.getElementById('stProg');prog.innerHTML='';
+  for(var i=0;i<st.chapters.length;i++){
+    var d=document.createElement('div');d.className='story-dot';
+    if(i<storySt.chapter)d.classList.add('done');
+    if(i===storySt.chapter)d.classList.add('current');
+    prog.appendChild(d);
+  }
+}
+
+function doStoryTask(){
+  pS('click');var st=STORIES.find(function(x){return x.id===storySt.id});
+  if(!st)return;
+  var ch=st.chapters[storySt.chapter];
+  var mode=ch.mode||st.tm;
+  startQ('story',st.aid,mode,1);
+  QS.storyId=st.id;
+  QS.storyChapter=storySt.chapter;
+}
+
+function storyAnswer(correct){storySt.answers.push(correct)}
+
+function storyNextChapter(){
+  storySt.chapter++;
+  var st=STORIES.find(function(x){return x.id===storySt.id});
+  if(!st||storySt.chapter>=st.chapters.length){finishStory(st)}
+  else{renderStoryChapter(st)}
+}
+
+function finishStory(st){
+  if(!st)return;
+  var key='story_'+st.id;
+  if(!S.stories)S.stories={};
+  S.stories[key]={done:true,answers:storySt.answers.slice()};
+  S.coins+=15;S.xp+=20;S.totalXp+=20;saveS();
+  document.getElementById('stAction').style.display='none';
+  document.querySelector('.story-skip').style.display='none';
+  var comp=document.getElementById('stComplete');comp.style.display='';
+  comp.innerHTML='<div class="story-complete"><div class="sc-icon">🎉</div><div class="sc-title">故事完成！</div><div class="sc-reward">获得 💰15 金币 + ⭐20 经验</div></div>';
+  fw(2);
+  setTimeout(function(){closeStory();updIsland()},2500);
+}
+
+function closeStory(){
+  pS('click');
+  document.getElementById('storyOv').classList.remove('show');
+  document.getElementById('stComplete').style.display='none';
+  document.querySelector('.story-skip').style.display='';
+  storySt.active=false;
+}
+
+function getAvailableStories(){
+  return STORIES.filter(function(s){
+    if(S.level<s.ul)return false;
+    var key='story_'+s.id;
+    if(S.stories&&S.stories[key]&&S.stories[key].done)return false;
+    return true;
+  });
+}
+
+function showAvailableStory(){
+  var avail=getAvailableStories();
+  if(avail.length>0){
+    showStory(avail[0].id);
+  }
+}
 ];
 
 function showAdvList(){pS('click');activeNav=2;updNav();show('adv-list-screen');renderAdvList()}
