@@ -2,213 +2,1010 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Animal Math Island</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<title>🐾 动物数学岛</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:linear-gradient(180deg,#1a237e 0%,#283593 40%,#3949ab 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation}
-.stars-bg{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0}
-.star-particle{position:absolute;width:4px;height:4px;background:white;border-radius:50%;animation:twinkle 2s ease-in-out infinite alternate}
-@keyframes twinkle{0%{opacity:.3}100%{opacity:1}}
-.gc{position:relative;z-index:1;width:95vw;max-width:480px;padding:10px}
-.hs{display:flex;flex-direction:column;align-items:center;padding:30px 20px;color:white;text-align:center}
-.ht{font-size:32px;margin-bottom:5px;text-shadow:2px 2px 8px rgba(0,0,0,.3)}
-.hsu{font-size:16px;opacity:.8;margin-bottom:30px}
-.hc{background:rgba(255,255,255,.12);border-radius:25px;padding:25px;width:100%;margin-bottom:15px;cursor:pointer;transition:transform .2s,background .2s;border:2px solid rgba(255,255,255,.15)}
-.hc:active{transform:scale(.97);background:rgba(255,255,255,.2)}
-.hc .cr{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;min-height:60px}
-.hc h3{font-size:22px;margin-bottom:5px}
-.hc p{font-size:14px;opacity:.7}
-.ls{display:none;flex-direction:column}
-.ls.sh{display:flex}
-.lh{display:flex;align-items:center;justify-content:space-between;padding:10px 15px;background:rgba(255,255,255,.1);border-radius:20px;margin-bottom:15px;color:white}
-.lb{background:rgba(255,255,255,.2);border:none;color:white;padding:8px 15px;border-radius:12px;font-size:16px;cursor:pointer}
-.lp{display:flex;gap:5px;justify-content:center;margin-bottom:15px}
-.pd{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .3s}
-.pd.ac{background:#ffd740;transform:scale(1.2)}
-.pd.dn{background:#66bb6a}
-.lca{background:white;border-radius:25px;padding:25px 20px;box-shadow:0 10px 40px rgba(0,0,0,.3);min-height:350px;display:flex;flex-direction:column;align-items:center;text-align:center}
-.lv{flex:1;display:flex;align-items:center;justify-content:center;min-height:180px;margin:15px 0}
-.lg{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:320px}
-.le{display:inline-flex;opacity:0;transform:scale(0);transition:all .4s cubic-bezier(.34,1.56,.64,1)}
-.le.sh{opacity:1;transform:scale(1)}
-.lt{font-size:20px;color:#333;line-height:1.6;margin:10px 0}
-.lt .big{font-size:36px;font-weight:bold;color:#1565c0}
-.lt .op{color:#e53935}
-.lt .res{color:#2e7d32;font-weight:bold}
-.ln{display:flex;gap:15px;margin-top:15px}
-.lnb{padding:12px 30px;border:none;border-radius:15px;font-size:18px;font-weight:bold;cursor:pointer}
-.lnb:active{transform:scale(.95)}
-.lnb.prev{background:#e0e0e0;color:#666}
-.lnb.next{background:linear-gradient(145deg,#667eea,#764ba2);color:white}
-.lnb.sg{background:linear-gradient(145deg,#66bb6a,#2e7d32);color:white}
-.lh2{background:#fff3e0;border-radius:12px;padding:10px 15px;font-size:16px;color:#e65100;margin-top:10px}
-.gs{display:none;flex-direction:column}
-.gs.sh{display:flex}
-.tb{display:flex;justify-content:space-between;align-items:center;padding:10px 15px;background:rgba(255,255,255,.1);border-radius:20px;margin-bottom:10px;color:white;font-size:16px}
-.tb .lv2{font-size:20px;font-weight:bold;color:#ffd740}
-.tb .xpb{flex:1;margin:0 10px;height:12px;background:rgba(0,0,0,.3);border-radius:6px;overflow:hidden}
-.tb .xf{height:100%;background:linear-gradient(90deg,#ffd740,#ff6f00);border-radius:6px;transition:width .5s ease}
-.cbr{display:flex;gap:5px;padding:8px 12px;background:rgba(255,255,255,.08);border-radius:15px;margin-bottom:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.cbr::-webkit-scrollbar{display:none}
-.ps{min-width:36px;height:36px;background:rgba(255,255,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;transition:all .3s}
-.ps.em{opacity:.3}
-.ps.nw{animation:pb .6s ease}
-@keyframes pb{0%{transform:scale(0)}50%{transform:scale(1.4)}70%{transform:scale(.9)}100%{transform:scale(1)}}
-.qc{background:linear-gradient(145deg,#ffffff,#f5f5f5);border-radius:25px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,.3);margin-bottom:15px;position:relative;overflow:hidden}
-.qc::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6)}
-.se{text-align:center;margin:10px 0;line-height:1.3;min-height:70px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px}
-.eq{display:flex;align-items:center;justify-content:center;gap:8px;margin:15px 0;font-size:48px;font-weight:bold}
-.eq .nm{color:#1565c0;background:#e3f2fd;width:55px;height:55px;display:flex;align-items:center;justify-content:center;border-radius:12px}
-.eq .opr{color:#e53935;font-size:40px}
-.ab{width:65px;height:65px;border:4px dashed #999;border-radius:15px;background:#fafafa;display:flex;align-items:center;justify-content:center;font-size:45px;color:#2e7d32;transition:all .3s}
-.ab.cr{border-color:#4caf50;background:#e8f5e9;animation:cp .5s ease}
-.ab.wr{border-color:#f44336;background:#ffebee;animation:ws .5s ease}
-@keyframes cp{0%,100%{transform:scale(1)}50%{transform:scale(1.15) rotate(5deg)}}
-@keyframes ws{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
-.np{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:15px 0}
-.nb{height:58px;border:none;border-radius:14px;font-size:26px;font-weight:bold;cursor:pointer;color:white;transition:transform .1s;box-shadow:0 4px 12px rgba(0,0,0,.2)}
-.nb:active{transform:scale(.92)}
-.cbf{text-align:center;font-size:20px;color:#ff6f00;min-height:28px}
-.fb{text-align:center;min-height:45px;display:flex;align-items:center;justify-content:center;font-size:22px;margin:10px 0}
-.mp{display:flex;gap:8px;justify-content:center;margin-bottom:10px}
-.mch{padding:8px 16px;border:2px solid rgba(255,255,255,.3);border-radius:20px;background:rgba(255,255,255,.1);color:white;font-size:16px;cursor:pointer;transition:all .3s}
-.mch.ac{background:rgba(255,255,255,.25);border-color:#ffd740;color:#ffd740}
-.gb{background:rgba(255,255,255,.2);border:none;color:white;padding:8px 15px;border-radius:12px;font-size:14px;cursor:pointer;margin-bottom:10px}
-.fw{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:100}
-.fp{position:absolute;width:8px;height:8px;border-radius:50%}
-.lm{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
-.lm.sh{opacity:1;pointer-events:auto}
-.lmc{background:linear-gradient(145deg,#ffd740,#ff6f00);border-radius:30px;padding:30px;text-align:center;animation:lp .6s ease;max-width:80vw}
-@keyframes lp{0%{transform:scale(0) rotate(-10deg)}60%{transform:scale(1.1) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
-.lmc h2{font-size:36px;color:white;text-shadow:2px 2px 4px rgba(0,0,0,.3)}
-.lmc .nt{font-size:24px;color:white;margin:10px 0}
-.lmb{margin-top:20px;padding:12px 30px;border:none;border-radius:20px;background:white;color:#ff6f00;font-size:20px;font-weight:bold;cursor:pointer}
-.er{position:fixed;pointer-events:none;z-index:50;animation:ef 2s ease-in forwards}
-@keyframes ef{0%{transform:translateY(-50px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(360deg);opacity:0}}
-.gi{display:inline-block;vertical-align:middle}
-.gl{width:56px;height:56px}
-.gm{width:48px;height:48px}
-.gs2{width:24px;height:24px}
-.se .gi{width:52px;height:52px}
-.ps .gi{width:24px;height:24px}
+html,body{height:100%;width:100%;overflow:hidden}
+body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;user-select:none;-webkit-user-select:none;touch-action:manipulation;background:#1a237e}
+
+/* ===== 屏幕管理 ===== */
+.screen{position:fixed;top:0;left:0;right:0;bottom:0;display:none;flex-direction:column;z-index:1}
+.screen.active{display:flex}
+.btn{border:none;border-radius:16px;font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s,box-shadow .15s}
+.btn:active{transform:scale(.93)}
+
+/* ===== 角色创建 ===== */
+#create-screen{background:linear-gradient(180deg,#87CEEB 0%,#98D8F0 40%,#90EE90 75%,#7CCD7C 100%);justify-content:center;align-items:center;padding:20px}
+.create-card{background:white;border-radius:28px;padding:28px 22px;width:100%;max-width:380px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.15)}
+.create-card h1{font-size:26px;margin-bottom:4px}
+.create-card .sub{color:#888;font-size:13px;margin-bottom:20px}
+.avatar-choose{display:flex;justify-content:center;gap:12px;margin-bottom:18px}
+.avatar-opt{width:68px;height:68px;border-radius:50%;border:3px solid #e0e0e0;display:flex;align-items:center;justify-content:center;font-size:34px;cursor:pointer;transition:all .2s;background:#f5f5f5}
+.avatar-opt.selected{border-color:#FF9800;background:#FFF3E0;transform:scale(1.12);box-shadow:0 4px 12px rgba(255,152,0,.35)}
+.name-input{width:100%;padding:14px 18px;border:2px solid #e0e0e0;border-radius:14px;font-size:18px;text-align:center;outline:none;font-family:inherit;margin-bottom:16px;transition:border-color .2s}
+.name-input:focus{border-color:#FF9800}
+.start-btn{width:100%;padding:16px;background:linear-gradient(135deg,#FF9800,#FF5722);color:white;font-size:20px;font-weight:bold;border-radius:16px;box-shadow:0 6px 20px rgba(255,87,34,.3)}
+
+/* ===== 岛屿 ===== */
+#island-screen{background:linear-gradient(180deg,#87CEEB 0%,#B3E5FC 25%,#E1F5FE 45%,#A5D6A7 65%,#81C784 85%,#66BB6A 100%)}
+
+/* HUD */
+.hud{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom-left-radius:18px;border-bottom-right-radius:18px;box-shadow:0 2px 12px rgba(0,0,0,.1);flex-shrink:0;z-index:10}
+.hud-left{display:flex;align-items:center;gap:4px}
+.hud-name{font-size:14px;font-weight:bold;color:#333}
+.hud-level{font-size:12px;color:#FF9800;font-weight:bold}
+.hud-xp-wrap{flex:1;margin:0 8px;height:10px;background:#E0E0E0;border-radius:5px;overflow:hidden;min-width:50px}
+.hud-xp-bar{height:100%;background:linear-gradient(90deg,#FFD54F,#FF8F00);border-radius:5px;transition:width .5s ease}
+.hud-coins{font-size:14px;color:#FF8F00;font-weight:bold}
+.hud-pet{font-size:18px;margin-left:6px}
+
+/* 岛屿场景 */
+.island-scene{flex:1;position:relative;overflow:hidden}
+
+/* 天空 */
+.sun{position:absolute;top:10px;right:16px;width:48px;height:48px;background:radial-gradient(circle,#FFD54F,#FFB300);border-radius:50%;box-shadow:0 0 30px rgba(255,183,0,.5);animation:sunPulse 3s ease-in-out infinite}
+@keyframes sunPulse{0%,100%{box-shadow:0 0 30px rgba(255,183,0,.5)}50%{box-shadow:0 0 50px rgba(255,183,0,.7)}}
+.cloud{position:absolute;background:white;border-radius:50px;opacity:.75}
+.cloud::before,.cloud::after{content:'';position:absolute;background:white;border-radius:50%}
+.cloud-1{width:70px;height:24px;top:12%;left:8%;animation:drift 28s linear infinite}
+.cloud-1::before{width:36px;height:36px;top:-18px;left:12px}
+.cloud-1::after{width:44px;height:44px;top:-22px;left:30px}
+.cloud-2{width:55px;height:20px;top:6%;left:50%;animation:drift 35s linear infinite reverse}
+.cloud-2::before{width:28px;height:28px;top:-14px;left:8px}
+.cloud-2::after{width:32px;height:32px;top:-16px;left:22px}
+@keyframes drift{0%{transform:translateX(0)}100%{transform:translateX(100px)}}
+
+/* 地面 */
+.island-ground{position:absolute;bottom:0;left:-5%;right:-5%;height:52%;background:linear-gradient(180deg,#A5D6A7 0%,#66BB6A 15%,#4CAF50 50%,#388E3C 100%);border-radius:50% 50% 0 0/25% 25% 0 0}
+
+/* 区域标签 */
+.area{position:absolute;bottom:6%;text-align:center;cursor:pointer;transition:transform .2s;z-index:4}
+.area:active{transform:scale(.94)}
+.area-icon{font-size:38px;display:block;margin-bottom:2px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
+.area-label{font-size:10px;color:white;font-weight:bold;text-shadow:0 1px 3px rgba(0,0,0,.4);background:rgba(0,0,0,.2);padding:2px 8px;border-radius:8px;display:inline-block}
+.area.locked{opacity:.4;pointer-events:none}
+.area.locked .area-label::after{content:' 🔒'}
+.area-home{left:5%}.area-home .area-icon{font-size:44px}
+.area-orchard{left:27%}
+.area-beach{left:48%}
+.area-park{left:68%}
+.area-castle{left:85%}
+
+/* 动物 */
+.animal{position:absolute;font-size:34px;cursor:pointer;filter:drop-shadow(0 3px 6px rgba(0,0,0,.2));transition:transform .15s;z-index:5}
+.animal:active{transform:scale(1.25)}
+.animal .badge{position:absolute;top:-10px;right:-14px;font-size:15px;animation:badgeBounce 1s ease-in-out infinite}
+@keyframes badgeBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes animalWalk{0%,100%{transform:translateX(0)}50%{transform:translateX(22px)}}
+
+/* 玩家 */
+.player{position:absolute;bottom:18%;left:18%;font-size:42px;z-index:6;transition:left 1.5s cubic-bezier(.25,.46,.45,.94);filter:drop-shadow(0 3px 8px rgba(0,0,0,.25));user-select:none;-webkit-user-select:none}
+.player-idle{animation:playerBounce 2s ease-in-out infinite}
+.player-walking{animation:playerWalk .35s ease-in-out infinite}
+@keyframes playerBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes playerWalk{0%,100%{transform:translateY(0) rotate(-3deg)}25%{transform:translateY(-10px) rotate(0)}50%{transform:translateY(0) rotate(3deg)}75%{transform:translateY(-10px) rotate(0)}}
+
+/* 脚步特效 */
+.footprint{position:absolute;width:12px;height:8px;background:rgba(139,119,80,.35);border-radius:50%;z-index:3;animation:footFade 1s ease-out forwards;pointer-events:none}
+@keyframes footFade{0%{opacity:.6;transform:scale(1)}100%{opacity:0;transform:scale(.3)}}
+
+/* 点击指示 */
+.tap-indicator{position:absolute;width:24px;height:24px;border:2px solid rgba(255,255,255,.7);border-radius:50%;z-index:7;animation:tapRipple .6s ease-out forwards;pointer-events:none}
+@keyframes tapRipple{0%{transform:scale(0);opacity:1}100%{transform:scale(2.5);opacity:0}}
+
+/* 装饰 */
+.tree{position:absolute;z-index:2;opacity:.85}
+.flower{position:absolute;z-index:3;font-size:16px}
+
+/* 底部导航 */
+.bottom-nav{display:flex;justify-content:space-around;padding:6px 4px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top-left-radius:20px;border-top-right-radius:20px;box-shadow:0 -2px 12px rgba(0,0,0,.08);flex-shrink:0;z-index:10}
+.nav-btn{display:flex;flex-direction:column;align-items:center;padding:4px 10px;border-radius:10px;background:none;color:#888;font-size:10px;gap:1px;min-width:52px;transition:all .2s}
+.nav-btn .nav-icon{font-size:20px}
+.nav-btn.active{color:#FF9800;background:rgba(255,152,0,.1)}
+
+/* ===== 对话气泡 ===== */
+.dialog-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.35);z-index:50;display:none;justify-content:center;align-items:flex-end;padding:16px}
+.dialog-overlay.show{display:flex}
+.dialog-box{background:white;border-radius:24px;padding:20px 18px;width:100%;max-width:400px;box-shadow:0 12px 40px rgba(0,0,0,.2);animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.dialog-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.dialog-avatar{font-size:34px}
+.dialog-name{font-size:15px;font-weight:bold;color:#333}
+.dialog-text{font-size:14px;line-height:1.7;color:#555;margin-bottom:14px;min-height:44px}
+.dialog-emoji{text-align:center;margin:8px 0;font-size:26px}
+.dialog-btn{width:100%;padding:13px;background:linear-gradient(135deg,#4CAF50,#2E7D32);color:white;font-size:16px;font-weight:bold;border-radius:14px;box-shadow:0 4px 12px rgba(76,175,80,.3)}
+.dialog-close{width:100%;padding:10px;background:#f5f5f5;color:#888;font-size:14px;border-radius:14px;margin-top:6px}
+
+/* ===== 题目界面 ===== */
+#q-screen{background:linear-gradient(180deg,#87CEEB 0%,#E1F5FE 35%,#FFF8E1 100%)}
+.q-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;flex-shrink:0}
+.q-back{background:rgba(255,255,255,.8);border:none;padding:8px 14px;border-radius:12px;font-size:14px;cursor:pointer}
+.q-title{font-size:15px;font-weight:bold;color:#333}
+.q-progress{display:flex;gap:6px;justify-content:center;padding:6px;flex-shrink:0}
+.q-dot{width:10px;height:10px;border-radius:50%;background:#E0E0E0;transition:all .3s}
+.q-dot.done{background:#4CAF50}
+.q-dot.current{background:#FF9800;transform:scale(1.3)}
+
+.q-card{background:white;border-radius:28px;padding:20px 18px;margin:8px 12px;flex:1;display:flex;flex-direction:column;align-items:center;box-shadow:0 10px 40px rgba(0,0,0,.12);overflow-y:auto}
+.q-animal{font-size:44px;margin-bottom:6px}
+.q-story{font-size:15px;line-height:1.7;color:#555;text-align:center;margin-bottom:12px;min-height:44px}
+.q-visual{display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;margin:10px 0;min-height:50px}
+.q-visual .vi{font-size:30px;animation:popIn .4s ease both}
+@keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.q-visual .vop{font-size:26px;color:#FF5722;font-weight:bold;margin:0 3px}
+.q-equation{display:flex;align-items:center;justify-content:center;gap:8px;margin:14px 0;font-size:30px;font-weight:bold}
+.q-num{background:#E3F2FD;color:#1565C0;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:12px;font-size:26px}
+.q-op{color:#FF5722;font-size:26px}
+.q-ab{width:52px;height:52px;border:3px dashed #999;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:30px;color:#2E7D32;background:#FAFAFA;transition:all .3s}
+.q-ab.ok{border-color:#4CAF50;background:#E8F5E9;animation:popIn .5s ease}
+.q-ab.no{border-color:#F44336;background:#FFEBEE;animation:shake .5s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+.q-options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:280px;margin-top:10px}
+.q-opt{height:52px;border:none;border-radius:14px;font-size:22px;font-weight:bold;color:white;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.12);transition:transform .15s}
+.q-opt:active{transform:scale(.92)}
+.q-opt:disabled{opacity:.55;cursor:default}
+.q-opt.ok-opt{background:linear-gradient(135deg,#66BB6A,#2E7D32)!important}
+.q-opt.no-opt{background:linear-gradient(135deg,#EF5350,#C62828)!important}
+
+.q-fb{text-align:center;min-height:32px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:bold;margin-top:8px}
+.q-fb.ok-fb{color:#4CAF50}
+.q-fb.no-fb{color:#F44336}
+
+/* ===== 学习 ===== */
+#learn-screen{background:linear-gradient(180deg,#87CEEB 0%,#E1F5FE 50%,#FFF9C4 100%)}
+.l-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;flex-shrink:0}
+.lesson-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 14px;overflow-y:auto}
+.lesson-card{background:white;border-radius:18px;padding:16px 12px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.08);cursor:pointer;transition:transform .2s}
+.lesson-card:active{transform:scale(.95)}
+.lesson-card.locked{opacity:.35;pointer-events:none}
+.lesson-card .lc-icon{font-size:36px;margin-bottom:6px}
+.lesson-card .lc-name{font-size:13px;font-weight:bold;color:#333}
+.lesson-card .lc-desc{font-size:10px;color:#888;margin-top:3px}
+.lesson-card .lc-badge{font-size:9px;background:#4CAF50;color:white;padding:2px 6px;border-radius:6px;display:inline-block;margin-top:4px}
+
+/* 课程步骤 */
+#course-screen{background:linear-gradient(180deg,#87CEEB 0%,#E1F5FE 50%,#FFF9C4 100%)}
+.course-card{background:white;border-radius:28px;padding:24px 18px;margin:8px 12px;flex:1;display:flex;flex-direction:column;align-items:center;box-shadow:0 10px 40px rgba(0,0,0,.12);overflow-y:auto}
+.teacher{font-size:52px;margin-bottom:8px;animation:teacherBounce 2s ease-in-out infinite}
+@keyframes teacherBounce{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-8px) rotate(-3deg)}75%{transform:translateY(-8px) rotate(3deg)}}
+.t-speech{background:#FFF3E0;border-radius:16px;padding:14px;margin:8px 0;font-size:14px;line-height:1.7;color:#555;text-align:center;max-width:310px;position:relative}
+.t-speech::before{content:'';position:absolute;top:-8px;left:50%;transform:translateX(-50%);border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:8px solid #FFF3E0}
+.t-demo{font-size:30px;margin:14px 0;text-align:center;line-height:1.6}
+.t-nav{display:flex;gap:10px;margin-top:14px}
+.t-nav .btn{padding:11px 24px;font-size:15px;font-weight:bold}
+.t-nav .prev-btn{background:#E0E0E0;color:#666}
+.t-nav .next-btn{background:linear-gradient(135deg,#FF9800,#FF5722);color:white;box-shadow:0 4px 12px rgba(255,87,34,.3)}
+
+/* ===== 冒险列表 ===== */
+#adv-list-screen{background:linear-gradient(180deg,#87CEEB 0%,#B3E5FC 40%,#DCEDC8 100%)}
+.al-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;flex-shrink:0}
+.al-list{padding:12px 14px;overflow-y:auto;flex:1}
+.al-card{background:white;border-radius:18px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);cursor:pointer;margin-bottom:10px;transition:transform .2s}
+.al-card:active{transform:scale(.97)}
+.al-card.locked{opacity:.35;pointer-events:none}
+.al-card .al-icon{font-size:36px}
+.al-card .al-name{font-size:14px;font-weight:bold;color:#333}
+.al-card .al-desc{font-size:11px;color:#888;margin-top:2px}
+.al-card .al-stars{color:#FFC107;font-size:13px;margin-top:3px}
+
+/* ===== 冒险地图 ===== */
+#adventure-screen{background:linear-gradient(180deg,#87CEEB 0%,#B3E5FC 40%,#DCEDC8 100%)}
+.av-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;flex-shrink:0}
+.av-map{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+.av-title{font-size:18px;font-weight:bold;color:white;text-shadow:0 2px 6px rgba(0,0,0,.3);margin-bottom:16px;text-align:center}
+.av-path{display:flex;flex-direction:column;align-items:center;gap:0}
+.av-node{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;transition:all .3s}
+.av-node.q-node{background:linear-gradient(135deg,#FFB74D,#FF9800);box-shadow:0 4px 12px rgba(255,152,0,.4);cursor:pointer}
+.av-node.boss-node{background:linear-gradient(135deg,#EF5350,#C62828);box-shadow:0 4px 12px rgba(198,40,40,.4);width:68px;height:68px;font-size:30px}
+.av-node.done-node{background:linear-gradient(135deg,#81C784,#4CAF50)}
+.av-node.lock-node{background:#BDBDBD;opacity:.45;cursor:default}
+.av-node.now-node{animation:nodePulse 1.5s ease-in-out infinite}
+@keyframes nodePulse{0%,100%{box-shadow:0 4px 12px rgba(255,152,0,.4)}50%{box-shadow:0 4px 24px rgba(255,152,0,.7)}}
+.av-line{width:4px;height:18px;background:rgba(255,255,255,.35)}
+
+/* ===== 升级弹窗 ===== */
+.lu-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:100;display:none;justify-content:center;align-items:center}
+.lu-overlay.show{display:flex}
+.lu-card{background:linear-gradient(135deg,#FFD54F,#FF8F00);border-radius:30px;padding:32px 24px;text-align:center;animation:luPop .6s ease;max-width:280px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+@keyframes luPop{0%{transform:scale(0) rotate(-10deg)}60%{transform:scale(1.1) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+.lu-card h2{font-size:30px;color:white;text-shadow:0 2px 4px rgba(0,0,0,.3)}
+.lu-card .lu-title{font-size:20px;color:white;margin:6px 0}
+.lu-card .lu-detail{font-size:13px;color:rgba(255,255,255,.85);margin:10px 0;line-height:1.5}
+.lu-btn{margin-top:14px;padding:13px 32px;background:white;color:#FF8F00;font-size:17px;font-weight:bold;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+
+/* ===== 烟花 ===== */
+.fw{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:99}
+.fp{position:absolute;border-radius:50%}
+
+/* ===== 宠物 ===== */
+#pet-screen{background:linear-gradient(180deg,#E8F5E9 0%,#FFF9C4 50%,#FFECB3 100%)}
+.p-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;flex-shrink:0}
+.p-house{flex:1;padding:12px;overflow-y:auto}
+.p-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.p-card{background:white;border-radius:16px;padding:12px 8px;text-align:center;box-shadow:0 3px 10px rgba(0,0,0,.07);transition:transform .2s}
+.p-card:active{transform:scale(.95)}
+.p-card .p-icon{font-size:36px;margin-bottom:4px}
+.p-card .p-name{font-size:12px;font-weight:bold;color:#333}
+.p-card .p-bonus{font-size:10px;color:#888;margin-top:2px}
+.p-card.empty{background:#F5F5F5;opacity:.45}
+.p-card.empty .p-icon{font-size:28px;opacity:.3}
+.p-card.companion{border:2px solid #FF9800;background:#FFF8E1}
+
+/* ===== 响应式 ===== */
+@media(max-width:360px){
+  .q-options{gap:6px}
+  .q-opt{height:46px;font-size:20px}
+  .q-num{width:42px;height:42px;font-size:22px}
+  .q-ab{width:46px;height:46px;font-size:26px}
+}
 </style>
 </head>
 <body>
-<div class="stars-bg" id="starsBg"></div>
+
+<!-- 角色创建 -->
+<div class="screen" id="create-screen">
+  <div class="create-card">
+    <h1>🏝️ 动物数学岛</h1>
+    <div class="sub">帮小动物解题，开始冒险吧！</div>
+    <div class="avatar-choose" id="avatarChoose">
+      <div class="avatar-opt selected" data-a="boy" onclick="pickAvatar(this)">👦</div>
+      <div class="avatar-opt" data-a="girl" onclick="pickAvatar(this)">👧</div>
+      <div class="avatar-opt" data-a="bear" onclick="pickAvatar(this)">🐻</div>
+      <div class="avatar-opt" data-a="cat" onclick="pickAvatar(this)">🐱</div>
+    </div>
+    <input class="name-input" id="nameInput" type="text" placeholder="输入你的名字" maxlength="8">
+    <button class="btn start-btn" onclick="startGame()">开始冒险 🚀</button>
+  </div>
+</div>
+
+<!-- 岛屿首页 -->
+<div class="screen" id="island-screen">
+  <div class="hud">
+    <div class="hud-left">
+      <span class="hud-name" id="hudName">小宝</span>
+      <span class="hud-level" id="hudLevel">Lv.1</span>
+    </div>
+    <div class="hud-xp-wrap"><div class="hud-xp-bar" id="hudXp" style="width:0%"></div></div>
+    <span class="hud-coins" id="hudCoins">💰0</span>
+    <span class="hud-pet" id="hudPet"></span>
+  </div>
+  <div class="island-scene" id="islandScene">
+    <div class="sun"></div>
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="island-ground"></div>
+    <!-- 树 -->
+    <div class="tree" style="left:20%;bottom:24%;font-size:42px">🌳</div>
+    <div class="tree" style="left:62%;bottom:22%;font-size:40px">🌴</div>
+    <div class="tree" style="left:42%;bottom:27%;font-size:38px">🌲</div>
+    <!-- 花 -->
+    <div class="flower" style="left:12%;bottom:10%">🌸</div>
+    <div class="flower" style="left:32%;bottom:8%">🌼</div>
+    <div class="flower" style="left:52%;bottom:11%">🌺</div>
+    <div class="flower" style="left:72%;bottom:9%">🌻</div>
+    <div class="flower" style="left:88%;bottom:10%">🌷</div>
+    <!-- 区域 -->
+    <div class="area area-home" onclick="goArea('home')"><span class="area-icon">🏠</span><span class="area-label">家</span></div>
+    <div class="area area-orchard locked" id="area-orchard" onclick="goArea('orchard')"><span class="area-icon">🌳</span><span class="area-label">果园</span></div>
+    <div class="area area-beach locked" id="area-beach" onclick="goArea('beach')"><span class="area-icon">🏖️</span><span class="area-label">海滩</span></div>
+    <div class="area area-park locked" id="area-park" onclick="goArea('park')"><span class="area-icon">🎪</span><span class="area-label">游乐场</span></div>
+    <div class="area area-castle locked" id="area-castle" onclick="goArea('castle')"><span class="area-icon">🏰</span><span class="area-label">城堡</span></div>
+    <!-- 动物 -->
+    <div class="animal" style="left:10%;bottom:16%;animation:animalWalk 7s ease-in-out infinite" onclick="talk('cat')"><span id="badge-cat" class="badge">❗</span>🐱</div>
+    <div class="animal" style="left:24%;bottom:18%;animation:animalWalk 9s ease-in-out infinite .5s" onclick="talk('dog')"><span id="badge-dog" class="badge">❗</span>🐶</div>
+    <div class="animal" style="left:36%;bottom:15%;animation:animalWalk 8s ease-in-out infinite 1s" onclick="talk('rabbit')"><span id="badge-rabbit" class="badge">❗</span>🐰</div>
+    <div class="animal" style="left:52%;bottom:17%;animation:animalWalk 10s ease-in-out infinite 2s" onclick="talk('bear')"><span id="badge-bear" class="badge">❗</span>🐻</div>
+    <div class="animal" style="left:68%;bottom:14%;animation:animalWalk 7.5s ease-in-out infinite 1.5s" onclick="talk('fox')"><span id="badge-fox" class="badge">❗</span>🦊</div>
+    <div class="animal" style="left:80%;bottom:16%;animation:animalWalk 8.5s ease-in-out infinite 3s" onclick="talk('panda')"><span id="badge-panda" class="badge">❗</span>🐼</div>
+    <!-- 玩家 -->
+    <div class="player player-idle" id="playerChar">👦</div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="navTo(0,'island-screen')"><span class="nav-icon">🏝️</span>岛屿</button>
+    <button class="nav-btn" onclick="navTo(1)"><span class="nav-icon">📚</span>学习</button>
+    <button class="nav-btn" onclick="navTo(2)"><span class="nav-icon">⚔️</span>冒险</button>
+    <button class="nav-btn" onclick="navTo(3)"><span class="nav-icon">🐾</span>宠物</button>
+  </div>
+</div>
+
+<!-- 对话 -->
+<div class="dialog-overlay" id="dialogOv" onclick="if(event.target===this)closeDlg()">
+  <div class="dialog-box" onclick="event.stopPropagation()">
+    <div class="dialog-header">
+      <span class="dialog-avatar" id="dAvatar">🐱</span>
+      <span class="dialog-name" id="dName">小橘</span>
+    </div>
+    <div class="dialog-text" id="dText"></div>
+    <div class="dialog-emoji" id="dEmoji"></div>
+    <button class="btn dialog-btn" id="dAction" onclick="doTask()">我来帮你！💪</button>
+    <button class="btn dialog-close" onclick="closeDlg()">下次吧</button>
+  </div>
+</div>
+
+<!-- 题目 -->
+<div class="screen" id="q-screen">
+  <div class="q-header">
+    <button class="q-back" onclick="exitQ()">✕ 退出</button>
+    <span class="q-title" id="qTitle">帮小橘解题</span>
+    <span style="width:50px"></span>
+  </div>
+  <div class="q-progress" id="qProg"></div>
+  <div class="q-card">
+    <div class="q-animal" id="qAnimal">🐱</div>
+    <div class="q-story" id="qStory"></div>
+    <div class="q-visual" id="qVis"></div>
+    <div class="q-equation" id="qEq"></div>
+    <div class="q-options" id="qOpts"></div>
+    <div class="q-fb" id="qFb"></div>
+  </div>
+</div>
+
+<!-- 学习课程选择 -->
+<div class="screen" id="learn-screen">
+  <div class="l-header">
+    <button class="q-back" onclick="show('island-screen')">✕ 返回</button>
+    <span class="q-title">📚 动物老师上课</span>
+    <span style="width:50px"></span>
+  </div>
+  <div class="lesson-grid" id="lessonGrid"></div>
+</div>
+
+<!-- 课程步骤 -->
+<div class="screen" id="course-screen">
+  <div class="l-header">
+    <button class="q-back" onclick="showLessons()">← 返回</button>
+    <span class="q-title" id="crsTitle">加法课</span>
+    <span style="width:50px"></span>
+  </div>
+  <div class="course-card" id="crsCard"></div>
+</div>
+
+<!-- 冒险列表 -->
+<div class="screen" id="adv-list-screen">
+  <div class="al-header">
+    <button class="q-back" onclick="show('island-screen')">✕ 返回</button>
+    <span class="q-title">⚔️ 冒险故事</span>
+    <span style="width:50px"></span>
+  </div>
+  <div class="al-list" id="alList"></div>
+</div>
+
+<!-- 冒险地图 -->
+<div class="screen" id="adventure-screen">
+  <div class="av-header">
+    <button class="q-back" onclick="exitAdv()">✕ 退出</button>
+    <span class="q-title" id="avTitle">小橘的钓鱼日</span>
+    <span style="width:50px"></span>
+  </div>
+  <div class="av-map" id="avMap"></div>
+</div>
+
+<!-- 宠物 -->
+<div class="screen" id="pet-screen">
+  <div class="p-header">
+    <button class="q-back" onclick="show('island-screen')">✕ 返回</button>
+    <span class="q-title">🐾 宠物小屋</span>
+    <span style="width:50px"></span>
+  </div>
+  <div class="p-house"><div class="p-grid" id="pGrid"></div></div>
+</div>
+
+<!-- 升级 -->
+<div class="lu-overlay" id="luOv">
+  <div class="lu-card">
+    <h2>🎉 升级了！</h2>
+    <div class="lu-title" id="luLv">Lv.2</div>
+    <div class="lu-detail" id="luDetail"></div>
+    <button class="btn lu-btn" onclick="closeLu()">继续冒险 🎮</button>
+  </div>
+</div>
+
 <div class="fw" id="fw"></div>
-<div class="lm" id="lm"><div class="lmc"><h2 id="lt2">Level Up!</h2><div class="nt" id="ln"></div><button class="lmb" onclick="cLU()">Keep Playing!</button></div></div>
-<div class="gc">
-<div class="hs" id="hs"><div class="ht">Animal Math Island</div><div class="hsu">Learn first, then challenge!</div>
-<div class="hc" onclick="eL('add')"><div class="cr" id="hca"></div><h3>Learn Addition</h3><p>Put things together</p></div>
-<div class="hc" onclick="eL('sub')"><div class="cr" id="hcs"></div><h3>Learn Subtraction</h3><p>How many are left</p></div>
-<div class="hc" onclick="eG()"><div class="cr" style="font-size:48px">&#127918;</div><h3>Challenge</h3><p>Use what you learned!</p></div>
-</div>
-<div class="ls" id="ls"><div class="lh"><button class="lb" onclick="gH()">&#8592; Back</button><span id="ltt">Learn Addition</span><span style="width:60px"></span></div>
-<div class="lp" id="lp"></div>
-<div class="lca"><div class="lv" id="lv2"></div><div class="lt" id="ltx"></div><div class="lh2" id="lh" style="display:none"></div>
-<div class="ln"><button class="lnb prev" onclick="lP()">&#9664; Prev</button><button class="lnb next" id="lnb2" onclick="lN()">Next &#9654;</button></div></div></div>
-<div class="gs" id="gss"><button class="gb" onclick="gH()">&#8592; Back</button>
-<div class="tb"><span class="lv2" id="lvd">Lv.1</span><div class="xpb"><div class="xf" id="xf" style="width:0%"></div></div><span id="sd">0</span></div>
-<div class="cbr" id="cb"></div>
-<div class="mp"><button class="mch ac" data-mode="add">Addition</button><button class="mch" data-mode="sub">Subtraction</button><button class="mch" data-mode="mix">Mixed</button></div>
-<div class="qc"><div class="se" id="sme"></div><div class="eq" id="eq2"></div></div>
-<div class="np" id="np2"></div><div class="cbf" id="cf"></div><div class="fb" id="fb"></div></div>
-</div>
+
 <script>
-var GI={};
-GI.apple='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="40" rx="20" ry="18" fill="#e53935"/><ellipse cx="26" cy="38" rx="6" ry="8" fill="#ef5350" opacity=".5"/><path d="M32 22 Q34 14 40 16" stroke="#4caf50" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="38" cy="16" rx="6" ry="4" fill="#4caf50" transform="rotate(-20 38 16)"/></svg>';
-GI.strawberry='<svg class="gi" viewBox="0 0 64 64"><path d="M32 18C20 18 14 30 14 40C14 52 22 60 32 60C42 60 50 52 50 40C50 30 44 18 32 18Z" fill="#e53935"/><circle cx="26" cy="38" r="1.5" fill="#ffeb3b" opacity=".8"/><circle cx="34" cy="36" r="1.5" fill="#ffeb3b" opacity=".8"/><circle cx="30" cy="44" r="1.5" fill="#ffeb3b" opacity=".8"/><circle cx="38" cy="42" r="1.5" fill="#ffeb3b" opacity=".8"/><path d="M32 18L28 10L32 14L36 10Z" fill="#4caf50"/></svg>';
-GI.flower='<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="24" r="8" fill="#e91e63" opacity=".9"/><circle cx="24" cy="32" r="8" fill="#e91e63" opacity=".9"/><circle cx="40" cy="32" r="8" fill="#e91e63" opacity=".9"/><circle cx="26" cy="22" r="8" fill="#f06292" opacity=".9"/><circle cx="38" cy="22" r="8" fill="#f06292" opacity=".9"/><circle cx="32" cy="30" r="6" fill="#ffeb3b"/></svg>';
-GI.cat='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="40" rx="18" ry="16" fill="#ff9800"/><polygon points="18,28 14,14 26,24" fill="#ff9800"/><polygon points="46,28 50,14 38,24" fill="#ff9800"/><circle cx="26" cy="36" r="3" fill="#333"/><circle cx="38" cy="36" r="3" fill="#333"/><ellipse cx="32" cy="42" rx="3" ry="2" fill="#ff5722"/></svg>';
-GI.dog='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="18" ry="14" fill="#8d6e63"/><ellipse cx="18" cy="30" rx="8" ry="14" fill="#8d6e63" transform="rotate(-10 18 30)"/><ellipse cx="46" cy="30" rx="8" ry="14" fill="#8d6e63" transform="rotate(10 46 30)"/><circle cx="26" cy="38" r="3" fill="#333"/><circle cx="38" cy="38" r="3" fill="#333"/><ellipse cx="32" cy="46" rx="5" ry="3" fill="#333"/></svg>';
-GI.butterfly='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="22" cy="28" rx="14" ry="16" fill="#ab47bc" opacity=".8"/><ellipse cx="42" cy="28" rx="14" ry="16" fill="#ab47bc" opacity=".8"/><ellipse cx="20" cy="44" rx="10" ry="10" fill="#ce93d8" opacity=".7"/><ellipse cx="44" cy="44" rx="10" ry="10" fill="#ce93d8" opacity=".7"/><ellipse cx="32" cy="38" rx="2" ry="16" fill="#4a148c"/></svg>';
-GI.balloon='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="30" rx="16" ry="20" fill="#42a5f5"/><ellipse cx="28" cy="26" rx="4" ry="6" fill="#90caf9" opacity=".5"/><polygon points="30,48 32,52 34,48" fill="#42a5f5"/><line x1="32" y1="52" x2="32" y2="62" stroke="#90caf9" stroke-width="1"/></svg>';
-GI.cookie='<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="34" r="20" fill="#d4a574"/><circle cx="24" cy="28" r="4" fill="#5d4037"/><circle cx="36" cy="26" r="3" fill="#5d4037"/><circle cx="30" cy="40" r="3.5" fill="#5d4037"/><circle cx="40" cy="36" r="3" fill="#5d4037"/></svg>';
-GI.candy='<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="32" r="16" fill="#e91e63"/><circle cx="28" cy="28" r="4" fill="#f48fb1" opacity=".6"/><path d="M16 32Q8 24 4 16" stroke="#e91e63" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M48 32Q56 24 60 16" stroke="#e91e63" stroke-width="3" fill="none" stroke-linecap="round"/></svg>';
-GI.fish='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="30" cy="34" rx="20" ry="14" fill="#26a69a"/><polygon points="50,34 62,24 62,44" fill="#26a69a"/><circle cx="22" cy="30" r="3" fill="#333"/><circle cx="22" cy="30" r="1" fill="#fff"/></svg>';
-GI.gift='<svg class="gi" viewBox="0 0 64 64"><rect x="14" y="30" width="36" height="26" rx="3" fill="#7b1fa2"/><rect x="12" y="26" width="40" height="8" rx="2" fill="#9c27b0"/><rect x="29" y="26" width="6" height="30" fill="#e1bee7"/><ellipse cx="26" cy="24" rx="8" ry="6" fill="#e91e63"/><ellipse cx="38" cy="24" rx="8" ry="6" fill="#e91e63"/></svg>';
-GI.pizza='<svg class="gi" viewBox="0 0 64 64"><path d="M14 50L32 10L50 50Z" fill="#ffcc02"/><circle cx="28" cy="36" r="4" fill="#e53935"/><circle cx="36" cy="38" r="3" fill="#e53935"/><circle cx="32" cy="44" r="3.5" fill="#e53935"/></svg>';
-GI.icecream='<svg class="gi" viewBox="0 0 64 64"><polygon points="24,40 40,40 32,60" fill="#d4a574"/><circle cx="32" cy="22" r="14" fill="#f48fb1"/><circle cx="32" cy="8" r="8" fill="#f48fb1"/></svg>';
-GI.chick='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="38" rx="16" ry="14" fill="#ffeb3b"/><circle cx="32" cy="24" r="12" fill="#ffeb3b"/><circle cx="28" cy="22" r="2.5" fill="#333"/><circle cx="36" cy="22" r="2.5" fill="#333"/><polygon points="30,26 34,26 32,30" fill="#ff9800"/></svg>';
-GI.egg='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="38" rx="18" ry="20" fill="#fff9c4"/><ellipse cx="32" cy="38" rx="16" ry="18" fill="#fff176"/></svg>';
-GI.rabbit='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="44" rx="18" ry="14" fill="#f5f5f5"/><ellipse cx="24" cy="14" rx="6" ry="16" fill="#f5f5f5" transform="rotate(-5 24 14)"/><ellipse cx="40" cy="14" rx="6" ry="16" fill="#f5f5f5" transform="rotate(5 40 14)"/><circle cx="26" cy="40" r="3" fill="#333"/><circle cx="38" cy="40" r="3" fill="#333"/><ellipse cx="32" cy="46" rx="2" ry="1.5" fill="#f48fb1"/></svg>';
-GI.fox='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="16" ry="12" fill="#ff9800"/><circle cx="32" cy="30" r="14" fill="#ff9800"/><polygon points="20,20 14,8 28,18" fill="#ff9800"/><polygon points="44,20 50,8 36,18" fill="#ff9800"/><circle cx="26" cy="28" r="2.5" fill="#333"/><circle cx="38" cy="28" r="2.5" fill="#333"/></svg>';
-GI.panda='<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="36" r="18" fill="#f5f5f5"/><circle cx="18" cy="22" r="8" fill="#333"/><circle cx="46" cy="22" r="8" fill="#333"/><ellipse cx="24" cy="32" rx="7" ry="6" fill="#333"/><ellipse cx="40" cy="32" rx="7" ry="6" fill="#333"/><circle cx="24" cy="32" r="2" fill="#fff"/><circle cx="40" cy="32" r="2" fill="#fff"/><ellipse cx="32" cy="40" rx="3" ry="2" fill="#333"/></svg>';
-GI.koala='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="16" ry="14" fill="#9e9e9e"/><circle cx="32" cy="28" r="16" fill="#bdbdbd"/><circle cx="16" cy="22" r="8" fill="#9e9e9e"/><circle cx="16" cy="22" r="4" fill="#e0e0e0"/><circle cx="48" cy="22" r="8" fill="#9e9e9e"/><circle cx="48" cy="22" r="4" fill="#e0e0e0"/><ellipse cx="26" cy="26" rx="4" ry="3" fill="#333"/><ellipse cx="38" cy="26" rx="4" ry="3" fill="#333"/></svg>';
-GI.lion='<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="32" r="20" fill="#ffcc02"/><circle cx="32" cy="34" r="14" fill="#ffe082"/><circle cx="26" cy="30" r="2.5" fill="#333"/><circle cx="38" cy="30" r="2.5" fill="#333"/><ellipse cx="32" cy="38" rx="3" ry="2" fill="#333"/></svg>';
-GI.tiger='<svg class="gi" viewBox="0 0 64 64"><circle cx="32" cy="34" r="18" fill="#ff9800"/><circle cx="32" cy="36" r="12" fill="#ffe0b2"/><circle cx="26" cy="32" r="2.5" fill="#333"/><circle cx="38" cy="32" r="2.5" fill="#333"/><ellipse cx="32" cy="40" rx="3" ry="2" fill="#333"/></svg>';
-GI.bear='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="18" ry="14" fill="#8d6e63"/><circle cx="32" cy="28" r="16" fill="#8d6e63"/><circle cx="18" cy="16" r="7" fill="#8d6e63"/><circle cx="46" cy="16" r="7" fill="#8d6e63"/><circle cx="26" cy="26" r="3" fill="#333"/><circle cx="38" cy="26" r="3" fill="#333"/><ellipse cx="32" cy="34" rx="6" ry="4" fill="#d7ccc8"/></svg>';
-GI.dragon='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="40" rx="16" ry="14" fill="#4caf50"/><circle cx="32" cy="26" r="14" fill="#4caf50"/><circle cx="26" cy="24" r="4" fill="#fff"/><circle cx="26" cy="24" r="2" fill="#333"/><circle cx="38" cy="24" r="4" fill="#fff"/><circle cx="38" cy="24" r="2" fill="#333"/></svg>';
-GI.unicorn='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="42" rx="16" ry="14" fill="#f8f8f8"/><circle cx="32" cy="26" r="14" fill="#f8f8f8"/><circle cx="26" cy="24" r="3" fill="#333"/><circle cx="38" cy="24" r="3" fill="#333"/><ellipse cx="32" cy="32" rx="2" ry="1.5" fill="#f48fb1"/><polygon points="32,8 28,20 36,20" fill="#ffd740"/></svg>';
-GI.octopus='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="32" cy="26" rx="18" ry="16" fill="#ab47bc"/><circle cx="24" cy="24" r="4" fill="#fff"/><circle cx="40" cy="24" r="4" fill="#fff"/><circle cx="24" cy="24" r="2" fill="#333"/><circle cx="40" cy="24" r="2" fill="#333"/></svg>';
-GI.shark='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="30" cy="34" rx="22" ry="14" fill="#78909c"/><polygon points="52,34 62,28 62,40" fill="#78909c"/><circle cx="22" cy="30" r="3" fill="#333"/></svg>';
-GI.tropicalfish='<svg class="gi" viewBox="0 0 64 64"><ellipse cx="28" cy="34" rx="18" ry="12" fill="#ff7043"/><polygon points="46,34 58,26 58,42" fill="#ff7043"/><circle cx="20" cy="30" r="3" fill="#333"/><circle cx="20" cy="30" r="1" fill="#fff"/></svg>';
-GI.star='<svg class="gi" viewBox="0 0 64 64"><polygon points="32,8 38,24 56,24 42,36 46,54 32,44 18,54 22,36 8,24 26,24" fill="#ffd740"/></svg>';
-GI.crown='<svg class="gi" viewBox="0 0 64 64"><path d="M10 44L14 20L24 32L32 14L40 32L50 20L54 44Z" fill="#ffd740"/><rect x="10" y="44" width="44" height="8" rx="2" fill="#ffab00"/></svg>';
-GI.diamond='<svg class="gi" viewBox="0 0 64 64"><polygon points="32,8 52,24 32,56 12,24" fill="#29b6f6"/><polygon points="32,8 52,24 32,28" fill="#4fc3f7"/></svg>';
-GI.wind='<svg class="gi" viewBox="0 0 64 64"><path d="M8 32Q20 20 32 32Q44 44 56 32" stroke="#90a4ae" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M16 24Q28 16 40 24" stroke="#b0bec5" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/></svg>';
-var EM={};
-EM['\uD83C\uDF4E']='apple';EM['\uD83C\uDF4A']='apple';EM['\uD83D\uDC31']='cat';EM['\uD83D\uDC36']='dog';
-EM['\uD83C\uDF38']='flower';EM['\uD83C\uDF53']='strawberry';EM['\uD83C\uDF88']='balloon';EM['\uD83E\uDD8B']='butterfly';
-EM['\uD83C\uDF6A']='cookie';EM['\uD83C\uDF6C']='candy';EM['\uD83D\uDC1F']='fish';EM['\uD83C\uDF81']='gift';
-EM['\uD83C\uDF55']='pizza';EM['\uD83C\uDF66']='icecream';EM['\uD83D\uDC25']='chick';EM['\uD83D\uDC23']='egg';
-EM['\uD83D\uDC24']='chick';EM['\uD83D\uDC30']='rabbit';EM['\uD83E\uDD8A']='fox';EM['\uD83D\uDC3C']='panda';
-EM['\uD83D\uDC28']='koala';EM['\uD83E\uDD81']='lion';EM['\uD83D\uDC2F']='tiger';EM['\uD83D\uDC3B']='bear';
-EM['\uD83D\uDC32']='dragon';EM['\uD83E\uDD84']='unicorn';EM['\uD83D\uDC09']='dragon';EM['\uD83D\uDC19']='octopus';
-EM['\uD83D\uDC20']='tropicalfish';EM['\uD83E\uDD88']='shark';EM['\uD83D\uDC51']='crown';EM['\uD83C\uDF1F']='star';
-EM['\uD83D\uDC8E']='diamond';EM['\uD83D\uDE0B']='cookie';EM['\uD83D\uDCA8']='wind';EM['\uD83D\uDC46']='';
-function icon(k,s){var sz=s||'gm';return '<span class="gi '+sz+'">'+(GI[k]||'')+'</span>';}
-function c2h(ch,sz){var k=EM[ch];if(k&&GI[k])return icon(k,sz);if(k==='')return '';return ch;}
-function s2h(str,sz){var r='',c=[...str];for(var i=0;i<c.length;i++){if(c[i].trim())r+=c2h(c[i],sz);}return r;}
-function rI(str,sz){return str.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uFE00-\uFE0F]/g,function(m){return c2h(m,sz)||m;});}
+/* ===== 音效 ===== */
 var AC=window.AudioContext||window.webkitAudioContext,ax;
-function gA(){if(!ax)ax=new AC();return ax;}
-function pS(t){try{var c=gA();if(t==='correct'){[523,659,784].forEach(function(f,i){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(f,c.currentTime+i*.1);g.gain.setValueAtTime(.3,c.currentTime+i*.1);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+i*.1+.15);o.start(c.currentTime+i*.1);o.stop(c.currentTime+i*.1+.15);});}else if(t==='wrong'){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sawtooth';o.frequency.setValueAtTime(200,c.currentTime);o.frequency.setValueAtTime(150,c.currentTime+.15);g.gain.setValueAtTime(.2,c.currentTime);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+.3);o.start(c.currentTime);o.stop(c.currentTime+.3);}else if(t==='levelup'){[523,587,659,698,784,880,988,1047].forEach(function(f,i){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(f,c.currentTime+i*.1);g.gain.setValueAtTime(.2,c.currentTime+i*.1);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+i*.1+.15);o.start(c.currentTime+i*.1);o.stop(c.currentTime+i*.1+.15);});}else if(t==='click'){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(800,c.currentTime);g.gain.setValueAtTime(.1,c.currentTime);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+.05);o.start(c.currentTime);o.stop(c.currentTime+.05);}else if(t==='appear'){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(600+Math.random()*400,c.currentTime);g.gain.setValueAtTime(.15,c.currentTime);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+.2);o.start(c.currentTime);o.stop(c.currentTime+.2);}}catch(e){}}
-var _A='\uD83C\uDF4E',_C='\uD83D\uDC31',_S='\uD83C\uDF53',_F='\uD83C\uDF38',_K='\uD83C\uDF6A',_B='\uD83C\uDF88',_W='\uD83D\uDCA8',_N='\uD83C\uDF6C',_I='\uD83D\uDC1F',_E='\uD83D\uDE0B';
-var LS={add:[
-{title:"What is Addition?",type:"concept",a:2,b:1,text:'Addition means <span class="op">putting things together</span>',hint:"\uD83D\uDC46 Look at the apples below!",steps:[{text:"Xiao Ming has <span class='big'>2</span> apples",emoji:_A+_A},{text:"Mom gives <span class='big'>1</span> more",emoji:_A},{text:"Count them all together...",emoji:_A+_A+_A},{text:'<span class=\'big\'>2</span> <span class=\'op\'>+</span> <span class=\'big\'>1</span> <span class=\'op\'>=</span> <span class=\'res\'>3</span>',emoji:_A+_A+_A}]},
-{title:"Another Example",type:"concept",a:3,b:2,text:'3 kittens <span class="op">plus</span> 2 kittens',hint:"How many kittens total?",steps:[{text:"<span class='big'>3</span> kittens in yard",emoji:_C+_C+_C},{text:"<span class='big'>2</span> more come",emoji:_C+_C},{text:"Count them all...",emoji:_C+_C+_C+_C+_C},{text:'<span class=\'big\'>3</span> <span class=\'op\'>+</span> <span class=\'big\'>2</span> <span class=\'op\'>=</span> <span class=\'res\'>5</span>',emoji:_C+_C+_C+_C+_C}]},
-{title:"Your Turn!",type:"practice",a:1,b:1,text:'<span class=\'big\'>1</span> <span class=\'op\'>+</span> <span class=\'big\'>1</span> <span class=\'op\'>=</span> <span class=\'res\'>?</span>',hint:"One strawberry + one = ?"},
-{title:"Try Again!",type:"practice",a:2,b:3,text:'<span class=\'big\'>2</span> <span class=\'op\'>+</span> <span class=\'big\'>3</span> <span class=\'op\'>=</span> <span class=\'res\'>?</span>',hint:_F+_F+" + "+_F+_F+_F+" = ?"}
-],sub:[
-{title:"What is Subtraction?",type:"concept",a:3,b:1,text:'Subtraction means <span class="op">taking some away</span>',hint:"\uD83D\uDC46 See how many eaten!",steps:[{text:"<span class='big'>3</span> cookies on plate",emoji:_K+_K+_K},{text:"Ate <span class='big'>1</span>",emoji:_E},{text:"How many left?",emoji:_K+_K},{text:'<span class=\'big\'>3</span> <span class=\'op\'>-</span> <span class=\'big\'>1</span> <span class=\'op\'>=</span> <span class=\'res\'>2</span>',emoji:_K+_K}]},
-{title:"Another Example",type:"concept",a:5,b:2,text:'5 balloons, <span class="op">2 flew away</span>',hint:"How many left?",steps:[{text:"You have <span class='big'>5</span> balloons",emoji:_B+_B+_B+_B+_B},{text:"<span class='big'>2</span> flew away",emoji:_W+_W},{text:"How many left?",emoji:_B+_B+_B},{text:'<span class=\'big\'>5</span> <span class=\'op\'>-</span> <span class=\'big\'>2</span> <span class=\'op\'>=</span> <span class=\'res\'>3</span>',emoji:_B+_B+_B}]},
-{title:"Your Turn!",type:"practice",a:2,b:1,text:'<span class=\'big\'>2</span> <span class=\'op\'>-</span> <span class=\'big\'>1</span> <span class=\'op\'>=</span> <span class=\'res\'>?</span>',hint:"2 candies, eat 1, left?"},
-{title:"Try Again!",type:"practice",a:4,b:2,text:'<span class=\'big\'>4</span> <span class=\'op\'>-</span> <span class=\'big\'>2</span> <span class=\'op\'>=</span> <span class=\'res\'>?</span>',hint:"4 fish, 2 swam away, left?"}
-]};
-var LVS=[{l:1,t:'Math Baby',x:5,p:['chick','','chick']},{l:2,t:'Counting Pro',x:10,p:['rabbit','','']},{l:3,t:'Math Whiz',x:15,p:['fox','','koala']},{l:4,t:'Math Genius',x:20,p:['lion','','']},{l:5,t:'Super Math King',x:25,p:['dragon','','dragon']},{l:6,t:'Math Explorer',x:30,p:['octopus','','']},{l:7,t:'Ultimate Master',x:50,p:['crown','','diamond']}];
-var SC={add:['apple','apple','cat','dog','flower','strawberry','balloon','butterfly'],sub:['cookie','candy','fish','gift','pizza','icecream']};
-var PR=['Awesome!','So smart!','Correct!','Amazing!','Great!','Perfect!','Genius!','Cool!','Wow!','Super!','Fantastic!','Unstoppable!'];
-var WR=['So close!','Think again~','No worries!','Almost!','Keep trying!','Next time!'];
-var G={mode:'add',xp:0,lv:1,tx:0,co:0,mx:0,cl:[],ca:null,an:false,tc:0};
-var LR={type:'add',li:0,si:0,an:false};
-var hs=document.getElementById('hs'),ls=document.getElementById('ls'),gss=document.getElementById('gss');
-var lv2=document.getElementById('lv2'),ltx=document.getElementById('ltx'),lh=document.getElementById('lh'),lnb2=document.getElementById('lnb2'),lp=document.getElementById('lp');
-function sS(s){hs.style.display='none';ls.classList.remove('sh');gss.classList.remove('sh');if(s==='home')hs.style.display='block';else s.classList.add('sh');}
-function gH(){pS('click');sS('home');}
-function iH(){document.getElementById('hca').innerHTML=icon('apple','gm')+' <span style="font-size:32px;color:#e53935;font-weight:bold">+</span> '+icon('apple','gm');document.getElementById('hcs').innerHTML=icon('cookie','gm')+' <span style="font-size:32px;color:#e53935;font-weight:bold">-</span>';}
-function eL(t){pS('click');LR.type=t;LR.li=0;LR.si=0;LR.an=false;document.getElementById('ltt').textContent=t==='add'?'Learn Addition':'Learn Subtraction';sS(ls);rL();}
-function rL(){var ls=LS[LR.type],le=ls[LR.li],ts=le.steps?le.steps.length:1;lp.innerHTML='';for(var i=0;i<ts;i++){var d=document.createElement('div');d.className='pd';if(i<LR.si)d.classList.add('dn');if(i===LR.si)d.classList.add('ac');lp.appendChild(d);}if(le.type==='concept')rCS(le);else rPS(le);}
-function rCS(le){var st=le.steps[LR.si],il=LR.si>=le.steps.length-1;lv2.innerHTML='';var g=document.createElement('div');g.className='lg';var ch=[...st.emoji];for(var i=0;i<ch.length;i++){var sp=document.createElement('span');sp.className='le';sp.innerHTML=c2h(ch[i],'gl');g.appendChild(sp);(function(s,idx){setTimeout(function(){s.classList.add('sh');pS('appear');},idx*300);})(sp,i);}lv2.appendChild(g);ltx.innerHTML=st.text;if(le.hint&&LR.si===0){lh.style.display='block';lh.innerHTML=rI(le.hint,'gs2');}else{lh.style.display='none';}lnb2.textContent=il?'Next Lesson':'Next';lnb2.className='lnb next';lnb2.onclick=lN;}
-function rPS(le){LR.an=false;var ans=le.a+(LR.type==='add'?le.b:-le.b);LR.pa=ans;lv2.innerHTML='';var h=document.createElement('div');h.style.cssText='font-size:35px;text-align:center;line-height:1.6;';if(LR.type==='add'){var ea=['strawberry','','','',''][LR.li%5],html='';for(var i=0;i<le.a;i++)html+=icon(ea,'gm');html+=' <span style="font-size:30px">+</span> ';for(var i=0;i<le.b;i++)html+=icon(ea,'gm');h.innerHTML=html;}else{var ea2=['candy','','',''][LR.li%4],html2='';for(var i=0;i<le.a;i++)html2+=icon(ea2,'gm');h.innerHTML=html2;}lv2.appendChild(h);ltx.innerHTML=le.text;lh.style.display='block';lh.innerHTML=rI(le.hint,'gs2');var np=document.createElement('div');np.className='np';np.style.marginTop='15px';var cs=['#ff6b6b','#ffa726','#ffee58','#66bb6a','#42a5f5','#ab47bc','#26c6da','#ef5350','#ffa726','#ffee58','#66bb6a'];for(var i=0;i<=10;i++){var b=document.createElement('button');b.className='nb';b.textContent=i;b.style.height='50px';b.style.fontSize='22px';b.style.background='linear-gradient(145deg,'+cs[i]+','+dk(cs[i])+')';(function(n,l,bb){b.onclick=function(){cLA(n,l,bb);};})(i,le,b);np.appendChild(b);}lv2.appendChild(np);lnb2.style.display='none';}
-function dk(c){return c.replace(/[a-f0-9]{2}$/gi,function(m){return Math.max(0,parseInt(m,16)-40).toString(16).padStart(2,'0');});}
-function cLA(num,le,btn){if(LR.an)return;if(num===LR.pa){LR.an=true;pS('correct');btn.style.background='linear-gradient(145deg,#66bb6a,#2e7d32)';var np=lv2.querySelector('.np');if(np)np.style.display='none';ltx.innerHTML=le.text.replace(/\?/g,'<span class="res">'+LR.pa+'</span>');lh.innerHTML='Correct! Great job!';lh.style.background='#e8f5e9';lh.style.color='#2e7d32';lnb2.style.display='';lnb2.textContent=LR.li<LS[LR.type].length-1?'Next Lesson':'Go Challenge!';lnb2.className=LR.li<LS[LR.type].length-1?'lnb next':'lnb sg';lnb2.onclick=function(){if(LR.li>=LS[LR.type].length-1)eG();else lN();};}else{pS('wrong');btn.style.background='linear-gradient(145deg,#ef5350,#c62828)';btn.style.transform='scale(.9)';setTimeout(function(){btn.style.background='';btn.style.transform='';},500);LR.an=true;var np2=lv2.querySelector('.np');if(np2)np2.style.display='none';lh.innerHTML='Not quite, answer is <strong>'+LR.pa+'</strong>!';lh.style.background='#fff3e0';lh.style.color='#e65100';lnb2.style.display='';lnb2.textContent=LR.li<LS[LR.type].length-1?'Next Lesson':'Go Challenge!';lnb2.className=LR.li<LS[LR.type].length-1?'lnb next':'lnb sg';lnb2.onclick=function(){if(LR.li>=LS[LR.type].length-1)eG();else lN();};}}
-function lN(){pS('click');var ls=LS[LR.type],le=ls[LR.li];if(le.type==='concept'){if(LR.si<le.steps.length-1){LR.si++;rL();}else if(LR.li<ls.length-1){LR.li++;LR.si=0;rL();}}else{if(LR.li<ls.length-1){LR.li++;LR.si=0;LR.an=false;lnb2.style.display='';rL();}}}
-function lP(){pS('click');var ls=LS[LR.type],le=ls[LR.li];if(le.type==='concept'&&LR.si>0){LR.si--;rL();}else if(le.type==='concept'&&LR.si===0&&LR.li>0){LR.li--;var p=ls[LR.li];LR.si=p.steps?p.steps.length-1:0;LR.an=false;lnb2.style.display='';rL();}else if(le.type==='practice'&&LR.li>0){LR.li--;LR.si=0;LR.an=false;lnb2.style.display='';rL();}}
-function eG(){pS('click');sS(gss);iG();}
-function iG(){iSt();iNp();iCB();gQ();uD();var ch=document.querySelectorAll('.mch');for(var i=0;i<ch.length;i++){(function(btn){var nb=btn.cloneNode(true);btn.parentNode.replaceChild(nb,btn);nb.onclick=function(){pS('click');document.querySelectorAll('.mch').forEach(function(b){b.classList.remove('ac');});nb.classList.add('ac');G.mode=nb.dataset.mode;G.co=0;document.getElementById('cf').textContent='';gQ();};})(ch[i]);}}
-function iSt(){var c=document.getElementById('starsBg');if(c.children.length>0)return;for(var i=0;i<30;i++){var s=document.createElement('div');s.className='star-particle';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.animationDelay=Math.random()*2+'s';c.appendChild(s);}}
-function iNp(){var el=document.getElementById('np2');if(el.children.length>0)return;var cs=['#ff6b6b','#ffa726','#ffee58','#66bb6a','#42a5f5','#ab47bc','#26c6da','#ef5350','#ffa726','#ffee58','#66bb6a'];for(var i=0;i<=10;i++){var b=document.createElement('button');b.className='nb';b.textContent=i;b.style.background='linear-gradient(145deg,'+cs[i]+','+dk(cs[i])+')';(function(n){b.onclick=function(){cA(n);};})(i);el.appendChild(b);}}
-function iCB(){var el=document.getElementById('cb');el.innerHTML='';for(var i=0;i<G.cl.length;i++){var s=document.createElement('div');s.className='ps';s.innerHTML=icon(G.cl[i],'gs2');el.appendChild(s);}for(var j=G.cl.length;j<Math.min(20,G.cl.length+3);j++){var s2=document.createElement('div');s2.className='ps em';s2.textContent='?';el.appendChild(s2);}}
-function gQ(){G.an=false;document.getElementById('fb').textContent='';document.getElementById('fb').style.color='';var md=G.mode;if(md==='mix')md=Math.random()<.5?'add':'sub';var mx=G.lv>=5?10:G.lv>=3?8:5;var a,b,ans,op;if(md==='add'){a=Math.floor(Math.random()*(mx+1));b=Math.floor(Math.random()*(mx+1-a));ans=a+b;op='+';}else{a=Math.floor(Math.random()*(mx+1));b=Math.floor(Math.random()*(a+1));ans=a-b;op='-';}G.ca=ans;var sl=SC[md],sk=sl[Math.floor(Math.random()*sl.length)],is=icon(sk,'gm');if(op==='+'){var h='';for(var i=0;i<a;i++)h+=is;h+=' <span style="font-size:36px">+</span> ';for(var i=0;i<b;i++)h+=is;document.getElementById('sme').innerHTML=h;}else{var r=a-b,h2='';for(var i=0;i<r;i++)h2+=is;if(b>0){var cr='';for(var i=0;i<b;i++)cr+=is;h2+='<span style="opacity:.35;text-decoration:line-through">'+cr+'</span>'+icon('wind','gs2');}document.getElementById('sme').innerHTML=h2;}document.getElementById('eq2').innerHTML='<div class="nm">'+a+'</div><div class="opr">'+op+'</div><div class="nm">'+b+'</div><div class="equals">=</div><div class="ab" id="ab2">?</div>';}
-function cA(num){if(G.an)return;G.an=true;var bx=document.getElementById('ab2');bx.textContent=num;if(num===G.ca){G.tc++;G.co++;if(G.co>G.mx)G.mx=G.co;bx.classList.add('cr');pS('correct');var xg=1+Math.floor(G.co/3);G.xp+=xg;G.tx+=xg;document.getElementById('fb').textContent=PR[Math.floor(Math.random()*PR.length)];document.getElementById('fb').style.color='#4caf50';if(G.co>=3)document.getElementById('cf').textContent='Combo x'+G.co+'!';var ld=LVS.find(function(l){return l.l===G.lv;})||LVS[LVS.length-1];if(G.tc%3===0){var pt=ld.p[Math.floor(Math.random()*ld.p.length)];G.cl.push(pt);setTimeout(function(){sER(pt);},300);}if(G.co>=5)cFW();uD();var nl=LVS.find(function(l){return l.l===G.lv+1;}),cl=LVS.find(function(l){return l.l===G.lv;})||LVS[0];if(G.xp>=cl.x&&nl){G.lv++;G.xp=0;setTimeout(function(){sLU(nl);},800);}setTimeout(gQ,1500);}else{G.co=0;document.getElementById('cf').textContent='';bx.classList.add('wr');pS('wrong');document.getElementById('fb').textContent=WR[Math.floor(Math.random()*WR.length)]+' Answer: '+G.ca;document.getElementById('fb').style.color='#f44336';uD();setTimeout(function(){bx.classList.remove('wr');G.an=false;bx.textContent='?';document.getElementById('fb').textContent='Try again!';document.getElementById('fb').style.color='#ff9800';},2500);}}
-function uD(){var c=LVS.find(function(l){return l.l===G.lv;})||LVS[0];document.getElementById('xf').style.width=Math.min(100,(G.xp/c.x)*100)+'%';document.getElementById('lvd').textContent='Lv.'+G.lv;document.getElementById('sd').textContent=G.tx;iCB();}
-function sLU(lv){pS('levelup');document.getElementById('lt2').textContent='Level Up! Lv.'+lv.l;document.getElementById('ln').textContent='Title: '+lv.t;document.getElementById('lm').classList.add('sh');cFW();}
-function cLU(){document.getElementById('lm').classList.remove('sh');pS('click');}
-function cFW(){var cs=['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff6f00','#ab47bc'];for(var f=0;f<3;f++){(function(ff){setTimeout(function(){var cx=Math.random()*window.innerWidth,cy=Math.random()*(window.innerHeight/2);for(var i=0;i<15;i++){var p=document.createElement('div');p.className='fp';p.style.left=cx+'px';p.style.top=cy+'px';p.style.background=cs[Math.floor(Math.random()*cs.length)];var a=(Math.PI*2/15)*i,d=80+Math.random()*60;p.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+Math.cos(a)*d+'px,'+Math.sin(a)*d+'px) scale(0)',opacity:0}],{duration:1e3,easing:'ease-out',fill:'forwards'});document.getElementById('fw').appendChild(p);setTimeout(function(){p.remove();},1e3);}},ff*300);})(f);}}
-function sER(key){for(var i=0;i<8;i++){(function(ii){setTimeout(function(){var el=document.createElement('div');el.className='er';el.innerHTML=icon(key,'gm');el.style.left=Math.random()*90+5+'%';document.body.appendChild(el);setTimeout(function(){el.remove();},2e3);},ii*100);})(i);}}
-sS('home');iSt();iNp();iH();
+function gA(){if(!ax)ax=new AC();return ax}
+function pS(t){try{var c=gA();if(t==='ok'){[523,659,784].forEach(function(f,i){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(f,c.currentTime+i*.1);g.gain.setValueAtTime(.22,c.currentTime+i*.1);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+i*.1+.15);o.start(c.currentTime+i*.1);o.stop(c.currentTime+i*.1+.15)})}else if(t==='no'){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sawtooth';o.frequency.setValueAtTime(200,c.currentTime);o.frequency.setValueAtTime(150,c.currentTime+.15);g.gain.setValueAtTime(.12,c.currentTime);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+.3);o.start(c.currentTime);o.stop(c.currentTime+.3)}else if(t==='lu'){[523,587,659,698,784,880,988,1047].forEach(function(f,i){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(f,c.currentTime+i*.08);g.gain.setValueAtTime(.18,c.currentTime+i*.08);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+i*.08+.12);o.start(c.currentTime+i*.08);o.stop(c.currentTime+i*.08+.12)})}else if(t==='click'){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(800,c.currentTime);g.gain.setValueAtTime(.06,c.currentTime);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+.05);o.start(c.currentTime);o.stop(c.currentTime+.05)}else if(t==='pop'){var o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(600+Math.random()*400,c.currentTime);g.gain.setValueAtTime(.1,c.currentTime);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+.12);o.start(c.currentTime);o.stop(c.currentTime+.12)}}catch(e){}}
+
+/* ===== 烟花 ===== */
+function fw(n){n=n||3;var cs=['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff6f00','#ab47bc'];for(var f=0;f<n;f++){(function(ff){setTimeout(function(){var cx=Math.random()*innerWidth,cy=Math.random()*innerHeight*.5;for(var i=0;i<14;i++){var p=document.createElement('div');p.className='fp';p.style.cssText='left:'+cx+'px;top:'+cy+'px;width:7px;height:7px;background:'+cs[ri(0,cs.length-1)];var a=Math.PI*2/14*i,d=50+Math.random()*50;p.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+Math.cos(a)*d+'px,'+Math.sin(a)*d+'px) scale(0)',opacity:0}],{'duration':800,'easing':'ease-out','fill':'forwards'});document.getElementById('fw').appendChild(p);setTimeout(function(){p.remove()},900)})(f*280)}}
+
+/* ===== 动物 ===== */
+var AN={
+  cat:{name:'小橘',emoji:'🐱',area:'home',teach:'add'},
+  dog:{name:'旺财',emoji:'🐶',area:'home',teach:'sub'},
+  rabbit:{name:'跳跳',emoji:'🐰',area:'orchard',teach:'addChain'},
+  bear:{name:'团团',emoji:'🐻',area:'orchard',teach:'subChain'},
+  fox:{name:'聪聪',emoji:'🦊',area:'park',teach:'mix'},
+  panda:{name:'圆圆',emoji:'🐼',area:'castle',teach:'bigNum'}
+};
+
+/* ===== 等级 ===== */
+var LV=[
+  {l:1,t:'数学小宝宝',xp:0,areas:['home']},
+  {l:2,t:'小小计算器',xp:200,areas:['home','orchard']},
+  {l:3,t:'加法小能手',xp:400,areas:['home','orchard','beach']},
+  {l:4,t:'数学小达人',xp:700,areas:['home','orchard','beach','park']},
+  {l:5,t:'运算小天才',xp:1100,areas:['home','orchard','beach','park']},
+  {l:6,t:'数学大师',xp:1600,areas:['home','orchard','beach','park','castle']},
+  {l:7,t:'终极数学大师',xp:2200,areas:['home','orchard','beach','park','castle']}
+];
+
+/* ===== 宠物 ===== */
+var PT=[
+  {id:'chick',name:'小黄',emoji:'🐥',bonus:'首次通关'},
+  {id:'bunny',name:'雪球',emoji:'🐇',bonus:'连击+1XP'},
+  {id:'foxp',name:'小火',emoji:'🦊',bonus:'难题+2XP'},
+  {id:'pandap',name:'团团宝',emoji:'🐼',bonus:'学习+1XP'},
+  {id:'lionp',name:'小狮',emoji:'🦁',bonus:'所有+2XP'},
+  {id:'dragp',name:'闪闪宝',emoji:'🐲',bonus:'所有+3XP'},
+  {id:'butterfly',name:'花花',emoji:'🦋',bonus:'收集花朵'},
+  {id:'fishp',name:'泡泡',emoji:'🐠',bonus:'收集珍珠'},
+  {id:'parrot',name:'小鹦',emoji:'🦜',bonus:'游乐场解锁'}
+];
+
+/* ===== 存档 ===== */
+function defState(){return{name:'小宝',avatar:'boy',xp:0,level:1,totalXp:0,coins:0,combo:0,mc:0,pets:[],companion:null,lessons:{add:0,sub:0,addChain:0,subChain:0,mix:0,bigNum:0},adventures:{},daily:{date:'',done:[]},areas:['home']}}
+var S=loadS()||defState();
+function loadS(){try{var d=localStorage.getItem('mi2');return d?JSON.parse(d):null}catch(e){return null}}
+function saveS(){try{localStorage.setItem('mi2',JSON.stringify(S))}catch(e){}}
+
+/* ===== 题目生成引擎 ===== */
+var TPL={
+  add:{mode:'add',maxSum:10,scenes:[
+    {e:'🐟',s:'{n}有{a}条小鱼，妈妈又给了{b}条',q:'现在有几条小鱼？'},
+    {e:'🍎',s:'树上有{a}个苹果，又长了{b}个',q:'现在有几个苹果？'},
+    {e:'🌸',s:'开了{a}朵花，又开了{b}朵',q:'一共有几朵花？'},
+    {e:'🍬',s:'有{a}颗糖果，又放了{b}颗',q:'现在有几颗糖果？'},
+    {e:'🐱',s:'来了{a}只小猫，又来了{b}只',q:'一共有几只小猫？'},
+    {e:'🎈',s:'有{a}个气球，又买了{b}个',q:'现在有几个气球？'},
+    {e:'🍪',s:'盘子里有{a}块饼干，又放了{b}块',q:'现在有几块饼干？'}
+  ]},
+  sub:{mode:'sub',maxTotal:10,scenes:[
+    {e:'🦴',s:'{n}有{a}根骨头，吃了{b}根',q:'还剩几根骨头？'},
+    {e:'🎈',s:'有{a}个气球，飞走了{b}个',q:'还剩几个气球？'},
+    {e:'🍪',s:'盘子里有{a}块饼干，被吃掉了{b}块',q:'还剩几块饼干？'},
+    {e:'🐟',s:'有{a}条鱼，游走了{b}条',q:'还剩几条鱼？'},
+    {e:'🍎',s:'树上有{a}个苹果，摘走了{b}个',q:'还剩几个苹果？'},
+    {e:'🍬',s:'有{a}颗糖，分给了朋友{b}颗',q:'还剩几颗糖？'}
+  ]},
+  addChain:{mode:'ac',parts:3,maxSum:10,scenes:[
+    {e:'🥕',s:'跳跳有{a}个胡萝卜，朋友给了{b}个，又给了{c}个',q:'现在有几个胡萝卜？'},
+    {e:'🍎',s:'树上有{a}个苹果，又长了{b}个，再长了{c}个',q:'现在有几个苹果？'},
+    {e:'🐟',s:'池里有{a}条鱼，游来了{b}条，又游来了{c}条',q:'现在有几条鱼？'}
+  ]},
+  subChain:{mode:'sc',parts:3,scenes:[
+    {e:'🍯',s:'团团有{a}罐蜂蜜，吃了{b}罐，又吃了{c}罐',q:'还剩几罐蜂蜜？'},
+    {e:'🍪',s:'有{a}块饼干，被吃了{b}块，又被吃了{c}块',q:'还剩几块饼干？'},
+    {e:'🎈',s:'有{a}个气球，飞走了{b}个，又飞走了{c}个',q:'还剩几个气球？'}
+  ]},
+  mix:{mode:'mix',scenes:[
+    {e:'🍬',s:'{n}有{a}颗糖，又买了{b}颗，吃了{c}颗',q:'现在有几颗糖？'},
+    {e:'🍎',s:'树上有{a}个苹果，又长了{b}个，摘走了{c}个',q:'现在有几个苹果？'}
+  ]},
+  bigNum:{mode:'add',maxSum:20,scenes:[
+    {e:'🎋',s:'圆圆找到了{a}根竹子，又找到了{b}根',q:'一共有几根竹子？'},
+    {e:'🍎',s:'树上有{a}个苹果，又长了{b}个',q:'现在有几个苹果？'},
+    {e:'🐟',s:'池里有{a}条鱼，又游来了{b}条',q:'现在有几条鱼？'}
+  ]}
+};
+
+function ri(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=ri(0,i);var t=a[i];a[i]=a[j];a[j]=t}return a}
+
+function genQ(mode,level,aid){
+  var an=AN[aid]||AN.cat;
+  var tk=mode||an.teach;
+  var tp=TPL[tk];
+  if(!tp)tp=TPL.add;
+  var sc=tp.scenes[ri(0,tp.scenes.length-1)];
+  var ms=tp.maxSum||10;
+  var nums=[],ans=0;
+
+  // 根据等级调整数字范围
+  var maxN=level<=2?3:level<=3?5:level<=4?7:level<=5?10:15;
+
+  if(tp.mode==='add'){
+    var a=ri(1,Math.min(maxN,ms-1));
+    var b=ri(1,Math.min(maxN,ms-a));
+    nums=[a,b];ans=a+b;
+  }else if(tp.mode==='sub'){
+    var a=ri(2,Math.min(maxN+2,ms));
+    var b=ri(1,Math.min(a-1,maxN));
+    nums=[a,b];ans=a-b;
+  }else if(tp.mode==='ac'){
+    var s=0;
+    for(var i=0;i<3;i++){var n=ri(1,Math.min(3,ms-s-(2-i)));n=Math.max(1,n);nums.push(n);s+=n}
+    ans=s;
+  }else if(tp.mode==='sc'){
+    var a=ri(8,14),b=ri(1,Math.min(4,a-2)),c=ri(1,Math.min(4,a-b-1));
+    nums=[a,b,c];ans=a-b-c;
+  }else if(tp.mode==='mix'){
+    var a=ri(3,8),b=ri(1,5),c=ri(1,Math.min(a+b-1,4));
+    nums=[a,b,c];ans=a+b-c;
+  }
+
+  // 选项
+  var opts=new Set([ans]);
+  while(opts.size<6){var d=ans+ri(-4,4);if(d>0&&d<=ms)opts.add(d)}
+  opts=shuffle([...opts]);
+
+  var story=sc.s.replace('{n}',an.name).replace('{a}',nums[0]).replace('{b}',nums[1]).replace('{c}',nums[2]||0);
+
+  return{mode:tp.mode,an:an,sc:sc,story:story,nums:nums,answer:ans,options:opts};
+}
+
+/* ===== 屏幕切换 ===== */
+var activeNav=0;
+function show(id){pS('click');document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});document.getElementById(id).classList.add('active');if(id==='island-screen'){updIsland();activeNav=0}updNav()}
+function navTo(n,id){pS('click');activeNav=n;updNav();if(!id)id='island-screen';show(id)}
+function updNav(){var btns=document.querySelectorAll('.nav-btn');btns.forEach(function(b,i){b.classList.toggle('active',i===activeNav)})}
+
+/* ===== 角色创建 ===== */
+var pickA='boy';
+function pickAvatar(el){pS('pop');document.querySelectorAll('.avatar-opt').forEach(function(a){a.classList.remove('selected')});el.classList.add('selected');pickA=el.dataset.a}
+
+function startGame(){
+  var n=document.getElementById('nameInput').value.trim();
+  if(!n)n='小宝';
+  S.name=n;S.avatar=pickA;S.areas=['home'];saveS();
+  pS('click');show('island-screen');fw(2);
+}
+
+/* ===== 岛屿更新 ===== */
+var aEmojis={boy:'👦',girl:'👧',bear:'🐻',cat:'🐱'};
+function updIsland(){
+  document.getElementById('hudName').textContent=S.name;
+  document.getElementById('hudLevel').textContent='Lv.'+S.level;
+  var cl=LV[S.level-1]||LV[0],nl=LV[S.level]||LV[LV.length-1];
+  var needed=nl.xp-cl.xp;
+  document.getElementById('hudXp').style.width=Math.min(100,S.xp/needed*100)+'%';
+  document.getElementById('hudCoins').textContent='💰'+S.coins;
+  document.getElementById('playerChar').textContent=aEmojis[S.avatar]||'👦';
+  if(S.companion){var p=PT.find(function(x){return x.id===S.companion});document.getElementById('hudPet').textContent=p?p.emoji:''}else{document.getElementById('hudPet').textContent=''}
+  // 区域
+  ['orchard','beach','park','castle'].forEach(function(a){
+    var el=document.getElementById('area-'+a);if(!el)return;
+    if(S.areas.indexOf(a)>=0)el.classList.remove('locked');else el.classList.add('locked');
+  });
+  // 动物任务
+  var today=new Date().toISOString().slice(0,10);
+  if(S.daily.date!==today){S.daily={date:today,done:[]};saveS()}
+  Object.keys(AN).forEach(function(k){
+    var b=document.getElementById('badge-'+k);if(!b)return;
+    b.textContent=S.daily.done.indexOf(k)>=0?'❤️':'❗';
+  });
+}
+
+/* ===== 对话 ===== */
+var curAnimal=null;
+var dlgData={};
+
+function talk(aid){
+  pS('pop');var an=AN[aid];if(!an)return;curAnimal=aid;
+  var done=S.daily.done&&S.daily.done.indexOf(aid)>=0;
+  document.getElementById('dAvatar').textContent=an.emoji;
+  document.getElementById('dName').textContent=an.name;
+  if(done){
+    document.getElementById('dText').textContent=an.name+'笑着说："谢谢你今天的帮助！你真棒！💕"';
+    document.getElementById('dEmoji').textContent=an.emoji+' ❤️';
+    document.getElementById('dAction').style.display='none';
+    dlgData={done:true};
+  }else{
+    var msgs={
+      cat:'嗨！我是小橘🐱 我有好多小鱼数不清，你能帮我数数吗？',
+      dog:'汪汪！我是旺财🐶 我的骨头被风吹走了，帮我算算还剩几根？',
+      rabbit:'那个...我是跳跳🐰 我的胡萝卜太多了，能帮我数数吗？',
+      bear:'嗯...我是团团🐻 我的蜂蜜被偷吃了一些，帮我算算还剩几罐？',
+      fox:'嘿嘿，我是聪聪🦊 来点有挑战的数学题怎么样？',
+      panda:'慢慢来...我是圆圆🐼 帮我数数竹子吧～'
+    };
+    document.getElementById('dText').textContent=msgs[aid]||(an.name+'有话对你说...');
+    document.getElementById('dEmoji').textContent=an.emoji+' ❓';
+    document.getElementById('dAction').style.display='';
+    dlgData={done:false,aid:aid,teach:an.teach};
+  }
+  document.getElementById('dialogOv').classList.add('show');
+}
+function closeDlg(){pS('click');document.getElementById('dialogOv').classList.remove('show');curAnimal=null}
+function doTask(){pS('click');closeDlg();if(dlgData.aid)startQ('task',dlgData.aid,dlgData.teach,1)}
+
+/* ===== 题目系统 ===== */
+var QS={mode:'',aid:'',teach:'',total:1,cur:0,correct:0,answered:false,curQ:null,advId:'',advNode:0,pracCounted:false};
+
+function startQ(mode,aid,teach,total){
+  QS.mode=mode;QS.aid=aid||'cat';QS.teach=teach||'add';QS.cur=0;QS.correct=0;QS.answered=false;QS.total=total||1;QS.advId='';QS.advNode=0;QS.pracCounted=false;
+  show('q-screen');nextQ();
+}
+
+function nextQ(){
+  if(QS.cur>=QS.total){finishQ();return}
+  QS.answered=false;
+  var q=genQ(QS.teach,S.level,QS.aid);QS.curQ=q;
+
+  document.getElementById('qAnimal').textContent=q.an.emoji;
+  document.getElementById('qTitle').textContent='帮'+q.an.name+'解题';
+  document.getElementById('qStory').textContent=q.story;
+
+  // 可视化
+  var vis=document.getElementById('qVis');vis.innerHTML='';
+  var m=q.mode;
+  if(m==='add'||m==='ac'){
+    for(var i=0;i<q.nums.length;i++){
+      for(var j=0;j<q.nums[i];j++){
+        var sp=document.createElement('span');sp.className='vi';sp.textContent=q.sc.e;sp.style.animationDelay=(i*3+j)*.12+'s';vis.appendChild(sp);
+      }
+      if(i<q.nums.length-1){var op=document.createElement('span');op.className='vop';op.textContent='+';vis.appendChild(op)}
+    }
+  }else if(m==='sub'||m==='sc'){
+    for(var i=0;i<q.nums[0];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.sc.e;sp.style.animationDelay=i*.12+'s';vis.appendChild(sp)}
+  }else if(m==='mix'){
+    for(var i=0;i<q.nums[0];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.sc.e;sp.style.animationDelay=i*.1+'s';vis.appendChild(sp)}
+    var op1=document.createElement('span');op1.className='vop';op1.textContent='+';vis.appendChild(op1);
+    for(var i=0;i<q.nums[1];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.sc.e;sp.style.animationDelay=(q.nums[0]+i)*.1+'s';vis.appendChild(sp)}
+    var op2=document.createElement('span');op2.className='vop';op2.textContent='-';vis.appendChild(op2);
+    for(var i=0;i<q.nums[2];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.sc.e;sp.style.opacity='.4';sp.style.animationDelay=(q.nums[0]+q.nums[1]+i)*.1+'s';vis.appendChild(sp)}
+  }
+
+  // 算式
+  var eq=document.getElementById('qEq');
+  if(q.nums.length===2){
+    var opS=m==='sub'?'-':'+';
+    eq.innerHTML='<div class="q-num">'+q.nums[0]+'</div><div class="q-op">'+opS+'</div><div class="q-num">'+q.nums[1]+'</div><div class="q-op">=</div><div class="q-ab" id="ab">?</div>';
+  }else{
+    var ops=m==='sc'?['-','-']:['+','-'];
+    eq.innerHTML='<div class="q-num">'+q.nums[0]+'</div><div class="q-op">'+ops[0]+'</div><div class="q-num">'+q.nums[1]+'</div><div class="q-op">'+ops[1]+'</div><div class="q-num">'+q.nums[2]+'</div><div class="q-op">=</div><div class="q-ab" id="ab">?</div>';
+  }
+
+  // 选项
+  var oc=document.getElementById('qOpts');oc.innerHTML='';
+  var colors=['#FF6B6B','#FFA726','#FFD54F','#66BB6A','#42A5F5','#AB47BC'];
+  q.options.forEach(function(o,i){
+    var b=document.createElement('button');b.className='q-opt';b.textContent=o;
+    b.style.background='linear-gradient(135deg,'+colors[i%colors.length]+','+dk(colors[i%colors.length])+')';
+    b.onclick=(function(n,btn){return function(){chk(n,btn)}})(o,b);
+    oc.appendChild(b);
+  });
+
+  document.getElementById('qFb').textContent='';document.getElementById('qFb').className='q-fb';
+  updProg();
+}
+
+function dk(h){var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);r=Math.max(0,r-35);g=Math.max(0,g-35);b=Math.max(0,b-35);return '#'+r.toString(16).padStart(2,'0')+g.toString(16).padStart(2,'0')+b.toString(16).padStart(2,'0')}
+
+function updProg(){
+  var c=document.getElementById('qProg');c.innerHTML='';
+  for(var i=0;i<QS.total;i++){var d=document.createElement('div');d.className='q-dot';if(i<QS.cur)d.classList.add('done');if(i===QS.cur)d.classList.add('current');c.appendChild(d)}
+}
+
+function chk(num,btn){
+  if(QS.answered)return;QS.answered=true;
+  var q=QS.curQ,box=document.getElementById('ab');
+  document.querySelectorAll('.q-opt').forEach(function(b){b.disabled=true});
+
+  if(num===q.answer){
+    pS('ok');box.textContent=num;box.classList.add('ok');btn.classList.add('ok-opt');QS.correct++;
+    var ps=['太棒了！🎉','你真聪明！🌟','答对了！💪','好厉害！👏','完美！✨','真棒！🏆'];
+    document.getElementById('qFb').textContent=ps[ri(0,ps.length-1)];document.getElementById('qFb').className='q-fb ok-fb';
+    var xg=10+S.mc*2;S.xp+=xg;S.totalXp+=xg;S.coins+=3;S.combo++;if(S.combo>S.mc)S.mc=S.combo;
+    chkLU();QS.cur++;saveS();setTimeout(nextQ,1100);
+  }else{
+    pS('no');box.textContent=num;box.classList.add('no');btn.classList.add('no-opt');S.combo=0;
+    document.getElementById('qFb').textContent='再想想～答案是 '+q.answer+' 💡';document.getElementById('qFb').className='q-fb no-fb';
+    document.querySelectorAll('.q-opt').forEach(function(b){if(parseInt(b.textContent)===q.answer)b.classList.add('ok-opt')});
+    QS.cur++;saveS();setTimeout(nextQ,1800);
+  }
+}
+
+function finishQ(){
+  if(QS.mode==='task'){
+    if(!S.daily.done)S.daily.done=[];
+    if(S.daily.done.indexOf(QS.aid)<0)S.daily.done.push(QS.aid);
+    saveS();updIsland();show('island-screen');
+  }else if(QS.mode==='adv'){
+    finishAdv();
+  }else{
+    // learn practice - only count once per session
+    if(!QS.pracCounted){
+      if(S.lessons[QS.teach]===undefined)S.lessons[QS.teach]=0;
+      S.lessons[QS.teach]++;QS.pracCounted=true;saveS();
+    }
+    show('island-screen');
+  }
+}
+
+function exitQ(){pS('click');if(QS.mode==='adv')exitAdv();else show('island-screen')}
+
+/* ===== 升级 ===== */
+function chkLU(){
+  var nl=LV[S.level];if(!nl||S.level>=7)return;
+  var cl=LV[S.level-1],needed=nl.xp-cl.xp;
+  if(S.xp>=needed){
+    S.level++;S.xp=0;S.areas=nl.areas.slice();saveS();
+    setTimeout(function(){showLU(nl)},400);
+  }
+}
+function showLU(lv){
+  pS('lu');fw(4);
+  document.getElementById('luLv').textContent='Lv.'+lv.l+' '+lv.t;
+  var msgs=[];
+  var prevLv=LV[lv.l-2];
+  var prevAreas=prevLv?prevLv.areas:[];
+  var newAreas=lv.areas.filter(function(a){return prevAreas.indexOf(a)<0});
+  if(newAreas.length){var an={home:'🏠 家',orchard:'🌳 果园',beach:'🏖️ 海滩',park:'🎪 游乐场',castle:'🏰 城堡'};msgs.push('解锁：'+newAreas.map(function(a){return an[a]||a}).join('、'))}
+  if(lv.l===2&&S.pets.indexOf('chick')<0){S.pets.push('chick');S.companion='chick';msgs.push('🐥 获得宠物：小黄！')}
+  if(lv.l===4&&S.pets.indexOf('parrot')<0){S.pets.push('parrot');msgs.push('🦜 获得宠物：小鹦！')}
+  saveS();
+  document.getElementById('luDetail').textContent=msgs.join('\n')||'继续加油！';
+  document.getElementById('luOv').classList.add('show');
+}
+function closeLu(){pS('click');document.getElementById('luOv').classList.remove('show');updIsland()}
+
+/* ===== 学习模式 ===== */
+function showLessons(){pS('click');activeNav=1;updNav();show('learn-screen');renderLessons()}
+
+function renderLessons(){
+  var g=document.getElementById('lessonGrid');g.innerHTML='';
+  var ls=[
+    {k:'add',n:'加法',ic:'🐱',d:'把东西合在一起',ul:1},
+    {k:'sub',n:'减法',ic:'🐶',d:'拿走一些还剩多少',ul:1},
+    {k:'addChain',n:'连加',ic:'🐰',d:'三个数相加',ul:3},
+    {k:'subChain',n:'连减',ic:'🐻',d:'连续减去几个数',ul:3},
+    {k:'mix',n:'混合运算',ic:'🦊',d:'加法和减法一起',ul:5},
+    {k:'bigNum',n:'大数运算',ic:'🐼',d:'更大的数字',ul:6}
+  ];
+  ls.forEach(function(l){
+    var locked=S.level<l.ul;
+    var done=S.lessons[l.k]&&S.lessons[l.k]>0;
+    var c=document.createElement('div');c.className='lesson-card'+(locked?' locked':'');
+    c.innerHTML='<div class="lc-icon">'+l.ic+'</div><div class="lc-name">'+l.n+'课</div><div class="lc-desc">'+l.d+'</div>'+(done?'<div class="lc-badge">✓ 已完成</div>':'')+(locked?'<div class="lc-badge" style="background:#BDBDBD">Lv.'+l.ul+'解锁</div>':'');
+    if(!locked)c.onclick=(function(k){return function(){startCrs(k)}})(l.k);
+    g.appendChild(c);
+  });
+}
+
+// 课程步骤数据
+var CRS={
+  add:{title:'加法课 🐱',aid:'cat',tm:'add',steps:[
+    {t:'teach',text:'加法就是把东西<strong>合在一起</strong>！',emoji:'🐟🐟 ➕ 🐟🐟🐟'},
+    {t:'teach',text:'比如，小橘有2条鱼，妈妈又给了3条，合起来有几条？',emoji:'🐟🐟 ➕ 🐟🐟🐟'},
+    {t:'teach',text:'数一数：1、2、3、4、5！所以 2 + 3 = 5 🎉',emoji:'⭐ 2 + 3 = 5 ⭐'},
+    {t:'prac',count:3}
+  ]},
+  sub:{title:'减法课 🐶',aid:'dog',tm:'sub',steps:[
+    {t:'teach',text:'减法就是<strong>拿走一些</strong>，看看还剩多少！',emoji:'🦴🦴🦴🦴🦴 ➖ 🦴🦴'},
+    {t:'teach',text:'比如，旺财有5根骨头，吃了2根，还剩几根？',emoji:'🦴🦴🦴🦴🦴 ➖ 🦴🦴'},
+    {t:'teach',text:'数一数剩下的：1、2、3！所以 5 - 2 = 3 🎉',emoji:'⭐ 5 - 2 = 3 ⭐'},
+    {t:'prac',count:3}
+  ]},
+  addChain:{title:'连加课 🐰',aid:'rabbit',tm:'addChain',steps:[
+    {t:'teach',text:'连加就是<strong>把好多东西合在一起</strong>！',emoji:'🥕 ➕ 🥕 ➕ 🥕🥕🥕'},
+    {t:'teach',text:'跳跳有2个胡萝卜，朋友给了1个，又给了3个',emoji:'🥕🥕 ➕ 🥕 ➕ 🥕🥕🥕'},
+    {t:'teach',text:'2 + 1 + 3 = 6！跳跳现在有6个胡萝卜 🎉',emoji:'⭐ 2 + 1 + 3 = 6 ⭐'},
+    {t:'prac',count:3}
+  ]},
+  subChain:{title:'连减课 🐻',aid:'bear',tm:'subChain',steps:[
+    {t:'teach',text:'连减就是<strong>连续拿走</strong>，看看最后还剩多少！',emoji:'🍯🍯🍯🍯🍯🍯🍯🍯 ➖ 🍯 ➖ 🍯🍯'},
+    {t:'teach',text:'团团有10罐蜂蜜，吃了2罐，又吃了3罐',emoji:'🍯×10 ➖ 🍯🍯 ➖ 🍯🍯🍯'},
+    {t:'teach',text:'10 - 2 - 3 = 5！团团还剩5罐蜂蜜 🎉',emoji:'⭐ 10 - 2 - 3 = 5 ⭐'},
+    {t:'prac',count:3}
+  ]},
+  mix:{title:'混合运算课 🦊',aid:'fox',tm:'mix',steps:[
+    {t:'teach',text:'混合运算就是<strong>加法和减法一起</strong>用！',emoji:'🍬🍬🍬 ➕ 🍬🍬🍬🍬 ➖ 🍬🍬'},
+    {t:'teach',text:'聪聪有5颗糖，又买了3颗，吃了2颗',emoji:'🍬×5 ➕ 🍬×3 ➖ 🍬×2'},
+    {t:'teach',text:'5 + 3 - 2 = 6！聪聪现在有6颗糖 🎉',emoji:'⭐ 5 + 3 - 2 = 6 ⭐'},
+    {t:'prac',count:3}
+  ]},
+  bigNum:{title:'大数运算课 🐼',aid:'panda',tm:'bigNum',steps:[
+    {t:'teach',text:'大数运算就是用<strong>更大的数字</strong>来算！',emoji:'🎋🎋🎋🎋🎋🎋🎋🎋🎋🎋 ➕ 🎋🎋🎋🎋🎋🎋🎋'},
+    {t:'teach',text:'圆圆找到了12根竹子，又找到了8根',emoji:'🎋×12 ➕ 🎋×8'},
+    {t:'teach',text:'12 + 8 = 20！圆圆找到了20根竹子 🎉',emoji:'⭐ 12 + 8 = 20 ⭐'},
+    {t:'prac',count:3}
+  ]}
+};
+
+var LS={k:'',si:0,aid:'',tm:''};
+
+function startCrs(k){
+  pS('click');var c=CRS[k];if(!c)return;
+  LS={k:k,si:0,aid:c.aid,tm:c.tm};
+  show('course-screen');document.getElementById('crsTitle').textContent=c.title;
+  renderStep();
+}
+
+function renderStep(){
+  var c=CRS[LS.k],step=c.steps[LS.si],card=document.getElementById('crsCard');
+  if(step.t==='teach'){
+    card.innerHTML='<div class="teacher">'+AN[LS.aid].emoji+'</div>'+
+      '<div class="t-speech">'+step.text+'</div>'+
+      '<div class="t-demo">'+step.emoji+'</div>'+
+      '<div class="t-nav">'+
+      (LS.si>0?'<button class="btn prev-btn" onclick="lsPrev()">← 上一步</button>':'')+
+      (LS.si<c.steps.length-1?'<button class="btn next-btn" onclick="lsNext()">下一步 →</button>':'<button class="btn next-btn" onclick="startPrac()">开始练习 💪</button>')+
+      '</div>';
+  }
+}
+function startPrac(){
+  pS('click');if(S.lessons[LS.k]===undefined)S.lessons[LS.k]=0;S.lessons[LS.k]++;saveS();
+  startQ('learn',LS.aid,LS.tm,3);
+}
+function lsNext(){pS('click');LS.si++;renderStep()}
+function lsPrev(){pS('click');LS.si--;renderStep()}
+
+/* ===== 冒险 ===== */
+var ADS=[
+  {id:'fishing',n:'小橘的钓鱼日',ic:'🐟',d:'帮小橘钓到5条鱼',ul:1,aid:'cat',tm:'add',nodes:5,boss:5},
+  {id:'bones',n:'旺财的骨头寻宝',ic:'🦴',d:'帮旺财找回丢失的骨头',ul:2,aid:'dog',tm:'sub',nodes:5,boss:5},
+  {id:'carrots',n:'跳跳的胡萝卜田',ic:'🥕',d:'帮跳跳种胡萝卜',ul:3,aid:'rabbit',tm:'addChain',nodes:6,boss:6},
+  {id:'honey',n:'团团的蜂蜜之旅',ic:'🍯',d:'帮团团找到蜂蜜',ul:4,aid:'bear',tm:'subChain',nodes:6,boss:6},
+  {id:'maze',n:'聪聪的迷宫挑战',ic:'🧩',d:'帮聪聪走出迷宫',ul:5,aid:'fox',tm:'mix',nodes:7,boss:7},
+  {id:'bamboo',n:'圆圆的竹林探险',ic:'🎋',d:'帮圆圆找到最大的竹子',ul:6,aid:'panda',tm:'bigNum',nodes:7,boss:7}
+];
+
+function showAdvList(){pS('click');activeNav=2;updNav();show('adv-list-screen');renderAdvList()}
+
+function renderAdvList(){
+  var l=document.getElementById('alList');l.innerHTML='';
+  ADS.forEach(function(a){
+    var locked=S.level<a.ul;
+    var pr=S.adventures[a.id]||{stars:0,done:false};
+    var stars='';for(var i=0;i<3;i++)stars+=i<pr.stars?'⭐':'☆';
+    var c=document.createElement('div');c.className='al-card'+(locked?' locked':'');
+    c.innerHTML='<div class="al-icon">'+a.ic+'</div><div><div class="al-name">'+a.n+'</div><div class="al-desc">'+a.d+'</div><div class="al-stars">'+stars+'</div></div>'+(locked?'<span style="font-size:18px">🔒</span>':'<span style="font-size:18px">▶️</span>');
+    if(!locked)c.onclick=(function(id){return function(){startAdv(id)}})(a.id);
+    l.appendChild(c);
+  });
+}
+
+var advSt={id:'',node:0};
+
+function startAdv(id){
+  pS('click');var a=ADS.find(function(x){return x.id===id});if(!a)return;
+  advSt={id:id,node:0};
+  show('adventure-screen');document.getElementById('avTitle').textContent=a.n;
+  renderAdvMap(a);
+}
+
+function renderAdvMap(a){
+  var m=document.getElementById('avMap');m.innerHTML='';
+  var title=document.createElement('div');title.className='av-title';title.textContent=a.n;m.appendChild(title);
+  var path=document.createElement('div');path.className='av-path';
+  for(var i=1;i<=a.nodes;i++){
+    if(i>1){var ln=document.createElement('div');ln.className='av-line';path.appendChild(ln)}
+    var nd=document.createElement('div');
+    var isBoss=i===a.boss;
+    if(i<advSt.node+1){nd.className='av-node done-node';nd.textContent='✅'}
+    else if(i===advSt.node+1){nd.className='av-node '+(isBoss?'boss-node now-node':'q-node now-node');nd.textContent=isBoss?'👑':'❓';nd.onclick=(function(n){return function(){playNode(n,a)}})(i)}
+    else{nd.className='av-node lock-node';nd.textContent=isBoss?'👑':'❓'}
+    path.appendChild(nd);
+  }
+  m.appendChild(path);
+}
+
+function playNode(n,a){
+  pS('pop');advSt.node=n-1;
+  if(n===a.boss){startQ('adv',a.aid,a.tm,5)}
+  else{startQ('adv',a.aid,a.tm,1)}
+}
+
+function finishAdv(){
+  var a=ADS.find(function(x){return x.id===advSt.id});if(!a){show('island-screen');return}
+  var isBoss=advSt.node>=(a.nodes-1);
+  if(isBoss&&QS.correct>=3){
+    var pr=S.adventures[a.id]||{stars:0,done:false};
+    pr.done=true;
+    var stars=QS.correct>=5?3:(QS.correct>=4?2:1);
+    if(stars>pr.stars)pr.stars=stars;
+    S.adventures[a.id]=pr;
+    var pm={fishing:'chick',carrots:'bunny',maze:'foxp',bamboo:'pandap'};
+    if(pm[a.id]&&S.pets.indexOf(pm[a.id])<0)S.pets.push(pm[a.id]);
+    S.coins+=20;saveS();
+    // 全通关宠物
+    var allDone=ADS.every(function(x){var p=S.adventures[x.id];return p&&p.done});
+    if(allDone&&S.pets.indexOf('dragp')<0){S.pets.push('dragp');saveS()}
+    fw(3);
+  }
+  // Boss未通过，留在当前节点重试
+  if(isBoss&&QS.correct<3){
+    advSt.node=Math.max(0,advSt.node-1);
+    renderAdvMap(a);
+    return;
+  }
+  // 非Boss节点，无论对错都前进
+  if(advSt.node<a.nodes-1){renderAdvMap(a)}
+  else{show('adv-list-screen')}
+}
+
+function exitAdv(){pS('click');show('adv-list-screen')}
+
+/* ===== 宠物 ===== */
+function showPets(){pS('click');activeNav=3;updNav();show('pet-screen');renderPets()}
+
+function renderPets(){
+  var g=document.getElementById('pGrid');g.innerHTML='';
+  PT.forEach(function(p){
+    var owned=S.pets.indexOf(p.id)>=0;
+    var isCompanion=S.companion===p.id;
+    var c=document.createElement('div');c.className='p-card'+(owned?(isCompanion?' companion':''):' empty');
+    if(owned){
+      c.innerHTML='<div class="p-icon">'+p.emoji+(isCompanion?'💕':'')+'</div><div class="p-name">'+p.name+'</div><div class="p-bonus">'+p.bonus+'</div>';
+      c.onclick=(function(id){return function(){togComp(id)}})(p.id);
+    }else{
+      c.innerHTML='<div class="p-icon">❓</div><div class="p-name">???</div><div class="p-bonus">待解锁</div>';
+    }
+    g.appendChild(c);
+  });
+}
+
+function togComp(id){
+  pS('click');S.companion=S.companion===id?null:id;saveS();renderPets();updIsland();
+}
+
+/* ===== 玩家行走 ===== */
+var playerTarget=null;
+var isWalking=false;
+
+function initPlayerWalk(){
+  var scene=document.getElementById('islandScene');
+  scene.addEventListener('click',function(e){
+    if(!document.getElementById('island-screen').classList.contains('active'))return;
+    if(document.getElementById('dialogOv').classList.contains('show'))return;
+    if(e.target.closest('.animal')||e.target.closest('.area')||e.target.closest('.player'))return;
+    var rect=scene.getBoundingClientRect();
+    var xPct=Math.max(5,Math.min(95,(e.clientX-rect.left)/rect.width*100));
+    walkTo(xPct,e.clientX-rect.left,e.clientY-rect.top);
+  });
+}
+
+function walkTo(xPct,tapX,tapY){
+  var pc=document.getElementById('playerChar');
+  var scene=document.getElementById('islandScene');
+  pc.classList.remove('player-idle');
+  pc.classList.add('player-walking');
+  isWalking=true;
+  var curLeft=parseFloat(pc.style.left)||18;
+  if(xPct<curLeft-1)pc.style.transform='scaleX(-1)';
+  else if(xPct>curLeft+1)pc.style.transform='scaleX(1)';
+  pc.style.left=xPct+'%';
+  var steps=Math.max(3,Math.round(Math.abs(xPct-curLeft)*1.2));
+  for(var i=1;i<=steps;i++)(function(step){
+    var delay=i*180;
+    var footPct=curLeft+(xPct-curLeft)*(step/(steps+1));
+    setTimeout(function(){
+      var fp=document.createElement('div');fp.className='footprint';
+      fp.style.left=footPct+'%';fp.style.bottom='14%';
+      scene.appendChild(fp);setTimeout(function(){fp.remove()},1100);
+    },delay);
+  })(i);
+  if(tapX!==undefined){
+    var ti=document.createElement('div');ti.className='tap-indicator';
+    ti.style.left=(tapX-12)+'px';ti.style.top=(tapY-12)+'px';
+    scene.appendChild(ti);setTimeout(function(){ti.remove()},700);
+  }
+  clearTimeout(playerTarget);
+  playerTarget=setTimeout(function(){
+    pc.classList.remove('player-walking');pc.classList.add('player-idle');isWalking=false;
+  },1600);
+}
+
+/* ===== 区域移动 ===== */
+function goArea(a){
+  pS('pop');
+  var pos={home:'12%',orchard:'30%',beach:'50%',park:'68%',castle:'84%'};
+  walkTo(pos[a]||'20%');
+}
+
+/* ===== 初始化 ===== */
+function init(){
+  initPlayerWalk();
+  var saved=loadS();
+  if(saved&&saved.name){S=saved;show('island-screen');updIsland()}
+  else{show('create-screen')}
+}
+init();
 </script>
 </body>
 </html>
