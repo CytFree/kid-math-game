@@ -848,22 +848,17 @@ function talk(aid){
   pS('pop');var an=AN[aid];if(!an)return;curAnimal=aid;
   var done=S.daily.done&&S.daily.done.indexOf(aid)>=0;
   document.getElementById('dAvatar').textContent=an.emoji;
-  document.getElementById('dName').textContent=an.name;
+  document.getElementById('dName').textContent=an.name+' ('+an.personality+')';
   if(done){
-    document.getElementById('dText').textContent=an.name+'笑着说："谢谢你今天的帮助！你真棒！💕"';
+    var doneMsgs=an.done||[an.name+'笑着说："谢谢你今天的帮助！你真棒！💕"'];
+    document.getElementById('dText').textContent=doneMsgs[Math.floor(Math.random()*doneMsgs.length)];
     document.getElementById('dEmoji').textContent=an.emoji+' ❤️';
     document.getElementById('dAction').style.display='none';
     dlgData={done:true};
   }else{
-    var msgs={
-      cat:'嗨！我是小橘🐱 我有好多小鱼数不清，你能帮我数数吗？',
-      dog:'汪汪！我是旺财🐶 我的骨头被风吹走了，帮我算算还剩几根？',
-      rabbit:'那个...我是跳跳🐰 我的胡萝卜太多了，能帮我数数吗？',
-      bear:'嗯...我是团团🐻 我的蜂蜜被偷吃了一些，帮我算算还剩几罐？',
-      fox:'嘿嘿，我是聪聪🦊 来点有挑战的数学题怎么样？',
-      panda:'慢慢来...我是圆圆🐼 帮我数数竹子吧～'
-    };
-    document.getElementById('dText').textContent=msgs[aid]||(an.name+'有话对你说...');
+    var greeting=an.greetings?an.greetings[Math.floor(Math.random()*an.greetings.length)]:'';
+    var story=an.stories?an.stories[Math.floor(Math.random()*an.stories.length)]:'';
+    document.getElementById('dText').textContent=greeting+(story?'\n'+story:'');
     document.getElementById('dEmoji').textContent=an.emoji+' ❓';
     document.getElementById('dAction').style.display='';
     dlgData={done:false,aid:aid,teach:an.teach};
