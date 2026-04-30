@@ -39,6 +39,8 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .hud-xp-bar{height:100%;background:linear-gradient(90deg,#FFD54F,#FF8F00);border-radius:5px;transition:width .5s ease}
 .hud-coins{font-size:14px;color:#FF8F00;font-weight:bold}
 .hud-pet{font-size:18px;margin-left:6px}
+.hud-task-btn{font-size:18px;background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:8px;transition:all .2s}
+.hud-task-btn:active{transform:scale(.9);background:rgba(255,152,0,.15)}
 
 /* 岛屿场景 */
 .island-scene{flex:1;position:relative;overflow:hidden}
@@ -103,6 +105,42 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .nav-btn{display:flex;flex-direction:column;align-items:center;padding:4px 10px;border-radius:10px;background:none;color:#888;font-size:10px;gap:1px;min-width:52px;transition:all .2s}
 .nav-btn .nav-icon{font-size:20px}
 .nav-btn.active{color:#FF9800;background:rgba(255,152,0,.1)}
+
+/* ===== 每日任务面板 ===== */
+.task-panel{position:fixed;top:0;left:0;right:0;bottom:0;z-index:60;display:none;justify-content:center;align-items:flex-end;padding:16px}
+.task-panel.show{display:flex}
+.task-bg{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.35)}
+.task-card{position:relative;background:white;border-radius:28px 28px 0 0;padding:20px 18px 24px;width:100%;max-width:420px;max-height:80vh;overflow-y:auto;box-shadow:0 -12px 40px rgba(0,0,0,.2);animation:slideFromBottom .35s ease}
+@keyframes slideFromBottom{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.task-handle{width:40px;height:4px;background:#E0E0E0;border-radius:2px;margin:0 auto 14px}
+.task-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.task-title{font-size:18px;font-weight:bold;color:#333}
+.task-close{width:32px;height:32px;border-radius:50%;background:#F5F5F5;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.task-streak{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border-radius:16px;padding:12px 14px;margin-bottom:14px}
+.streak-fire{font-size:28px;animation:streakPulse 1.5s ease-in-out infinite}
+@keyframes streakPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.streak-info{flex:1}
+.streak-label{font-size:12px;color:#E65100;font-weight:bold}
+.streak-count{font-size:22px;font-weight:bold;color:#FF6D00}
+.streak-bonus{font-size:11px;color:#BF360C;margin-top:2px}
+.streak-reward{font-size:28px}
+.task-section-title{font-size:13px;font-weight:bold;color:#888;margin:14px 0 8px;display:flex;align-items:center;gap:6px}
+.task-section-title::after{content:'';flex:1;height:1px;background:#E0E0E0}
+.task-list{display:flex;flex-direction:column;gap:8px}
+.task-item{display:flex;align-items:center;gap:10px;background:#FAFAFA;border-radius:14px;padding:10px 12px;transition:all .3s}
+.task-item.done{background:#E8F5E9;opacity:.7}
+.task-item .t-emoji{font-size:28px;flex-shrink:0}
+.task-item .t-info{flex:1;min-width:0}
+.task-item .t-name{font-size:14px;font-weight:bold;color:#333}
+.task-item .t-desc{font-size:11px;color:#888;margin-top:2px}
+.task-item .t-reward{font-size:11px;color:#FF8F00;font-weight:bold;margin-top:2px}
+.task-item .t-status{font-size:22px;flex-shrink:0}
+.task-item .t-status.done-icon{color:#4CAF50}
+.task-item .t-status.pending-icon{color:#BDBDBD}
+.task-summary{display:flex;justify-content:space-around;margin-top:14px;padding:12px;background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-radius:16px}
+.summary-item{text-align:center}
+.summary-item .s-val{font-size:20px;font-weight:bold;color:#2E7D32}
+.summary-item .s-label{font-size:11px;color:#666;margin-top:2px}
 
 /* ===== 对话气泡 ===== */
 .dialog-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.35);z-index:50;display:none;justify-content:center;align-items:flex-end;padding:16px}
@@ -270,6 +308,7 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
     <div class="hud-xp-wrap"><div class="hud-xp-bar" id="hudXp" style="width:0%"></div></div>
     <span class="hud-coins" id="hudCoins">💰0</span>
     <span class="hud-pet" id="hudPet"></span>
+    <button class="hud-task-btn" id="hudTaskBtn" onclick="showTaskPanel()" style="font-size:18px;background:none;border:none;cursor:pointer">📋</button>
   </div>
   <div class="island-scene" id="islandScene">
     <div class="sun"></div>
@@ -321,6 +360,34 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
     <div class="dialog-emoji" id="dEmoji"></div>
     <button class="btn dialog-btn" id="dAction" onclick="doTask()">我来帮你！💪</button>
     <button class="btn dialog-close" onclick="closeDlg()">下次吧</button>
+  </div>
+</div>
+
+<!-- 每日任务面板 -->
+<div class="task-panel" id="taskPanel" onclick="if(event.target===this)closeTaskPanel()">
+  <div class="task-bg"></div>
+  <div class="task-card" onclick="event.stopPropagation()">
+    <div class="task-handle"></div>
+    <div class="task-header">
+      <span class="task-title">📋 今日任务</span>
+      <button class="task-close" onclick="closeTaskPanel()">✕</button>
+    </div>
+    <div class="task-streak" id="taskStreak">
+      <span class="streak-fire">🔥</span>
+      <div class="streak-info">
+        <div class="streak-label">连续打卡</div>
+        <div class="streak-count" id="streakCount">0 天</div>
+        <div class="streak-bonus" id="streakBonus">完成任务获得额外奖励</div>
+      </div>
+      <span class="streak-reward" id="streakReward">🎁</span>
+    </div>
+    <div class="task-section-title">今日待完成</div>
+    <div class="task-list" id="taskList"></div>
+    <div class="task-summary" id="taskSummary">
+      <div class="summary-item"><div class="s-val" id="sDone">0</div><div class="s-label">已完成</div></div>
+      <div class="summary-item"><div class="s-val" id="sLeft">0</div><div class="s-label">待完成</div></div>
+      <div class="summary-item"><div class="s-val" id="sReward">0</div><div class="s-label">可获金币</div></div>
+    </div>
   </div>
 </div>
 
@@ -448,7 +515,7 @@ var PT=[
 ];
 
 /* ===== 存档 ===== */
-function defState(){return{name:'小宝',avatar:'boy',xp:0,level:1,totalXp:0,coins:0,combo:0,mc:0,pets:[],companion:null,lessons:{add:0,sub:0,addChain:0,subChain:0,mix:0,bigNum:0},adventures:{},daily:{date:'',done:[]},areas:['home']}}
+function defState(){return{name:'小宝',avatar:'boy',xp:0,level:1,totalXp:0,coins:0,combo:0,mc:0,pets:[],companion:null,lessons:{add:0,sub:0,addChain:0,subChain:0,mix:0,bigNum:0},adventures:{},daily:{date:'',done:[],streak:0,lastDate:''},areas:['home']}}
 var S=loadS()||defState();
 function loadS(){try{var d=localStorage.getItem('mi2');return d?JSON.parse(d):null}catch(e){return null}}
 function saveS(){try{localStorage.setItem('mi2',JSON.stringify(S))}catch(e){}}
@@ -573,7 +640,17 @@ function updIsland(){
   });
   // 动物任务
   var today=new Date().toISOString().slice(0,10);
-  if(S.daily.date!==today){S.daily={date:today,done:[]};saveS()}
+  if(S.daily.date!==today){
+    var yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
+    var streak=S.daily.streak||0;
+    if(S.daily.lastDate===yesterday&&S.daily.done&&S.daily.done.length>0){
+      streak++;
+    }else if(S.daily.lastDate!==today){
+      streak=0;
+    }
+    S.daily={date:today,done:[],streak:streak,lastDate:S.daily.date||''};
+    saveS();
+  }
   Object.keys(AN).forEach(function(k){
     var b=document.getElementById('badge-'+k);if(!b)return;
     b.textContent=S.daily.done.indexOf(k)>=0?'❤️':'❗';
@@ -704,7 +781,11 @@ function finishQ(){
   if(QS.mode==='task'){
     if(!S.daily.done)S.daily.done=[];
     if(S.daily.done.indexOf(QS.aid)<0)S.daily.done.push(QS.aid);
-    saveS();updIsland();show('island-screen');
+    // 连续打卡奖励
+    var streak=S.daily.streak||0;
+    var bonus=streak>=7?3:streak>=3?2:streak>=1?1:0;
+    S.coins+=bonus;S.xp+=bonus;S.totalXp+=bonus;
+    updateStreak();saveS();updIsland();show('island-screen');
   }else if(QS.mode==='adv'){
     finishAdv();
   }else{
@@ -996,6 +1077,91 @@ function goArea(a){
   pS('pop');
   var pos={home:'12%',orchard:'30%',beach:'50%',park:'68%',castle:'84%'};
   walkTo(pos[a]||'20%');
+}
+
+/* ===== 每日任务面板 ===== */
+function showTaskPanel(){
+  pS('click');
+  renderTaskPanel();
+  document.getElementById('taskPanel').classList.add('show');
+}
+function closeTaskPanel(){
+  pS('click');
+  document.getElementById('taskPanel').classList.remove('show');
+}
+
+function renderTaskPanel(){
+  var today=new Date().toISOString().slice(0,10);
+  // 初始化 streak
+  if(!S.daily.streak)S.daily.streak=0;
+  if(!S.daily.lastDate)S.daily.lastDate='';
+  // 检查是否是新的一天
+  if(S.daily.date!==today){
+    // 检查是否连续（昨天有玩）
+    var yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
+    if(S.daily.lastDate===yesterday&&S.daily.done.length>0){
+      S.daily.streak++;
+    }else if(S.daily.lastDate!==today){
+      S.daily.streak=S.daily.lastDate===today?S.daily.streak:0;
+    }
+    S.daily={date:today,done:[],streak:S.daily.streak,lastDate:S.daily.date||''};
+    saveS();
+  }
+  var streak=S.daily.streak||0;
+  var done=S.daily.done||[];
+  var totalTasks=Object.keys(AN).length;
+  var doneCount=done.length;
+  var leftCount=totalTasks-doneCount;
+  var baseReward=3; // 每个任务基础金币
+  var streakBonus=streak>=7?3:streak>=3?2:streak>=1?1:0;
+  var totalReward=leftCount*(baseReward+streakBonus);
+  // 更新 streak 显示
+  document.getElementById('streakCount').textContent=streak+' 天';
+  var bonusText='';
+  if(streak>=7)bonusText='🔥 全勤大师！每任务 +'+streakBonus+' 金币';
+  else if(streak>=3)bonusText='🔥 连续达人！每任务 +'+streakBonus+' 金币';
+  else if(streak>=1)bonusText='✨ 连续打卡！每任务 +'+streakBonus+' 金币';
+  else bonusText='💪 开始今天的第一题！';
+  document.getElementById('streakBonus').textContent=bonusText;
+  // streak 奖励图标
+  var rewardEmoji=streak>=7?'🏆':streak>=3?'🥇':streak>=1?'🥈':'🎁';
+  document.getElementById('streakReward').textContent=rewardEmoji;
+  // 任务列表
+  var list=document.getElementById('taskList');list.innerHTML='';
+  var areaNames={home:'🏠 家',orchard:'🌳 果园',beach:'🏖️ 海滩',park:'🎪 游乐场',castle:'🏰 城堡'};
+  Object.keys(AN).forEach(function(k){
+    var an=AN[k];
+    var isDone=done.indexOf(k)>=0;
+    var isLocked=S.areas.indexOf(an.area)<0;
+    var item=document.createElement('div');
+    item.className='task-item'+(isDone?' done':'')+(isLocked?' locked':'');
+    if(isLocked){
+      item.innerHTML='<span class="t-emoji" style="opacity:.3">'+an.emoji+'</span>'+
+        '<div class="t-info"><div class="t-name" style="opacity:.3">'+an.name+'</div>'+
+        '<div class="t-desc">🔒 在'+(areaNames[an.area]||an.area)+'</div></div>'+
+        '<span class="t-status pending-icon">🔒</span>';
+    }else{
+      var reward=(baseReward+streakBonus);
+      item.innerHTML='<span class="t-emoji">'+an.emoji+'</span>'+
+        '<div class="t-info"><div class="t-name">'+an.name+'</div>'+
+        '<div class="t-desc">帮'+an.name+'解题</div>'+
+        '<div class="t-reward">💰 +'+reward+' 金币'+(streakBonus>0?' (含连续奖励)':'')+'</div></div>'+
+        '<span class="t-status '+(isDone?'done-icon':'pending-icon')+'">'+(isDone?'✅':'⏳')+'</span>';
+    }
+    list.appendChild(item);
+  });
+  // 汇总
+  document.getElementById('sDone').textContent=doneCount;
+  document.getElementById('sLeft').textContent=leftCount;
+  document.getElementById('sReward').textContent=totalReward;
+}
+
+function updateStreak(){
+  var today=new Date().toISOString().slice(0,10);
+  if(S.daily.lastDate!==today){
+    S.daily.lastDate=today;
+    saveS();
+  }
 }
 
 /* ===== 初始化 ===== */
