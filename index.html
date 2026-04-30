@@ -74,6 +74,34 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .area-park{left:68%}
 .area-castle{left:85%}
 
+/* ===== 区域场景 ===== */
+.area-screen{position:fixed;top:0;left:0;right:0;bottom:0;z-index:55;display:none;flex-direction:column}
+.area-screen.active{display:flex}
+.area-header{display:flex;align-items:center;padding:8px 12px;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom-left-radius:16px;border-bottom-right-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.1);flex-shrink:0;z-index:10}
+.area-back{background:none;border:none;font-size:20px;cursor:pointer;padding:4px 8px}
+.area-title{flex:1;text-align:center;font-size:16px;font-weight:bold;color:#333}
+.area-scene{flex:1;position:relative;overflow:hidden}
+.area-ground{position:absolute;bottom:0;left:-5%;right:-5%;height:45%;border-radius:50% 50% 0 0/25% 25% 0 0}
+.area-deco{position:absolute;font-size:32px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2));animation:areaFloat 3s ease-in-out infinite}
+@keyframes areaFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.area-task{position:absolute;bottom:12%;text-align:center;cursor:pointer;z-index:5}
+.area-task:active{transform:scale(.9)}
+.area-task .at-icon{font-size:40px;display:block;margin-bottom:4px}
+.area-task .at-label{font-size:11px;color:white;font-weight:bold;text-shadow:0 1px 3px rgba(0,0,0,.4);background:rgba(0,0,0,.3);padding:3px 10px;border-radius:10px}
+.area-task .at-badge{position:absolute;top:-8px;right:-12px;font-size:14px;animation:badgeBounce 1s ease-in-out infinite}
+#orchard-screen{background:linear-gradient(180deg,#87CEEB 0%,#B3E5FC 30%,#DCEDC8 60%,#81C784 100%)}
+#orchard-screen .area-ground{background:linear-gradient(180deg,#A5D6A7 0%,#66BB6A 50%,#4CAF50 100%)}
+#beach-screen{background:linear-gradient(180deg,#4FC3F7 0%,#81D4FA 30%,#E1F5FE 50%,#FFE082 70%,#FFD54F 100%)}
+#beach-screen .area-ground{background:linear-gradient(180deg,#FFE082 0%,#FFD54F 50%,#FFC107 100%)}
+.wave{position:absolute;bottom:42%;left:0;right:0;height:20px;background:rgba(255,255,255,.3);border-radius:50%;animation:wave 4s ease-in-out infinite}
+@keyframes wave{0%,100%{transform:translateX(0)}50%{transform:translateX(20px)}}
+#park-screen{background:linear-gradient(180deg,#87CEEB 0%,#B3E5FC 40%,#C8E6C9 70%,#81C784 100%)}
+#park-screen .area-ground{background:linear-gradient(180deg,#C8E6C9 0%,#81C784 50%,#4CAF50 100%)}
+#castle-screen{background:linear-gradient(180deg,#3F51B5 0%,#5C6BC0 30%,#7986CB 60%,#9FA8DA 100%)}
+#castle-screen .area-ground{background:linear-gradient(180deg,#7986CB 0%,#5C6BC0 50%,#3F51B5 100%)}
+.star-bg{position:absolute;width:4px;height:4px;background:white;border-radius:50%;animation:twinkle 2s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.3}50%{opacity:1}}
+
 /* 动物 */
 .animal{position:absolute;font-size:34px;cursor:pointer;filter:drop-shadow(0 3px 6px rgba(0,0,0,.2));transition:transform .15s;z-index:5}
 .animal:active{transform:scale(1.25)}
@@ -1560,6 +1588,48 @@ function goArea(a){
   pS('pop');
   var pos={home:'12%',orchard:'30%',beach:'50%',park:'68%',castle:'84%'};
   walkTo(pos[a]||'20%');
+  // 进入区域场景
+  if(a!=='home')enterArea(a);
+}
+
+/* ===== 区域场景 ===== */
+var currentArea=null;
+
+function enterArea(a){
+  pS('pop');
+  if(S.areas.indexOf(a)<0)return;
+  currentArea=a;
+  var screenId=a+'-screen';
+  document.getElementById(screenId).classList.add('active');
+  updateAreaBadges(a);
+}
+
+function exitArea(){
+  pS('click');
+  if(currentArea){
+    document.getElementById(currentArea+'-screen').classList.remove('active');
+  }
+  currentArea=null;
+}
+
+function enterAreaTask(aid){
+  pS('pop');
+  talk(aid);
+}
+
+function updateAreaBadges(area){
+  var animals={
+    orchard:['rabbit','bear'],
+    park:['fox'],
+    castle:['panda','lion']
+  };
+  var list=animals[area]||[];
+  list.forEach(function(k){
+    var b=document.getElementById('area-badge-'+k);
+    if(b){
+      b.textContent=S.daily.done&&S.daily.done.indexOf(k)>=0?'❤️':'❗';
+    }
+  });
 }
 
 /* ===== 每日任务面板 ===== */
