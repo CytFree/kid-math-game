@@ -404,6 +404,13 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .sound-toggle:active{transform:scale(.9)}
 .sound-toggle.muted{opacity:.5}
 
+/* ===== 角色外观 ===== */
+.player-accessory{position:absolute;font-size:20px;transition:all .5s ease;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
+.player-hat{top:-18px;left:50%;transform:translateX(-50%)}
+.player-cape{bottom:10px;right:-12px;animation:capeWave 2s ease-in-out infinite}
+@keyframes capeWave{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+.player-shoes{bottom:-8px;left:50%;transform:translateX(-50%);font-size:14px}
+
 /* ===== 响应式 ===== */
 @media(max-width:360px){
   .q-options{gap:6px}
@@ -735,6 +742,51 @@ var LV=[
   {l:7,t:'终极数学大师',xp:2200,areas:['home','orchard','beach','park','castle']}
 ];
 
+/* ===== 角色外观 ===== */
+var ACCESSORIES=[
+  {level:1,hat:'',cape:'',shoes:'',name:'初始'},
+  {level:2,hat:'🎀',cape:'',shoes:'',name:'蝴蝶结'},
+  {level:3,hat:'🎩',cape:'',shoes:'',name:'礼帽'},
+  {level:4,hat:'👒',cape:'🧣',shoes:'',name:'遮阳帽+围巾'},
+  {level:5,hat:'🎓',cape:'🧣',shoes:'👟',name:'学士帽+围巾+运动鞋'},
+  {level:6,hat:'👑',cape:'🎽',shoes:'👟',name:'王冠+披风+运动鞋'},
+  {level:7,hat:'👑',cape:'🔥',shoes:'✨',name:'王冠+火焰披风+闪光鞋'}
+];
+
+function getAccessory(level){
+  var acc=ACCESSORIES[0];
+  for(var i=0;i<ACCESSORIES.length;i++){
+    if(level>=ACCESSORIES[i].level)acc=ACCESSORIES[i];
+  }
+  return acc;
+}
+
+function renderPlayerAccessories(){
+  var pc=document.getElementById('playerChar');
+  if(!pc)return;
+  // 清除旧装饰
+  pc.querySelectorAll('.player-accessory').forEach(function(e){e.remove()});
+  var acc=getAccessory(S.level);
+  if(acc.hat){
+    var hat=document.createElement('span');
+    hat.className='player-accessory player-hat';
+    hat.textContent=acc.hat;
+    pc.appendChild(hat);
+  }
+  if(acc.cape){
+    var cape=document.createElement('span');
+    cape.className='player-accessory player-cape';
+    cape.textContent=acc.cape;
+    pc.appendChild(cape);
+  }
+  if(acc.shoes){
+    var shoes=document.createElement('span');
+    shoes.className='player-accessory player-shoes';
+    shoes.textContent=acc.shoes;
+    pc.appendChild(shoes);
+  }
+}
+
 /* ===== 宠物 ===== */
 var PT=[
   {id:'chick',name:'小黄',emoji:'🐥',bonus:'首次通关'},
@@ -866,6 +918,7 @@ function updIsland(){
   document.getElementById('hudXp').style.width=Math.min(100,S.xp/needed*100)+'%';
   document.getElementById('hudCoins').textContent='💰'+S.coins;
   document.getElementById('playerChar').textContent=aEmojis[S.avatar]||'👦';
+  renderPlayerAccessories();
   if(S.companion){var p=PT.find(function(x){return x.id===S.companion});document.getElementById('hudPet').textContent=p?p.emoji:''}else{document.getElementById('hudPet').textContent=''}
   // 区域
   ['orchard','beach','park','castle'].forEach(function(a){
@@ -1960,7 +2013,7 @@ function finishEmergency(){
 function init(){
   initPlayerWalk();
   var saved=loadS();
-  if(saved&&saved.name){S=saved;show('island-screen');updIsland();initDecoSystem()}
+  if(saved&&saved.name){S=saved;show('island-screen');updIsland();initDecoSystem();renderPlayerAccessories()}
   else{show('create-screen')}
   // 紧急任务定时器（每30秒检查一次）
   setInterval(function(){
