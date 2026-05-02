@@ -214,9 +214,10 @@ function genQ(mode,level,aid){
   for(var t=0;opts.size<4&&t<50;t++){var d=ans+ri(-5,5);if(d>=0&&d<=ms)opts.add(d)}
   opts=shuffle([...opts]);
 
-  var story=sc.s.replace('{n}',an.name).replace('{a}',nums[0]).replace('{b}',nums[1]);
+  var emoji=(an.items&&an.items.length)?an.items[ri(0,an.items.length-1)]:'🍎';
+  var story=sc.s.replace(/{n}/g,an.name).replace(/{a}/g,nums[0]).replace(/{b}/g,nums[1]).replace(/{e}/g,emoji);
 
-  return{mode:tp.mode,an:an,sc:sc,story:story,nums:nums,answer:ans,options:opts,op:op};
+  return{mode:tp.mode,an:an,sc:sc,story:story,emoji:emoji,nums:nums,answer:ans,options:opts,op:op};
 }
 
 /* ===== 屏幕切换 ===== */
@@ -315,12 +316,12 @@ function nextQ(){
 
   // 可视化
   var vis=document.getElementById('qVis');vis.innerHTML='';
-  for(var i=0;i<q.nums[0];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.sc.e;sp.style.animationDelay=i*.12+'s';vis.appendChild(sp)}
+  for(var i=0;i<q.nums[0];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.emoji;sp.style.animationDelay=i*.12+'s';vis.appendChild(sp)}
   var opEl=document.createElement('span');opEl.className='vop';opEl.textContent=q.op;vis.appendChild(opEl);
   if(q.op==='+'){
-    for(var i=0;i<q.nums[1];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.sc.e;sp.style.animationDelay=(q.nums[0]+i)*.12+'s';vis.appendChild(sp)}
+    for(var i=0;i<q.nums[1];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.emoji;sp.style.animationDelay=(q.nums[0]+i)*.12+'s';vis.appendChild(sp)}
   }else{
-    for(var i=0;i<q.nums[1];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.sc.e;sp.style.opacity='.4';sp.style.animationDelay=(q.nums[0]+i)*.12+'s';vis.appendChild(sp)}
+    for(var i=0;i<q.nums[1];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.emoji;sp.style.opacity='.4';sp.style.animationDelay=(q.nums[0]+i)*.12+'s';vis.appendChild(sp)}
   }
 
   // 算式
