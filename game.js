@@ -86,6 +86,19 @@ function toggleSound(){
   else{setTimeout(playBgMusic,500)}
 }
 
+/* ===== 语音朗读 ===== */
+function speak(text){
+  if(soundMuted)return;
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  if(!text)return;
+  var u=new SpeechSynthesisUtterance(text);
+  u.lang='zh-CN';u.rate=0.7;u.pitch=1.1;
+  var voices=window.speechSynthesis.getVoices();
+  var cv=voices.find(function(v){return v.lang.indexOf('zh')>=0});
+  if(cv)u.voice=cv;
+  window.speechSynthesis.speak(u);
+}
+
 /* ===== 烟花 ===== */
 function fw(n){
   n=n||3;
@@ -329,6 +342,8 @@ function nextQ(){
 
   document.getElementById('qFb').textContent='';document.getElementById('qFb').className='q-fb';
   updProg();
+  // 自动朗读题目
+  setTimeout(function(){speak(q.story)},300);
 }
 
 function updProg(){
@@ -338,6 +353,7 @@ function updProg(){
 
 function chk(num,btn){
   if(QS.answered)return;QS.answered=true;
+  window.speechSynthesis && window.speechSynthesis.cancel();
   var q=QS.curQ,box=document.getElementById('ab');
   document.querySelectorAll('.q-opt').forEach(function(b){b.disabled=true});
 

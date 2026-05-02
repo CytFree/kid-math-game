@@ -160,6 +160,8 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .q-bubble{display:flex;align-items:center;gap:12px;margin-bottom:8px;width:100%}
 .q-speech{flex:1;background:#FFF3E0;border-radius:16px;padding:14px 16px;font-size:17px;line-height:1.8;color:#555;position:relative;min-height:60px}
 .q-speech::before{content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);border-top:8px solid transparent;border-bottom:8px solid transparent;border-right:8px solid #FFF3E0}
+.q-speak-btn{background:rgba(255,255,255,.8);border:none;border-radius:50%;width:40px;height:40px;font-size:20px;cursor:pointer;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.1);transition:transform .15s}
+.q-speak-btn:active{transform:scale(.9)}
 .q-visual{display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;margin:10px 0;min-height:50px}
 .q-visual .vi{font-size:38px;animation:popIn .4s ease both}
 @keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
