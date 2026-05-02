@@ -700,7 +700,7 @@ function renderDecoGrid(){
     if(owned.length===0){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:#888;padding:20px">还没有装饰，去商店看看吧 🛒</div>';return}
     owned.forEach(function(id){
       var d=DECOS.find(function(x){return x.id===id});if(!d)return;
-      var isPlaced=placed.indexOf(id)>=0;
+      var isPlaced=placed.some(function(x){return x.id===id});
       var item=document.createElement('div');
       item.className='deco-item'+(isPlaced?' placed':' owned');
       item.innerHTML='<div class="di-icon">'+d.ic+'</div><div class="di-name">'+d.name+'</div><div class="di-status">'+(isPlaced?'📍 已放置':'📦 未放置')+'</div>';
@@ -709,13 +709,13 @@ function renderDecoGrid(){
     });
   }else if(decoTab==='placed'){
     if(placed.length===0){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:#888;padding:20px">还没有放置装饰，去已拥有里点击放置 📍</div>';return}
-    placed.forEach(function(id){
-      var d=DECOS.find(function(x){return x.id===id});if(!d)return;
-      var item=document.createElement('div');
-      item.className='deco-item placed';
-      item.innerHTML='<div class="di-icon">'+d.ic+'</div><div class="di-name">'+d.name+'</div><div class="di-status">🗑️ 点击移除</div>';
-      item.onclick=function(){removeDeco(id)};
-      grid.appendChild(item);
+    placed.forEach(function(item){
+      var d=DECOS.find(function(x){return x.id===item.id});if(!d)return;
+      var itemEl=document.createElement('div');
+      itemEl.className='deco-item placed';
+      itemEl.innerHTML='<div class="di-icon">'+d.ic+'</div><div class="di-name">'+d.name+'</div><div class="di-status">🗑️ 点击移除</div>';
+      itemEl.onclick=function(){removeDeco(item.id)};
+      grid.appendChild(itemEl);
     });
   }
   document.getElementById('decoInfo').textContent='点击装饰放置到岛上，点击已放置的装饰可移除';
