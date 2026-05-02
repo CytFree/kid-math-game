@@ -770,7 +770,7 @@ function enterAreaTask(aid){
 }
 
 function updateAreaBadges(area){
-  var animals={orchard:['rabbit','bear'],park:['fox'],castle:['panda']};
+  var animals={orchard:['rabbit','bear'],beach:['dolphin'],park:['fox'],castle:['panda']};
   var list=animals[area]||[];
   list.forEach(function(k){
     var b=document.getElementById('area-badge-'+k);

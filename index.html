@@ -65,6 +65,7 @@
     <div class="animal" style="left:52%;bottom:17%;animation:animalWalk 10s ease-in-out infinite 2s" onclick="talk('bear')"><span id="badge-bear" class="badge">❗</span>🐻</div>
     <div class="animal" style="left:68%;bottom:14%;animation:animalWalk 7.5s ease-in-out infinite 1.5s" onclick="talk('fox')"><span id="badge-fox" class="badge">❗</span>🦊</div>
     <div class="animal" style="left:80%;bottom:16%;animation:animalWalk 8.5s ease-in-out infinite 3s" onclick="talk('panda')"><span id="badge-panda" class="badge">❗</span>🐼</div>
+    <div class="animal" style="left:91%;bottom:22%;animation:animalWalk 6.5s ease-in-out infinite 2.5s" onclick="talk('dolphin')"><span id="badge-dolphin" class="badge">❗</span>🐬</div>
     <div class="player player-idle" id="playerChar">👦</div>
   </div>
   </div>
@@ -191,7 +192,7 @@
     <span class="area-screen-title">海滩</span>
   </div>
   <div class="area-animals">
-    <div class="area-animal disabled">🐚<span class="area-animal-name">更多动物即将到来</span></div>
+    <div class="area-animal" onclick="enterAreaTask('dolphin')"><span class="area-badge" id="area-badge-dolphin">❗</span>🐬<span class="area-animal-name">蓝蓝</span></div>
   </div>
   <button class="btn area-back-btn" onclick="exitArea()">← 返回岛屿</button>
 </div>
