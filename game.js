@@ -348,22 +348,28 @@ function updProg(){
 }
 
 function chk(num,btn){
-  if(QS.answered)return;QS.answered=true;
+  if(QS.answered)return;
   window.speechSynthesis && window.speechSynthesis.cancel();
   var q=QS.curQ,box=document.getElementById('ab');
-  document.querySelectorAll('.q-opt').forEach(function(b){b.disabled=true});
 
   if(num===q.answer){
+    QS.answered=true;
+    document.querySelectorAll('.q-opt').forEach(function(b){b.disabled=true});
     pS('ok');box.textContent=num;box.classList.add('ok');btn.classList.add('ok-opt');QS.correct++;
     var ps=['太棒了！🎉','你真聪明！🌟','答对了！💪','好厉害！👏','完美！✨','真棒！🏆'];
     document.getElementById('qFb').textContent=ps[ri(0,ps.length-1)];document.getElementById('qFb').className='q-fb ok-fb';
     var xg=20+S.mc*3;S.xp+=xg;S.totalXp+=xg;S.coins+=5;S.combo++;if(S.combo>S.mc)S.mc=S.combo;
     chkLU();QS.cur++;saveS();setTimeout(nextQ,1100);
   }else{
-    pS('no');box.textContent=num;box.classList.add('no');btn.classList.add('no-opt');S.combo=0;
-    document.getElementById('qFb').textContent='再想想～答案是 '+q.answer+' 💡';document.getElementById('qFb').className='q-fb no-fb';
-    document.querySelectorAll('.q-opt').forEach(function(b){if(parseInt(b.textContent)===q.answer)b.classList.add('ok-opt')});
-    QS.cur++;saveS();setTimeout(nextQ,1800);
+    pS('no');box.textContent=num;box.classList.add('no');btn.classList.add('no-opt');btn.disabled=true;S.combo=0;
+    document.getElementById('qFb').textContent='再想想哦，你可以的！💪';document.getElementById('qFb').className='q-fb no-fb';
+  }
+}
+
+function resetGame(){
+  if(confirm('确定要重置所有进度吗？')){
+    localStorage.removeItem('mi2');
+    location.reload();
   }
 }
 
