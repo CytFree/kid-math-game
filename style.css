@@ -5,7 +5,7 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 /* ===== 屏幕管理 ===== */
 .screen{position:fixed;top:0;left:0;right:0;bottom:0;display:none;flex-direction:column;z-index:1}
 .screen.active{display:flex}
-.btn{border:none;border-radius:16px;font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s,box-shadow .15s}
+.btn{border:none;border-radius:16px;font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s,box-shadow .15s;min-height:44px}
 .btn:active{transform:scale(.93)}
 
 /* ===== 角色创建 ===== */
@@ -32,7 +32,7 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .hud-xp-bar{height:100%;background:linear-gradient(90deg,#FFD54F,#FF8F00);border-radius:5px;transition:width .5s ease}
 .hud-coins{font-size:14px;color:#FF8F00;font-weight:bold}
 .hud-pet{font-size:18px;margin-left:6px}
-.hud-task-btn{font-size:18px;background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:8px;transition:all .2s}
+.hud-task-btn{font-size:18px;background:none;border:none;cursor:pointer;padding:8px;border-radius:8px;min-height:44px;transition:all .2s}
 .hud-task-btn:active{transform:scale(.9);background:rgba(255,152,0,.15)}
 
 /* 岛屿场景 */
@@ -133,48 +133,6 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .tree{position:absolute;z-index:2;opacity:.85}
 .flower{position:absolute;z-index:3;font-size:16px}
 
-/* 底部导航 */
-.bottom-nav{display:flex;justify-content:space-around;padding:6px 4px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top-left-radius:20px;border-top-right-radius:20px;box-shadow:0 -2px 12px rgba(0,0,0,.08);flex-shrink:0;z-index:10}
-.nav-btn{display:flex;flex-direction:column;align-items:center;padding:4px 10px;border-radius:10px;background:none;color:#888;font-size:10px;gap:1px;min-width:52px;transition:all .2s}
-.nav-btn .nav-icon{font-size:20px}
-.nav-btn.active{color:#FF9800;background:rgba(255,152,0,.1)}
-
-/* ===== 每日任务面板 ===== */
-.task-panel{position:fixed;top:0;left:0;right:0;bottom:0;z-index:60;display:none;justify-content:center;align-items:flex-end;padding:16px}
-.task-panel.show{display:flex}
-.task-bg{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.35)}
-.task-card{position:relative;background:white;border-radius:28px 28px 0 0;padding:20px 18px 24px;width:100%;max-width:420px;max-height:80vh;overflow-y:auto;box-shadow:0 -12px 40px rgba(0,0,0,.2);animation:slideFromBottom .35s ease}
-@keyframes slideFromBottom{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.task-handle{width:40px;height:4px;background:#E0E0E0;border-radius:2px;margin:0 auto 14px}
-.task-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.task-title{font-size:18px;font-weight:bold;color:#333}
-.task-close{width:32px;height:32px;border-radius:50%;background:#F5F5F5;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.task-streak{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border-radius:16px;padding:12px 14px;margin-bottom:14px}
-.streak-fire{font-size:28px;animation:streakPulse 1.5s ease-in-out infinite}
-@keyframes streakPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
-.streak-info{flex:1}
-.streak-label{font-size:12px;color:#E65100;font-weight:bold}
-.streak-count{font-size:22px;font-weight:bold;color:#FF6D00}
-.streak-bonus{font-size:11px;color:#BF360C;margin-top:2px}
-.streak-reward{font-size:28px}
-.task-section-title{font-size:13px;font-weight:bold;color:#888;margin:14px 0 8px;display:flex;align-items:center;gap:6px}
-.task-section-title::after{content:'';flex:1;height:1px;background:#E0E0E0}
-.task-list{display:flex;flex-direction:column;gap:8px}
-.task-item{display:flex;align-items:center;gap:10px;background:#FAFAFA;border-radius:14px;padding:10px 12px;transition:all .3s}
-.task-item.done{background:#E8F5E9;opacity:.7}
-.task-item .t-emoji{font-size:28px;flex-shrink:0}
-.task-item .t-info{flex:1;min-width:0}
-.task-item .t-name{font-size:14px;font-weight:bold;color:#333}
-.task-item .t-desc{font-size:11px;color:#888;margin-top:2px}
-.task-item .t-reward{font-size:11px;color:#FF8F00;font-weight:bold;margin-top:2px}
-.task-item .t-status{font-size:22px;flex-shrink:0}
-.task-item .t-status.done-icon{color:#4CAF50}
-.task-item .t-status.pending-icon{color:#BDBDBD}
-.task-summary{display:flex;justify-content:space-around;margin-top:14px;padding:12px;background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-radius:16px}
-.summary-item{text-align:center}
-.summary-item .s-val{font-size:20px;font-weight:bold;color:#2E7D32}
-.summary-item .s-label{font-size:11px;color:#666;margin-top:2px}
-
 /* ===== 对话气泡 ===== */
 .dialog-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.35);z-index:50;display:none;justify-content:center;align-items:flex-end;padding:16px}
 .dialog-overlay.show{display:flex}
@@ -191,17 +149,19 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 /* ===== 题目界面 ===== */
 #q-screen{background:linear-gradient(180deg,#87CEEB 0%,#E1F5FE 35%,#FFF8E1 100%)}
 .q-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;flex-shrink:0}
-.q-back{background:rgba(255,255,255,.8);border:none;padding:8px 14px;border-radius:12px;font-size:14px;cursor:pointer}
+.q-back{background:rgba(255,255,255,.8);border:none;padding:10px 16px;min-height:44px;border-radius:12px;font-size:14px;cursor:pointer}
 .q-title{font-size:15px;font-weight:bold;color:#333}
 .q-progress{display:flex;gap:6px;justify-content:center;padding:6px;flex-shrink:0}
 .q-dot{width:10px;height:10px;border-radius:50%;background:#E0E0E0;transition:all .3s}
 .q-dot.done{background:#4CAF50}
 .q-dot.current{background:#FF9800;transform:scale(1.3)}
 .q-card{background:white;border-radius:28px;padding:20px 18px;margin:8px 12px;flex:1;display:flex;flex-direction:column;align-items:center;box-shadow:0 10px 40px rgba(0,0,0,.12);overflow-y:auto}
-.q-animal{font-size:44px;margin-bottom:6px}
-.q-story{font-size:15px;line-height:1.7;color:#555;text-align:center;margin-bottom:12px;min-height:44px}
+.q-animal{font-size:52px}
+.q-bubble{display:flex;align-items:center;gap:12px;margin-bottom:8px;width:100%}
+.q-speech{flex:1;background:#FFF3E0;border-radius:16px;padding:14px 16px;font-size:17px;line-height:1.8;color:#555;position:relative;min-height:60px}
+.q-speech::before{content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);border-top:8px solid transparent;border-bottom:8px solid transparent;border-right:8px solid #FFF3E0}
 .q-visual{display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;margin:10px 0;min-height:50px}
-.q-visual .vi{font-size:30px;animation:popIn .4s ease both}
+.q-visual .vi{font-size:38px;animation:popIn .4s ease both}
 @keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
 .q-visual .vop{font-size:26px;color:#FF5722;font-weight:bold;margin:0 3px}
 .q-equation{display:flex;align-items:center;justify-content:center;gap:8px;margin:14px 0;font-size:30px;font-weight:bold}
@@ -220,31 +180,6 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .q-fb{text-align:center;min-height:32px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:bold;margin-top:8px}
 .q-fb.ok-fb{color:#4CAF50}
 .q-fb.no-fb{color:#F44336}
-
-/* ===== 学习 ===== */
-#learn-screen{background:linear-gradient(180deg,#87CEEB 0%,#E1F5FE 50%,#FFF9C4 100%)}
-.l-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;flex-shrink:0}
-.lesson-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 14px;overflow-y:auto}
-.lesson-card{background:white;border-radius:18px;padding:16px 12px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.08);cursor:pointer;transition:transform .2s}
-.lesson-card:active{transform:scale(.95)}
-.lesson-card.locked{opacity:.35;pointer-events:none}
-.lesson-card .lc-icon{font-size:36px;margin-bottom:6px}
-.lesson-card .lc-name{font-size:13px;font-weight:bold;color:#333}
-.lesson-card .lc-desc{font-size:10px;color:#888;margin-top:3px}
-.lesson-card .lc-badge{font-size:9px;background:#4CAF50;color:white;padding:2px 6px;border-radius:6px;display:inline-block;margin-top:4px}
-
-/* 课程步骤 */
-#course-screen{background:linear-gradient(180deg,#87CEEB 0%,#E1F5FE 50%,#FFF9C4 100%)}
-.course-card{background:white;border-radius:28px;padding:24px 18px;margin:8px 12px;flex:1;display:flex;flex-direction:column;align-items:center;box-shadow:0 10px 40px rgba(0,0,0,.12);overflow-y:auto}
-.teacher{font-size:52px;margin-bottom:8px;animation:teacherBounce 2s ease-in-out infinite}
-@keyframes teacherBounce{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-8px) rotate(-3deg)}75%{transform:translateY(-8px) rotate(3deg)}}
-.t-speech{background:#FFF3E0;border-radius:16px;padding:14px;margin:8px 0;font-size:14px;line-height:1.7;color:#555;text-align:center;max-width:310px;position:relative}
-.t-speech::before{content:'';position:absolute;top:-8px;left:50%;transform:translateX(-50%);border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:8px solid #FFF3E0}
-.t-demo{font-size:30px;margin:14px 0;text-align:center;line-height:1.6}
-.t-nav{display:flex;gap:10px;margin-top:14px}
-.t-nav .btn{padding:11px 24px;font-size:15px;font-weight:bold}
-.t-nav .prev-btn{background:#E0E0E0;color:#666}
-.t-nav .next-btn{background:linear-gradient(135deg,#FF9800,#FF5722);color:white;box-shadow:0 4px 12px rgba(255,87,34,.3)}
 
 /* ===== 冒险列表 ===== */
 #adv-list-screen{background:linear-gradient(180deg,#87CEEB 0%,#B3E5FC 40%,#DCEDC8 100%)}
@@ -330,9 +265,9 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .deco-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .deco-title{font-size:18px;font-weight:bold;color:#333}
 .deco-coins{font-size:14px;color:#FF8F00;font-weight:bold}
-.deco-close{width:32px;height:32px;border-radius:50%;background:#F5F5F5;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.deco-close{width:40px;height:40px;border-radius:50%;background:#F5F5F5;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .deco-tabs{display:flex;gap:8px;margin-bottom:14px}
-.deco-tab{flex:1;padding:8px;border:none;border-radius:12px;font-size:13px;font-weight:bold;cursor:pointer;background:#F5F5F5;color:#888;transition:all .2s}
+.deco-tab{flex:1;padding:12px 8px;min-height:44px;border:none;border-radius:12px;font-size:13px;font-weight:bold;cursor:pointer;background:#F5F5F5;color:#888;transition:all .2s}
 .deco-tab.active{background:linear-gradient(135deg,#FF9800,#FF5722);color:white}
 .deco-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .deco-item{background:#FAFAFA;border-radius:16px;padding:12px 8px;text-align:center;transition:all .2s;cursor:pointer;border:2px solid transparent}
@@ -353,20 +288,6 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .deco-on-island .deco-emoji{font-size:28px;display:block}
 .deco-on-island .deco-remove{position:absolute;top:-8px;right:-8px;width:18px;height:18px;background:#F44336;color:white;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
 .deco-on-island:hover .deco-remove{opacity:1}
-
-/* ===== 紧急任务 ===== */
-.emergency-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,0,0,.15);z-index:80;display:none;justify-content:center;align-items:center;padding:16px;animation:emergencyFlash 1s ease-in-out infinite}
-@keyframes emergencyFlash{0%,100%{background:rgba(255,0,0,.15)}50%{background:rgba(255,0,0,.25)}}
-.emergency-overlay.show{display:flex}
-.emergency-card{background:white;border-radius:28px;padding:24px 20px;width:100%;max-width:360px;box-shadow:0 16px 48px rgba(0,0,0,.3);animation:emergencyPop .4s ease;text-align:center}
-@keyframes emergencyPop{0%{transform:scale(.5) rotate(-5deg);opacity:0}60%{transform:scale(1.08) rotate(2deg)}100%{transform:scale(1) rotate(0);opacity:1}}
-.emergency-icon{font-size:56px;margin-bottom:10px;animation:emergencyShake .5s ease-in-out infinite}
-@keyframes emergencyShake{0%,100%{transform:rotate(0)}25%{transform:rotate(-10deg)}75%{transform:rotate(10deg)}}
-.emergency-title{font-size:20px;font-weight:bold;color:#F44336;margin-bottom:8px}
-.emergency-text{font-size:14px;line-height:1.7;color:#555;margin-bottom:14px}
-.emergency-timer{font-size:28px;font-weight:bold;color:#FF5722;margin-bottom:14px}
-.emergency-btn{width:100%;padding:14px;background:linear-gradient(135deg,#F44336,#D32F2F);color:white;font-size:16px;font-weight:bold;border-radius:14px;box-shadow:0 4px 12px rgba(244,67,54,.3);margin-bottom:6px}
-.emergency-skip{width:100%;padding:10px;background:#F5F5F5;color:#888;font-size:14px;border-radius:14px}
 
 /* ===== 音效控制 ===== */
 .sound-toggle{position:fixed;top:60px;right:12px;z-index:20;background:rgba(255,255,255,.8);border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.1);transition:all .2s}

@@ -115,46 +115,6 @@ var TPL={
   ]}
 };
 
-/* ===== 课程数据 ===== */
-var CRS={
-  add:{title:'加法课 🐱',aid:'cat',tm:'add',steps:[
-    {t:'teach',text:'加法就是把东西<strong>合在一起</strong>！',emoji:'🐟🐟 ➕ 🐟🐟🐟'},
-    {t:'teach',text:'比如，小橘有2条鱼，妈妈又给了3条，合起来有几条？',emoji:'🐟🐟 ➕ 🐟🐟🐟'},
-    {t:'teach',text:'数一数：1、2、3、4、5！所以 2 + 3 = 5 🎉',emoji:'⭐ 2 + 3 = 5 ⭐'},
-    {t:'prac',count:3}
-  ]},
-  sub:{title:'减法课 🐶',aid:'dog',tm:'sub',steps:[
-    {t:'teach',text:'减法就是<strong>拿走一些</strong>，看看还剩多少！',emoji:'🦴🦴🦴🦴🦴 ➖ 🦴🦴'},
-    {t:'teach',text:'比如，旺财有5根骨头，吃了2根，还剩几根？',emoji:'🦴🦴🦴🦴🦴 ➖ 🦴🦴'},
-    {t:'teach',text:'数一数剩下的：1、2、3！所以 5 - 2 = 3 🎉',emoji:'⭐ 5 - 2 = 3 ⭐'},
-    {t:'prac',count:3}
-  ]},
-  addChain:{title:'连加课 🐰',aid:'rabbit',tm:'addChain',steps:[
-    {t:'teach',text:'连加就是<strong>把好多东西合在一起</strong>！',emoji:'🥕 ➕ 🥕 ➕ 🥕🥕🥕'},
-    {t:'teach',text:'跳跳有2个胡萝卜，朋友给了1个，又给了3个',emoji:'🥕🥕 ➕ 🥕 ➕ 🥕🥕🥕'},
-    {t:'teach',text:'2 + 1 + 3 = 6！跳跳现在有6个胡萝卜 🎉',emoji:'⭐ 2 + 1 + 3 = 6 ⭐'},
-    {t:'prac',count:3}
-  ]},
-  subChain:{title:'连减课 🐻',aid:'bear',tm:'subChain',steps:[
-    {t:'teach',text:'连减就是<strong>连续拿走</strong>，看看最后还剩多少！',emoji:'🍯🍯🍯🍯🍯🍯🍯🍯 ➖ 🍯 ➖ 🍯🍯'},
-    {t:'teach',text:'团团有10罐蜂蜜，吃了2罐，又吃了3罐',emoji:'🍯×10 ➖ 🍯🍯 ➖ 🍯🍯🍯'},
-    {t:'teach',text:'10 - 2 - 3 = 5！团团还剩5罐蜂蜜 🎉',emoji:'⭐ 10 - 2 - 3 = 5 ⭐'},
-    {t:'prac',count:3}
-  ]},
-  mix:{title:'混合运算课 🦊',aid:'fox',tm:'mix',steps:[
-    {t:'teach',text:'混合运算就是<strong>加法和减法一起</strong>用！',emoji:'🍬🍬🍬 ➕ 🍬🍬🍬🍬 ➖ 🍬🍬'},
-    {t:'teach',text:'聪聪有5颗糖，又买了3颗，吃了2颗',emoji:'🍬×5 ➕ 🍬×3 ➖ 🍬×2'},
-    {t:'teach',text:'5 + 3 - 2 = 6！聪聪现在有6颗糖 🎉',emoji:'⭐ 5 + 3 - 2 = 6 ⭐'},
-    {t:'prac',count:3}
-  ]},
-  bigNum:{title:'大数运算课 🐼',aid:'panda',tm:'bigNum',steps:[
-    {t:'teach',text:'大数运算就是用<strong>更大的数字</strong>来算！',emoji:'🎋🎋🎋🎋🎋🎋🎋🎋🎋🎋 ➕ 🎋🎋🎋🎋🎋🎋🎋'},
-    {t:'teach',text:'圆圆找到了12根竹子，又找到了8根',emoji:'🎋×12 ➕ 🎋×8'},
-    {t:'teach',text:'12 + 8 = 20！圆圆找到了20根竹子 🎉',emoji:'⭐ 12 + 8 = 20 ⭐'},
-    {t:'prac',count:3}
-  ]}
-};
-
 /* ===== 冒险 ===== */
 var ADS=[
   {id:'fishing',n:'小橘的钓鱼日',ic:'🐟',d:'帮小橘钓到5条鱼',ul:1,aid:'cat',tm:'add',nodes:5,boss:5},
@@ -221,11 +181,3 @@ var DECOS=[
   {id:'crystal',name:'水晶',ic:'💎',price:30,area:'home'}
 ];
 
-/* ===== 紧急任务文本 ===== */
-var EMERGENCY_TEXTS=[
-  {icon:'🔥',title:'果园着火了！',text:'跳跳的胡萝卜田着火了！快帮它算出还剩几根胡萝卜！'},
-  {icon:'🌊',title:'海滩涨潮了！',text:'旺财的骨头被潮水冲走了！快帮它算算还剩几根！'},
-  {icon:'🎪',title:'游乐场停电了！',text:'聪聪的迷宫灯灭了！快帮他算出正确路线！'},
-  {icon:'🏰',title:'城堡遇到麻烦！',text:'圆圆的竹子被偷了！快帮他算算还剩几根！'},
-  {icon:'🐟',title:'小鱼迷路了！',text:'小橘的鱼游走了！快帮她算算还剩几条！'}
-];

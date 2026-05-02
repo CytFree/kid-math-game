@@ -147,9 +147,7 @@ function defState(){
   return{
     name:'小宝',avatar:'boy',xp:0,level:1,totalXp:0,coins:0,combo:0,mc:0,
     pets:[],companion:null,
-    lessons:{add:0,sub:0,addChain:0,subChain:0,mix:0,bigNum:0},
-    adventures:{},daily:{date:'',done:[],streak:0,lastDate:''},
-    stories:{},decos:[],placedDecos:[],areas:['home']
+    adventures:{},stories:{},decos:[],placedDecos:[],areas:['home']
   }
 }
 
@@ -212,27 +210,11 @@ function genQ(mode,level,aid){
 }
 
 /* ===== 屏幕切换 ===== */
-var activeNav=0;
-
 function show(id){
   pS('click');
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
   document.getElementById(id).classList.add('active');
-  if(id==='island-screen'){updIsland();activeNav=0}
-  updNav()
-}
-
-function navTo(n,id){
-  pS('click');
-  activeNav=n;
-  updNav();
-  if(!id)id='island-screen';
-  show(id)
-}
-
-function updNav(){
-  var btns=document.querySelectorAll('.nav-btn');
-  btns.forEach(function(b,i){b.classList.toggle('active',i===activeNav)})
+  if(id==='island-screen'){updIsland()}
 }
 
 /* ===== 角色创建 ===== */
@@ -270,19 +252,10 @@ function updIsland(){
     var el=document.getElementById('area-'+a);if(!el)return;
     if(S.areas.indexOf(a)>=0)el.classList.remove('locked');else el.classList.add('locked');
   });
-  // 每日任务状态
-  var today=new Date().toISOString().slice(0,10);
-  if(S.daily.date!==today){
-    var yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
-    var streak=S.daily.streak||0;
-    if(S.daily.lastDate===yesterday&&S.daily.done&&S.daily.done.length>0){streak++}
-    else if(S.daily.lastDate!==today){streak=0}
-    S.daily={date:today,done:[],streak:streak,lastDate:S.daily.date||''};
-    saveS();
-  }
+  // 动物徽章 — 始终显示需要帮助
   Object.keys(AN).forEach(function(k){
     var b=document.getElementById('badge-'+k);if(!b)return;
-    b.textContent=S.daily.done.indexOf(k)>=0?'❤️':'❗';
+    b.textContent='❗';
   });
   // 故事按钮
   var storyBtn=document.getElementById('hudStoryBtn');
@@ -299,34 +272,25 @@ var dlgData={};
 
 function talk(aid){
   pS('pop');var an=AN[aid];if(!an)return;curAnimal=aid;
-  var done=S.daily.done&&S.daily.done.indexOf(aid)>=0;
   document.getElementById('dAvatar').textContent=an.emoji;
   document.getElementById('dName').textContent=an.name+' ('+an.personality+')';
-  if(done){
-    var doneMsgs=an.done||[an.name+'笑着说："谢谢你今天的帮助！你真棒！💕"'];
-    document.getElementById('dText').textContent=doneMsgs[Math.floor(Math.random()*doneMsgs.length)];
-    document.getElementById('dEmoji').textContent=an.emoji+' ❤️';
-    document.getElementById('dAction').style.display='none';
-    dlgData={done:true};
-  }else{
-    var greeting=an.greetings?an.greetings[Math.floor(Math.random()*an.greetings.length)]:'';
-    var story=an.stories?an.stories[Math.floor(Math.random()*an.stories.length)]:'';
-    document.getElementById('dText').textContent=greeting+(story?'\n'+story:'');
-    document.getElementById('dEmoji').textContent=an.emoji+' ❓';
-    document.getElementById('dAction').style.display='';
-    dlgData={done:false,aid:aid,teach:an.teach};
-  }
+  var greeting=an.greetings?an.greetings[Math.floor(Math.random()*an.greetings.length)]:'';
+  var story=an.stories?an.stories[Math.floor(Math.random()*an.stories.length)]:'';
+  document.getElementById('dText').textContent=greeting+(story?'\n'+story:'');
+  document.getElementById('dEmoji').textContent=an.emoji+' ❓';
+  document.getElementById('dAction').style.display='';
+  dlgData={aid:aid,teach:an.teach};
   document.getElementById('dialogOv').classList.add('show');
 }
 
 function closeDlg(){pS('click');document.getElementById('dialogOv').classList.remove('show');curAnimal=null}
-function doTask(){pS('click');closeDlg();if(dlgData.aid)startQ('task',dlgData.aid,dlgData.teach,1)}
+function doTask(){pS('click');closeDlg();if(dlgData.aid)startQ('',dlgData.aid,dlgData.teach,1)}
 
 /* ===== 题目系统 ===== */
-var QS={mode:'',aid:'',teach:'',total:1,cur:0,correct:0,answered:false,curQ:null,advId:'',advNode:0,pracCounted:false};
+var QS={mode:'',aid:'',teach:'',total:1,cur:0,correct:0,answered:false,curQ:null,advId:'',advNode:0};
 
 function startQ(mode,aid,teach,total){
-  QS.mode=mode;QS.aid=aid||'cat';QS.teach=teach||'add';QS.cur=0;QS.correct=0;QS.answered=false;QS.total=total||1;QS.advId='';QS.advNode=0;QS.pracCounted=false;
+  QS.mode=mode;QS.aid=aid||'cat';QS.teach=teach||'add';QS.cur=0;QS.correct=0;QS.answered=false;QS.total=total||1;QS.advId='';QS.advNode=0;
   show('q-screen');nextQ();
 }
 
@@ -392,26 +356,11 @@ function chk(num,btn){
 }
 
 function finishQ(){
-  if(QS.mode==='task'){
-    if(!S.daily.done)S.daily.done=[];
-    if(S.daily.done.indexOf(QS.aid)<0)S.daily.done.push(QS.aid);
-    var streak=S.daily.streak||0;
-    var bonus=streak>=7?3:streak>=3?2:streak>=1?1:0;
-    S.coins+=bonus;S.xp+=bonus;S.totalXp+=bonus;
-    saveS();show('island-screen');updIsland();
-  }else if(QS.mode==='story'){
+  if(QS.mode==='story'){
     storyNextChapter();
-  }else if(QS.mode==='emergency'){
-    finishEmergency();
-    show('island-screen');
-    updateStreak();saveS();updIsland();show('island-screen');
   }else if(QS.mode==='adv'){
     finishAdv();
   }else{
-    if(!QS.pracCounted){
-      if(S.lessons[QS.teach]===undefined)S.lessons[QS.teach]=0;
-      S.lessons[QS.teach]++;QS.pracCounted=true;saveS();
-    }
     show('island-screen');
   }
 }
@@ -444,59 +393,6 @@ function showLU(lv){
 }
 
 function closeLu(){pS('click');document.getElementById('luOv').classList.remove('show');updIsland()}
-
-/* ===== 学习模式 ===== */
-function showLessons(){pS('click');activeNav=1;updNav();show('learn-screen');renderLessons()}
-
-function renderLessons(){
-  var g=document.getElementById('lessonGrid');g.innerHTML='';
-  var ls=[
-    {k:'add',n:'加法',ic:'🐱',d:'把东西合在一起',ul:1},
-    {k:'sub',n:'减法',ic:'🐶',d:'拿走一些还剩多少',ul:1},
-    {k:'addChain',n:'连加',ic:'🐰',d:'三个数相加',ul:3},
-    {k:'subChain',n:'连减',ic:'🐻',d:'连续减去几个数',ul:3},
-    {k:'mix',n:'混合运算',ic:'🦊',d:'加法和减法一起',ul:5},
-    {k:'bigNum',n:'大数运算',ic:'🐼',d:'更大的数字',ul:6}
-  ];
-  ls.forEach(function(l){
-    var locked=S.level<l.ul;
-    var done=S.lessons[l.k]&&S.lessons[l.k]>0;
-    var c=document.createElement('div');c.className='lesson-card'+(locked?' locked':'');
-    c.innerHTML='<div class="lc-icon">'+l.ic+'</div><div class="lc-name">'+l.n+'课</div><div class="lc-desc">'+l.d+'</div>'+(done?'<div class="lc-badge">✓ 已完成</div>':'')+(locked?'<div class="lc-badge" style="background:#BDBDBD">Lv.'+l.ul+'解锁</div>':'');
-    if(!locked)c.onclick=(function(k){return function(){startCrs(k)}})(l.k);
-    g.appendChild(c);
-  });
-}
-
-var LS={k:'',si:0,aid:'',tm:''};
-
-function startCrs(k){
-  pS('click');var c=CRS[k];if(!c)return;
-  LS={k:k,si:0,aid:c.aid,tm:c.tm};
-  show('course-screen');document.getElementById('crsTitle').textContent=c.title;
-  renderStep();
-}
-
-function renderStep(){
-  var c=CRS[LS.k],step=c.steps[LS.si],card=document.getElementById('crsCard');
-  if(step.t==='teach'){
-    card.innerHTML='<div class="teacher">'+AN[LS.aid].emoji+'</div>'+
-      '<div class="t-speech">'+step.text+'</div>'+
-      '<div class="t-demo">'+step.emoji+'</div>'+
-      '<div class="t-nav">'+
-      (LS.si>0?'<button class="btn prev-btn" onclick="lsPrev()">← 上一步</button>':'')+
-      (LS.si<c.steps.length-1?'<button class="btn next-btn" onclick="lsNext()">下一步 →</button>':'<button class="btn next-btn" onclick="startPrac()">开始练习 💪</button>')+
-      '</div>';
-  }
-}
-
-function startPrac(){
-  pS('click');
-  startQ('learn',LS.aid,LS.tm,3);
-}
-
-function lsNext(){pS('click');LS.si++;renderStep()}
-function lsPrev(){pS('click');LS.si--;renderStep()}
 
 /* ===== 故事任务 ===== */
 var storySt={id:'',chapter:0,active:false,answers:[]};
@@ -588,7 +484,7 @@ function getAvailableStories(){
 /* ===== 冒险系统 ===== */
 var advSt={id:'',node:0};
 
-function showAdvList(){pS('click');activeNav=2;updNav();show('adv-list-screen');renderAdvList()}
+function showAdvList(){pS('click');show('adv-list-screen');renderAdvList()}
 
 function renderAdvList(){
   var l=document.getElementById('alList');l.innerHTML='';
@@ -776,7 +672,7 @@ function initDecoSystem(){
 }
 
 /* ===== 宠物 ===== */
-function showPets(){pS('click');activeNav=3;updNav();show('pet-screen');renderPets()}
+function showPets(){pS('click');show('pet-screen');renderPets()}
 
 function renderPets(){
   var g=document.getElementById('pGrid');g.innerHTML='';
@@ -878,135 +774,10 @@ function updateAreaBadges(area){
   var list=animals[area]||[];
   list.forEach(function(k){
     var b=document.getElementById('area-badge-'+k);
-    if(b){b.textContent=S.daily.done&&S.daily.done.indexOf(k)>=0?'❤️':'❗'}
+    if(b){b.textContent='❗'}
   });
 }
 
-/* ===== 每日任务面板 ===== */
-function showTaskPanel(){
-  pS('click');
-  renderTaskPanel();
-  document.getElementById('taskPanel').classList.add('show');
-}
-
-function closeTaskPanel(){
-  pS('click');
-  document.getElementById('taskPanel').classList.remove('show');
-}
-
-function renderTaskPanel(){
-  var today=new Date().toISOString().slice(0,10);
-  if(!S.daily.streak)S.daily.streak=0;
-  if(!S.daily.lastDate)S.daily.lastDate='';
-  if(S.daily.date!==today){
-    var yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
-    if(S.daily.lastDate===yesterday&&S.daily.done.length>0){S.daily.streak++}
-    else if(S.daily.lastDate!==today){S.daily.streak=S.daily.lastDate===today?S.daily.streak:0}
-    S.daily={date:today,done:[],streak:S.daily.streak,lastDate:S.daily.date||''};
-    saveS();
-  }
-  var streak=S.daily.streak||0;
-  var done=S.daily.done||[];
-  var totalTasks=Object.keys(AN).length;
-  var doneCount=done.length;
-  var leftCount=totalTasks-doneCount;
-  var baseReward=3;
-  var streakBonus=streak>=7?3:streak>=3?2:streak>=1?1:0;
-  var totalReward=leftCount*(baseReward+streakBonus);
-  document.getElementById('streakCount').textContent=streak+' 天';
-  var bonusText='';
-  if(streak>=7)bonusText='🔥 全勤大师！每任务 +'+streakBonus+' 金币';
-  else if(streak>=3)bonusText='🔥 连续达人！每任务 +'+streakBonus+' 金币';
-  else if(streak>=1)bonusText='✨ 连续打卡！每任务 +'+streakBonus+' 金币';
-  else bonusText='💪 开始今天的第一题！';
-  document.getElementById('streakBonus').textContent=bonusText;
-  var rewardEmoji=streak>=7?'🏆':streak>=3?'🥇':streak>=1?'🥈':'🎁';
-  document.getElementById('streakReward').textContent=rewardEmoji;
-  var list=document.getElementById('taskList');list.innerHTML='';
-  var areaNames={home:'🏠 家',orchard:'🌳 果园',beach:'🏖️ 海滩',park:'🎪 游乐场',castle:'🏰 城堡'};
-  Object.keys(AN).forEach(function(k){
-    var an=AN[k];
-    var isDone=done.indexOf(k)>=0;
-    var isLocked=S.areas.indexOf(an.area)<0;
-    var item=document.createElement('div');
-    item.className='task-item'+(isDone?' done':'')+(isLocked?' locked':'');
-    if(isLocked){
-      item.innerHTML='<span class="t-emoji" style="opacity:.3">'+an.emoji+'</span>'+
-        '<div class="t-info"><div class="t-name" style="opacity:.3">'+an.name+'</div>'+
-        '<div class="t-desc">🔒 在'+(areaNames[an.area]||an.area)+'</div></div>'+
-        '<span class="t-status pending-icon">🔒</span>';
-    }else{
-      var reward=(baseReward+streakBonus);
-      item.innerHTML='<span class="t-emoji">'+an.emoji+'</span>'+
-        '<div class="t-info"><div class="t-name">'+an.name+'</div>'+
-        '<div class="t-desc">帮'+an.name+'解题</div>'+
-        '<div class="t-reward">💰 +'+reward+' 金币'+(streakBonus>0?' (含连续奖励)':'')+'</div></div>'+
-        '<span class="t-status '+(isDone?'done-icon':'pending-icon')+'">'+(isDone?'✅':'⏳')+'</span>';
-    }
-    list.appendChild(item);
-  });
-  document.getElementById('sDone').textContent=doneCount;
-  document.getElementById('sLeft').textContent=leftCount;
-  document.getElementById('sReward').textContent=totalReward;
-}
-
-function updateStreak(){
-  var today=new Date().toISOString().slice(0,10);
-  if(S.daily.lastDate!==today){S.daily.lastDate=today;saveS()}
-}
-
-/* ===== 紧急任务 ===== */
-var emergencyTimer=null;
-var emergencyTimeLeft=0;
-var emergencyActive=false;
-var emergencyData={};
-
-function triggerEmergency(){
-  if(emergencyActive)return;
-  if(Math.random()>0.1)return;
-  var em=EMERGENCY_TEXTS[Math.floor(Math.random()*EMERGENCY_TEXTS.length)];
-  emergencyData=em;
-  emergencyActive=true;
-  emergencyTimeLeft=30;
-  document.getElementById('emIcon').textContent=em.icon;
-  document.getElementById('emTitle').textContent=em.title;
-  document.getElementById('emText').textContent=em.text;
-  document.getElementById('emTimer').textContent='⏰ '+emergencyTimeLeft;
-  document.getElementById('emergencyOv').classList.add('show');
-  emergencyTimer=setInterval(function(){
-    emergencyTimeLeft--;
-    document.getElementById('emTimer').textContent='⏰ '+emergencyTimeLeft;
-    if(emergencyTimeLeft<=0){closeEmergency()}
-  },1000);
-}
-
-function doEmergencyTask(){
-  pS('click');
-  clearInterval(emergencyTimer);
-  emergencyActive=false;
-  document.getElementById('emergencyOv').classList.remove('show');
-  var animals=['cat','dog','rabbit','bear','fox','panda'];
-  var aid=animals[Math.floor(Math.random()*animals.length)];
-  var an=AN[aid];
-  startQ('emergency',aid,an.teach,3);
-  QS.emergency=true;
-  QS.emergencyTime=emergencyTimeLeft;
-}
-
-function closeEmergency(){
-  pS('click');
-  clearInterval(emergencyTimer);
-  emergencyActive=false;
-  document.getElementById('emergencyOv').classList.remove('show');
-}
-
-function finishEmergency(){
-  var bonus=QS.correct>=2?10:5;
-  S.coins+=bonus;S.xp+=bonus;S.totalXp+=bonus;
-  saveS();updIsland();
-  pS('lu');
-  fw(2);
-}
 
 /* ===== 初始化 ===== */
 function init(){
@@ -1014,10 +785,6 @@ function init(){
   var saved=loadS();
   if(saved&&saved.name){S=saved;show('island-screen');updIsland();initDecoSystem();renderPlayerAccessories()}
   else{show('create-screen')}
-  // 紧急任务每30秒检查一次
-  setInterval(function(){
-    if(document.getElementById('island-screen').classList.contains('active')){triggerEmergency()}
-  },30000);
   // 背景音乐
   setTimeout(playBgMusic,1000);
 }

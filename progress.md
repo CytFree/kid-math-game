@@ -41,6 +41,16 @@
   - game.js（genQ/finishQ/chk/nextQ 重写）
   - style.css（q-options grid 3列→2列）
 
+### 阶段 3：自审发现 Bug  修复
+- **状态：** complete
+- **执行的操作：**
+  - Bug 5: 装饰位置随机跳动 — renderIslandDecos 用 Math.random() 定位，改为网格布局+存储位置
+  - Bug 6: 装饰tab切换崩溃 — switchDecoTab 引用不存在的元素ID，改用 class 遍历+toggle
+  - Bug 7: 区域进入无效 — orchard-screen/beach-screen/park-screen/castle-screen 从未在HTML中存在，添加4个区域屏幕及样式
+  - Bug 8: 课程计数翻倍 — startPrac() 和 finishQ() 都做了 S.lessons[k]++
+  - Bug 9: 升级强制改伴侣 — Lv.2 无条件 S.companion='chick'，改为仅无伴侣时设置
+  - 额外: placedDecos 改对象格式后渲染中的 indexOf/some 不兼容，修复 renderDecoGrid 两处调用
+
 ## 测试结果
 | 测试 | 输入 | 预期结果 | 实际结果 | 状态 |
 |------|------|---------|---------|------|

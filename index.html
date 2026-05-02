@@ -37,7 +37,7 @@
     <div class="hud-xp-wrap"><div class="hud-xp-bar" id="hudXp" style="width:0%"></div></div>
     <span class="hud-coins" id="hudCoins">💰0</span>
     <span class="hud-pet" id="hudPet"></span>
-    <button class="hud-task-btn" onclick="showTaskPanel()" style="font-size:18px;background:none;border:none;cursor:pointer">📋</button>
+    <button class="hud-task-btn" onclick="showPets()" style="font-size:18px;background:none;border:none;cursor:pointer">🐾</button>
     <button class="hud-task-btn" id="hudStoryBtn" onclick="showAvailableStory()" style="font-size:18px;background:none;border:none;cursor:pointer;display:none">📖</button>
     <button class="hud-task-btn" onclick="showDecoPanel()" style="font-size:18px;background:none;border:none;cursor:pointer">🏠</button>
   </div>
@@ -67,11 +67,6 @@
     <div class="animal" style="left:80%;bottom:16%;animation:animalWalk 8.5s ease-in-out infinite 3s" onclick="talk('panda')"><span id="badge-panda" class="badge">❗</span>🐼</div>
     <div class="player player-idle" id="playerChar">👦</div>
   </div>
-  <div class="bottom-nav">
-    <button class="nav-btn active" onclick="navTo(0,'island-screen')"><span class="nav-icon">🏝️</span>岛屿</button>
-    <button class="nav-btn" onclick="navTo(1)"><span class="nav-icon">📚</span>学习</button>
-    <button class="nav-btn" onclick="navTo(2)"><span class="nav-icon">⚔️</span>冒险</button>
-    <button class="nav-btn" onclick="navTo(3)"><span class="nav-icon">🐾</span>宠物</button>
   </div>
 </div>
 
@@ -86,46 +81,6 @@
     <div class="dialog-emoji" id="dEmoji"></div>
     <button class="btn dialog-btn" id="dAction" onclick="doTask()">我来帮你！💪</button>
     <button class="btn dialog-close" onclick="closeDlg()">下次吧</button>
-  </div>
-</div>
-
-<!-- 每日任务面板 -->
-<div class="task-panel" id="taskPanel" onclick="if(event.target===this)closeTaskPanel()">
-  <div class="task-bg"></div>
-  <div class="task-card" onclick="event.stopPropagation()">
-    <div class="task-handle"></div>
-    <div class="task-header">
-      <span class="task-title">📋 今日任务</span>
-      <button class="task-close" onclick="closeTaskPanel()">✕</button>
-    </div>
-    <div class="task-streak" id="taskStreak">
-      <span class="streak-fire">🔥</span>
-      <div class="streak-info">
-        <div class="streak-label">连续打卡</div>
-        <div class="streak-count" id="streakCount">0 天</div>
-        <div class="streak-bonus" id="streakBonus">完成任务获得额外奖励</div>
-      </div>
-      <span class="streak-reward" id="streakReward">🎁</span>
-    </div>
-    <div class="task-section-title">今日待完成</div>
-    <div class="task-list" id="taskList"></div>
-    <div class="task-summary" id="taskSummary">
-      <div class="summary-item"><div class="s-val" id="sDone">0</div><div class="s-label">已完成</div></div>
-      <div class="summary-item"><div class="s-val" id="sLeft">0</div><div class="s-label">待完成</div></div>
-      <div class="summary-item"><div class="s-val" id="sReward">0</div><div class="s-label">可获金币</div></div>
-    </div>
-  </div>
-</div>
-
-<!-- 紧急任务 -->
-<div class="emergency-overlay" id="emergencyOv">
-  <div class="emergency-card">
-    <div class="emergency-icon" id="emIcon">🚨</div>
-    <div class="emergency-title" id="emTitle">紧急任务！</div>
-    <div class="emergency-text" id="emText">小动物遇到麻烦了！快来帮忙！</div>
-    <div class="emergency-timer" id="emTimer">⏰ 30</div>
-    <button class="btn emergency-btn" onclick="doEmergencyTask()">我来帮忙！💪</button>
-    <button class="btn emergency-skip" onclick="closeEmergency()">下次吧</button>
   </div>
 </div>
 
@@ -172,33 +127,15 @@
   </div>
   <div class="q-progress" id="qProg"></div>
   <div class="q-card">
-    <div class="q-animal" id="qAnimal">🐱</div>
-    <div class="q-story" id="qStory"></div>
+    <div class="q-bubble">
+      <div class="q-animal" id="qAnimal">🐱</div>
+      <div class="q-speech" id="qStory"></div>
+    </div>
     <div class="q-visual" id="qVis"></div>
     <div class="q-equation" id="qEq"></div>
     <div class="q-options" id="qOpts"></div>
     <div class="q-fb" id="qFb"></div>
   </div>
-</div>
-
-<!-- 学习课程选择 -->
-<div class="screen" id="learn-screen">
-  <div class="l-header">
-    <button class="q-back" onclick="show('island-screen')">✕ 返回</button>
-    <span class="q-title">📚 动物老师上课</span>
-    <span style="width:50px"></span>
-  </div>
-  <div class="lesson-grid" id="lessonGrid"></div>
-</div>
-
-<!-- 课程步骤 -->
-<div class="screen" id="course-screen">
-  <div class="l-header">
-    <button class="q-back" onclick="showLessons()">← 返回</button>
-    <span class="q-title" id="crsTitle">加法课</span>
-    <span style="width:50px"></span>
-  </div>
-  <div class="course-card" id="crsCard"></div>
 </div>
 
 <!-- 冒险列表 -->
