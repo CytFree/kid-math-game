@@ -436,7 +436,7 @@ function showLU(lv){
   var prevAreas=prevLv?prevLv.areas:[];
   var newAreas=lv.areas.filter(function(a){return prevAreas.indexOf(a)<0});
   if(newAreas.length){var an={home:'🏠 家',orchard:'🌳 果园',beach:'🏖️ 海滩',park:'🎪 游乐场',castle:'🏰 城堡'};msgs.push('解锁：'+newAreas.map(function(a){return an[a]||a}).join('、'))}
-  if(lv.l===2&&S.pets.indexOf('chick')<0){S.pets.push('chick');S.companion='chick';msgs.push('🐥 获得宠物：小黄！')}
+  if(lv.l===2&&S.pets.indexOf('chick')<0){S.pets.push('chick');if(!S.companion)S.companion='chick';msgs.push('🐥 获得宠物：小黄！')}
   if(lv.l===4&&S.pets.indexOf('parrot')<0){S.pets.push('parrot');msgs.push('🦜 获得宠物：小鹦！')}
   saveS();
   document.getElementById('luDetail').textContent=msgs.join('\n')||'继续加油！';
@@ -491,7 +491,7 @@ function renderStep(){
 }
 
 function startPrac(){
-  pS('click');if(S.lessons[LS.k]===undefined)S.lessons[LS.k]=0;S.lessons[LS.k]++;saveS();
+  pS('click');
   startQ('learn',LS.aid,LS.tm,3);
 }
 
@@ -676,9 +676,8 @@ function closeDecoPanel(){
 
 function switchDecoTab(tab){
   decoTab=tab;
-  document.querySelectorAll('.deco-tab').forEach(function(t){t.classList.remove('active')});
-  var tabId='decoTab'+tab.charAt(0).toUpperCase()+tab.slice(1);
-  document.getElementById(tabId).classList.add('active');
+  var tabs=['shop','owned','placed'];
+  document.querySelectorAll('.deco-tab').forEach(function(t,i){t.classList.toggle('active',tabs[i]===tab)});
   renderDecoGrid();
 }
 
@@ -735,34 +734,36 @@ function buyDeco(id){
 
 function toggleDeco(id){
   if(!S.placedDecos)S.placedDecos=[];
-  var idx=S.placedDecos.indexOf(id);
-  if(idx>=0){S.placedDecos.splice(idx,1)}else{S.placedDecos.push(id)}
+  var idx=S.placedDecos.findIndex(function(x){return x.id===id});
+  if(idx>=0){S.placedDecos.splice(idx,1)}else{S.placedDecos.push({id:id,l:15+(S.placedDecos.length%4)*20,b:10+Math.floor(S.placedDecos.length/4)*15})}
   saveS();pS('click');renderDecoGrid();renderIslandDecos();
 }
 
 function removeDeco(id){
   if(!S.placedDecos)S.placedDecos=[];
-  var idx=S.placedDecos.indexOf(id);
-  if(idx>=0)S.placedDecos.splice(idx,1);
+  S.placedDecos=S.placedDecos.filter(function(x){return x.id!==id});
   saveS();pS('click');renderDecoGrid();renderIslandDecos();
 }
 
 function renderIslandDecos(){
   document.querySelectorAll('.deco-on-island').forEach(function(e){e.remove()});
   if(!S.placedDecos)return;
+  // 兼容旧格式——纯字符串ID数组
+  if(typeof S.placedDecos[0]==='string'){
+    S.placedDecos=S.placedDecos.map(function(id,i){return{id:id,l:15+(i%4)*20,b:10+Math.floor(i/4)*15}});
+    saveS();
+  }
   var scene=document.getElementById('islandScene');
-  S.placedDecos.forEach(function(id){
-    var d=DECOS.find(function(x){return x.id===id});if(!d)return;
+  S.placedDecos.forEach(function(item){
+    var d=DECOS.find(function(x){return x.id===item.id});if(!d)return;
     var deco=document.createElement('div');
-    deco.className='deco-on-island';deco.dataset.id=id;
-    var left=10+Math.random()*80;
-    var bottom=8+Math.random()*30;
-    deco.style.left=left+'%';deco.style.bottom=bottom+'%';
+    deco.className='deco-on-island';deco.dataset.id=item.id;
+    deco.style.left=item.l+'%';deco.style.bottom=item.b+'%';
     deco.innerHTML='<span class="deco-emoji">'+d.ic+'</span>';
     deco.onclick=function(){
       if(!S.placedDecos)return;
-      var idx=S.placedDecos.indexOf(id);
-      if(idx>=0){S.placedDecos.splice(idx,1);saveS();renderIslandDecos();renderDecoGrid()}
+      S.placedDecos=S.placedDecos.filter(function(x){return x.id!==item.id});
+      saveS();renderIslandDecos();renderDecoGrid();
     };
     scene.appendChild(deco);
   });

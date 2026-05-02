@@ -231,6 +231,61 @@
   <div class="p-house"><div class="p-grid" id="pGrid"></div></div>
 </div>
 
+<!-- 区域：果园 -->
+<div class="screen" id="orchard-screen">
+  <div class="area-ground"></div>
+  <div class="area-screen-header">
+    <span class="area-screen-emoji">🌳</span>
+    <span class="area-screen-title">果园</span>
+  </div>
+  <div class="area-animals">
+    <div class="area-animal" onclick="enterAreaTask('rabbit')"><span class="area-badge" id="area-badge-rabbit">❗</span>🐰<span class="area-animal-name">跳跳</span></div>
+    <div class="area-animal" onclick="enterAreaTask('bear')"><span class="area-badge" id="area-badge-bear">❗</span>🐻<span class="area-animal-name">团团</span></div>
+  </div>
+  <button class="btn area-back-btn" onclick="exitArea()">← 返回岛屿</button>
+</div>
+
+<!-- 区域：海滩 -->
+<div class="screen" id="beach-screen">
+  <div class="area-ground"></div>
+  <div class="wave"></div>
+  <div class="area-screen-header">
+    <span class="area-screen-emoji">🏖️</span>
+    <span class="area-screen-title">海滩</span>
+  </div>
+  <div class="area-animals">
+    <div class="area-animal disabled">🐚<span class="area-animal-name">更多动物即将到来</span></div>
+  </div>
+  <button class="btn area-back-btn" onclick="exitArea()">← 返回岛屿</button>
+</div>
+
+<!-- 区域：游乐场 -->
+<div class="screen" id="park-screen">
+  <div class="area-ground"></div>
+  <div class="area-screen-header">
+    <span class="area-screen-emoji">🎪</span>
+    <span class="area-screen-title">游乐场</span>
+  </div>
+  <div class="area-animals">
+    <div class="area-animal" onclick="enterAreaTask('fox')"><span class="area-badge" id="area-badge-fox">❗</span>🦊<span class="area-animal-name">聪聪</span></div>
+  </div>
+  <button class="btn area-back-btn" onclick="exitArea()">← 返回岛屿</button>
+</div>
+
+<!-- 区域：城堡 -->
+<div class="screen" id="castle-screen">
+  <div class="area-ground"></div>
+  <div class="star-bg"></div>
+  <div class="area-screen-header">
+    <span class="area-screen-emoji">🏰</span>
+    <span class="area-screen-title">城堡</span>
+  </div>
+  <div class="area-animals">
+    <div class="area-animal" onclick="enterAreaTask('panda')"><span class="area-badge" id="area-badge-panda">❗</span>🐼<span class="area-animal-name">圆圆</span></div>
+  </div>
+  <button class="btn area-back-btn" onclick="exitArea()">← 返回岛屿</button>
+</div>
+
 <!-- 升级 -->
 <div class="lu-overlay" id="luOv">
   <div class="lu-card">

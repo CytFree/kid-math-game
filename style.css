@@ -95,6 +95,18 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .star-bg{position:absolute;width:4px;height:4px;background:white;border-radius:50%;animation:twinkle 2s ease-in-out infinite}
 @keyframes twinkle{0%,100%{opacity:.3}50%{opacity:1}}
 
+/* 区域屏幕新样式 */
+.area-screen-header{text-align:center;padding:40px 20px 10px;position:relative;z-index:5}
+.area-screen-emoji{font-size:56px;display:block;margin-bottom:4px;animation:areaFloat 3s ease-in-out infinite}
+.area-screen-title{font-size:28px;font-weight:bold;color:white;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+.area-animals{display:flex;justify-content:center;gap:24px;padding:20px;position:relative;z-index:5;flex-wrap:wrap}
+.area-animal{text-align:center;font-size:48px;cursor:pointer;transition:transform .15s;position:relative;background:rgba(255,255,255,.2);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);border-radius:20px;padding:16px 20px;min-width:100px;box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.area-animal:active{transform:scale(.9)}
+.area-animal.disabled{opacity:.5;cursor:default;font-size:36px}
+.area-animal-name{display:block;font-size:13px;color:white;font-weight:bold;margin-top:4px;text-shadow:0 1px 3px rgba(0,0,0,.3)}
+.area-badge{position:absolute;top:-6px;right:-6px;font-size:14px;animation:badgeBounce 1s ease-in-out infinite}
+.area-back-btn{margin:auto auto 24px;padding:12px 32px;font-size:16px;background:rgba(255,255,255,.9);color:#333;z-index:5;position:relative;box-shadow:0 4px 16px rgba(0,0,0,.1)}
+
 /* 动物 */
 .animal{position:absolute;font-size:34px;cursor:pointer;filter:drop-shadow(0 3px 6px rgba(0,0,0,.2));transition:transform .15s;z-index:5}
 .animal:active{transform:scale(1.25)}
