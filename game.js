@@ -182,7 +182,7 @@ function genQ(mode,level,aid){
   var tk=mode||an.teach;
   var tp=TPL[tk];
   if(!tp)tp=TPL.add;
-  var sc=tp.scenes[ri(0,tp.scenes.length-1)];
+  var sc;
   var ms=Math.min(tp.maxSum||10,10);
   var nums=[],ans=0,op='+';
 
@@ -190,12 +190,17 @@ function genQ(mode,level,aid){
     var a=ri(1,Math.min(9,ms-1));
     var b=ri(1,ms-a);
     nums=[a,b];ans=a+b;op='+';
+    sc=tp.scenes[ri(0,tp.scenes.length-1)];
   }else if(tp.mode==='sub'||tp.mode==='sc'){
     var a=ri(1,ms);
     var b=ri(0,a);
     nums=[a,b];ans=a-b;op='-';
+    sc=tp.scenes[ri(0,tp.scenes.length-1)];
   }else if(tp.mode==='mix'){
-    if(Math.random()<0.5){
+    var isAdd=Math.random()<0.5;
+    var matchScenes=tp.scenes.filter(function(s){return s.op===(isAdd?'+':'-')});
+    sc=matchScenes.length?matchScenes[ri(0,matchScenes.length-1)]:tp.scenes[ri(0,tp.scenes.length-1)];
+    if(isAdd){
       var a=ri(1,Math.min(9,ms-1));
       var b=ri(1,ms-a);
       nums=[a,b];ans=a+b;op='+';
@@ -208,6 +213,7 @@ function genQ(mode,level,aid){
     var a=ri(1,Math.min(9,ms-1));
     var b=ri(1,ms-a);
     nums=[a,b];ans=a+b;op='+';
+    sc=tp.scenes[ri(0,tp.scenes.length-1)];
   }
 
   var opts=new Set([ans]);
