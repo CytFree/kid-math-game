@@ -14,6 +14,43 @@
 
 直接在浏览器中打开 `index.html` 即可运行，无需任何服务器。
 
+## 代码结构
+
+```
+kid-math-game/
+├── index.html          # 主页面 — HTML 结构 (~250行)
+├── style.css           # 所有样式 — CSS (~380行)
+├── game-data.js        # 游戏数据 — 常量定义 (~230行)
+├── game.js             # 游戏逻辑 — 全部逻辑 (~1040行)
+├── TODO.md             # 开发进度跟踪
+└── README.md           # 本文件
+```
+
+### 文件说明
+
+| 文件 | 职责 |
+|------|------|
+| `index.html` | 页面骨架，包含所有屏幕（岛屿、题目、学习、冒险、宠物等）的 DOM 元素，通过 `onclick` 调用 JS 函数 |
+| `style.css` | 全部内联样式已迁移至此，含岛屿场景、弹窗、动画关键帧、响应式适配 |
+| `game-data.js` | 纯数据定义：6只动物档案、7级成长体系、7种外观、9只宠物、6种课程、6个冒险、4个故事、20种装饰、5种紧急事件 |
+| `game.js` | 完整游戏引擎：音效合成、存档管理、题目生成、每日任务、连击打卡、故事系统、装饰系统、宠物系统、紧急任务、玩家行走、初始化 |
+
+### 关键函数一览
+
+**game.js** 核心模块（按加载顺序）：
+
+- **音效** `pS()` / `playBgMusic()` — Web Audio API 合成
+- **存档** `loadS()` / `saveS()` — localStorage 持久化
+- **题目** `genQ()` — 根据等级调整难度，6种出题模式
+- **屏幕** `show()` / `navTo()` — 页面切换
+- **升级** `chkLU()` / `showLU()` — 7级经验成长，解锁区域+宠物
+- **学习** `renderLessons()` / `renderStep()` — 先学知识点再练习
+- **故事** `showStory()` / `finishStory()` — 每故事5章，连续答题
+- **冒险** `startAdv()` / `finishAdv()` — Boss关闯关，3星评价
+- **装饰** `renderDecoGrid()` / `renderIslandDecos()` — 商店/放置/移除
+- **紧急** `triggerEmergency()` / `finishEmergency()` — 限时30秒，奖励翻倍
+- **行走** `initPlayerWalk()` / `walkTo()` — 点击地面行走
+
 ## 适合年龄
 
 4-6岁（幼儿园中大班）
