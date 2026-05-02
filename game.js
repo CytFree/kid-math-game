@@ -190,17 +190,12 @@ function genQ(mode,level,aid){
     var a=ri(1,Math.min(9,ms-1));
     var b=ri(1,ms-a);
     nums=[a,b];ans=a+b;op='+';
-    sc=tp.scenes[ri(0,tp.scenes.length-1)];
   }else if(tp.mode==='sub'||tp.mode==='sc'){
     var a=ri(1,ms);
     var b=ri(0,a);
     nums=[a,b];ans=a-b;op='-';
-    sc=tp.scenes[ri(0,tp.scenes.length-1)];
   }else if(tp.mode==='mix'){
-    var isAdd=Math.random()<0.5;
-    var matchScenes=tp.scenes.filter(function(s){return s.op===(isAdd?'+':'-')});
-    sc=matchScenes.length?matchScenes[ri(0,matchScenes.length-1)]:tp.scenes[ri(0,tp.scenes.length-1)];
-    if(isAdd){
+    if(Math.random()<0.5){
       var a=ri(1,Math.min(9,ms-1));
       var b=ri(1,ms-a);
       nums=[a,b];ans=a+b;op='+';
@@ -213,15 +208,24 @@ function genQ(mode,level,aid){
     var a=ri(1,Math.min(9,ms-1));
     var b=ri(1,ms-a);
     nums=[a,b];ans=a+b;op='+';
-    sc=tp.scenes[ri(0,tp.scenes.length-1)];
   }
+
+  // 选场景：优先用动物专属，再回退到 TPL
+  var opKey=op==='+'?'add':'sub';
+  var scenes=an.scenes&&an.scenes[opKey]&&an.scenes[opKey].length
+    ? an.scenes[opKey].map(function(s){return {s:s}})
+    : tp.scenes;
+  // mix 模式按 op 过滤 TPL
+  if(scenes[0]&&scenes[0].op!==undefined)scenes=scenes.filter(function(s){return s.op===op});
+  sc=scenes.length?scenes[ri(0,scenes.length-1)]:tp.scenes[0];
 
   var opts=new Set([ans]);
   for(var t=0;opts.size<4&&t<50;t++){var d=ans+ri(-5,5);if(d>=0&&d<=ms)opts.add(d)}
   opts=shuffle([...opts]);
 
   var emoji=(an.items&&an.items.length)?an.items[ri(0,an.items.length-1)]:'🍎';
-  var story=sc.s.replace(/{n}/g,an.name).replace(/{a}/g,nums[0]).replace(/{b}/g,nums[1]).replace(/{e}/g,emoji);
+  var story=sc.s.replace(/{n}/g,an.name).replace(/{a}/g,nums[0]).replace(/{b}/g,nums[1]);
+  if(sc.s.indexOf('{e}')>=0)story=story.replace(/{e}/g,emoji);
 
   return{mode:tp.mode,an:an,sc:sc,story:story,emoji:emoji,nums:nums,answer:ans,options:opts,op:op};
 }
