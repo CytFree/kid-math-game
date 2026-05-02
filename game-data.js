@@ -41,12 +41,12 @@ var AN={
 /* ===== 等级 ===== */
 var LV=[
   {l:1,t:'数学小宝宝',xp:0,areas:['home']},
-  {l:2,t:'小小计算器',xp:200,areas:['home','orchard']},
-  {l:3,t:'加法小能手',xp:400,areas:['home','orchard','beach']},
-  {l:4,t:'数学小达人',xp:700,areas:['home','orchard','beach','park']},
-  {l:5,t:'运算小天才',xp:1100,areas:['home','orchard','beach','park']},
-  {l:6,t:'数学大师',xp:1600,areas:['home','orchard','beach','park','castle']},
-  {l:7,t:'终极数学大师',xp:2200,areas:['home','orchard','beach','park','castle']}
+  {l:2,t:'小小计算器',xp:80,areas:['home','orchard']},
+  {l:3,t:'加法小能手',xp:180,areas:['home','orchard','beach']},
+  {l:4,t:'数学小达人',xp:320,areas:['home','orchard','beach','park']},
+  {l:5,t:'运算小天才',xp:500,areas:['home','orchard','beach','park']},
+  {l:6,t:'数学大师',xp:700,areas:['home','orchard','beach','park','castle']},
+  {l:7,t:'终极数学大师',xp:920,areas:['home','orchard','beach','park','castle']}
 ];
 
 /* ===== 角色外观 ===== */
@@ -92,21 +92,23 @@ var TPL={
     {e:'🍎',s:'树上有{a}个苹果，摘走了{b}个',q:'还剩几个苹果？'},
     {e:'🍬',s:'有{a}颗糖，分给了朋友{b}颗',q:'还剩几颗糖？'}
   ]},
-  addChain:{mode:'ac',parts:3,maxSum:10,scenes:[
-    {e:'🥕',s:'跳跳有{a}个胡萝卜，朋友给了{b}个，又给了{c}个',q:'现在有几个胡萝卜？'},
-    {e:'🍎',s:'树上有{a}个苹果，又长了{b}个，再长了{c}个',q:'现在有几个苹果？'},
-    {e:'🐟',s:'池里有{a}条鱼，游来了{b}条，又游来了{c}条',q:'现在有几条鱼？'}
+  addChain:{mode:'ac',maxSum:10,scenes:[
+    {e:'🥕',s:'跳跳有{a}个胡萝卜，朋友又给了{b}个',q:'现在有几个胡萝卜？'},
+    {e:'🍎',s:'树上有{a}个苹果，又长了{b}个',q:'现在有几个苹果？'},
+    {e:'🐟',s:'池里有{a}条鱼，又游来了{b}条',q:'现在有几条鱼？'}
   ]},
-  subChain:{mode:'sc',parts:3,scenes:[
-    {e:'🍯',s:'团团有{a}罐蜂蜜，吃了{b}罐，又吃了{c}罐',q:'还剩几罐蜂蜜？'},
-    {e:'🍪',s:'有{a}块饼干，被吃了{b}块，又被吃了{c}块',q:'还剩几块饼干？'},
-    {e:'🎈',s:'有{a}个气球，飞走了{b}个，又飞走了{c}个',q:'还剩几个气球？'}
+  subChain:{mode:'sc',scenes:[
+    {e:'🍯',s:'团团有{a}罐蜂蜜，吃了{b}罐',q:'还剩几罐蜂蜜？'},
+    {e:'🍪',s:'有{a}块饼干，被吃了{b}块',q:'还剩几块饼干？'},
+    {e:'🎈',s:'有{a}个气球，飞走了{b}个',q:'还剩几个气球？'}
   ]},
   mix:{mode:'mix',scenes:[
-    {e:'🍬',s:'{n}有{a}颗糖，又买了{b}颗，吃了{c}颗',q:'现在有几颗糖？'},
-    {e:'🍎',s:'树上有{a}个苹果，又长了{b}个，摘走了{c}个',q:'现在有几个苹果？'}
+    {e:'🍬',s:'{n}有{a}颗糖，又买了{b}颗',q:'现在有几颗糖？'},
+    {e:'🍎',s:'树上有{a}个苹果，又长了{b}个',q:'现在有几个苹果？'},
+    {e:'🍬',s:'{n}有{a}颗糖，吃了{b}颗',q:'现在有几颗糖？'},
+    {e:'🍎',s:'树上有{a}个苹果，摘走了{b}个',q:'现在有几个苹果？'}
   ]},
-  bigNum:{mode:'add',maxSum:20,scenes:[
+  bigNum:{mode:'add',maxSum:10,scenes:[
     {e:'🎋',s:'圆圆找到了{a}根竹子，又找到了{b}根',q:'一共有几根竹子？'},
     {e:'🍎',s:'树上有{a}个苹果，又长了{b}个',q:'现在有几个苹果？'},
     {e:'🐟',s:'池里有{a}条鱼，又游来了{b}条',q:'现在有几条鱼？'}

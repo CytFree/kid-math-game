@@ -199,7 +199,7 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .q-ab.ok{border-color:#4CAF50;background:#E8F5E9;animation:popIn .5s ease}
 .q-ab.no{border-color:#F44336;background:#FFEBEE;animation:shake .5s ease}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-.q-options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:280px;margin-top:10px}
+.q-options{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;max-width:280px;margin-top:10px}
 .q-opt{height:52px;border:none;border-radius:14px;font-size:22px;font-weight:bold;color:white;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.12);transition:transform .15s}
 .q-opt:active{transform:scale(.92)}
 .q-opt:disabled{opacity:.55;cursor:default}

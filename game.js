@@ -175,37 +175,40 @@ function genQ(mode,level,aid){
   var tp=TPL[tk];
   if(!tp)tp=TPL.add;
   var sc=tp.scenes[ri(0,tp.scenes.length-1)];
-  var ms=tp.maxSum||10;
-  var nums=[],ans=0;
-  var maxN=level<=2?3:level<=3?5:level<=4?7:level<=5?10:15;
+  var ms=Math.min(tp.maxSum||10,10);
+  var nums=[],ans=0,op='+';
 
-  if(tp.mode==='add'){
-    var a=ri(1,Math.min(maxN,ms-1));
-    var b=ri(1,Math.min(maxN,ms-a));
-    nums=[a,b];ans=a+b;
-  }else if(tp.mode==='sub'){
-    var a=ri(2,Math.min(maxN+2,ms));
-    var b=ri(1,Math.min(a-1,maxN));
-    nums=[a,b];ans=a-b;
-  }else if(tp.mode==='ac'){
-    var s=0;
-    for(var i=0;i<3;i++){var n=ri(1,Math.min(3,ms-s-(2-i)));n=Math.max(1,n);nums.push(n);s+=n}
-    ans=s;
-  }else if(tp.mode==='sc'){
-    var a=ri(8,14),b=ri(1,Math.min(4,a-2)),c=ri(1,Math.min(4,a-b-1));
-    nums=[a,b,c];ans=a-b-c;
+  if(tp.mode==='add'||tp.mode==='ac'){
+    var a=ri(1,Math.min(9,ms-1));
+    var b=ri(1,ms-a);
+    nums=[a,b];ans=a+b;op='+';
+  }else if(tp.mode==='sub'||tp.mode==='sc'){
+    var a=ri(1,ms);
+    var b=ri(0,a);
+    nums=[a,b];ans=a-b;op='-';
   }else if(tp.mode==='mix'){
-    var a=ri(3,8),b=ri(1,5),c=ri(1,Math.min(a+b-1,4));
-    nums=[a,b,c];ans=a+b-c;
+    if(Math.random()<0.5){
+      var a=ri(1,Math.min(9,ms-1));
+      var b=ri(1,ms-a);
+      nums=[a,b];ans=a+b;op='+';
+    }else{
+      var a=ri(1,ms);
+      var b=ri(0,a);
+      nums=[a,b];ans=a-b;op='-';
+    }
+  }else{
+    var a=ri(1,Math.min(9,ms-1));
+    var b=ri(1,ms-a);
+    nums=[a,b];ans=a+b;op='+';
   }
 
   var opts=new Set([ans]);
-  while(opts.size<6){var d=ans+ri(-4,4);if(d>0&&d<=ms)opts.add(d)}
+  for(var t=0;opts.size<4&&t<50;t++){var d=ans+ri(-5,5);if(d>=0&&d<=ms)opts.add(d)}
   opts=shuffle([...opts]);
 
-  var story=sc.s.replace('{n}',an.name).replace('{a}',nums[0]).replace('{b}',nums[1]).replace('{c}',nums[2]||0);
+  var story=sc.s.replace('{n}',an.name).replace('{a}',nums[0]).replace('{b}',nums[1]);
 
-  return{mode:tp.mode,an:an,sc:sc,story:story,nums:nums,answer:ans,options:opts};
+  return{mode:tp.mode,an:an,sc:sc,story:story,nums:nums,answer:ans,options:opts,op:op};
 }
 
 /* ===== 屏幕切换 ===== */
@@ -338,33 +341,17 @@ function nextQ(){
 
   // 可视化
   var vis=document.getElementById('qVis');vis.innerHTML='';
-  var m=q.mode;
-  if(m==='add'||m==='ac'){
-    for(var i=0;i<q.nums.length;i++){
-      for(var j=0;j<q.nums[i];j++){
-        var sp=document.createElement('span');sp.className='vi';sp.textContent=q.sc.e;sp.style.animationDelay=(i*3+j)*.12+'s';vis.appendChild(sp);
-      }
-      if(i<q.nums.length-1){var op=document.createElement('span');op.className='vop';op.textContent='+';vis.appendChild(op)}
-    }
-  }else if(m==='sub'||m==='sc'){
-    for(var i=0;i<q.nums[0];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.sc.e;sp.style.animationDelay=i*.12+'s';vis.appendChild(sp)}
-  }else if(m==='mix'){
-    for(var i=0;i<q.nums[0];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.sc.e;sp.style.animationDelay=i*.1+'s';vis.appendChild(sp)}
-    var op1=document.createElement('span');op1.className='vop';op1.textContent='+';vis.appendChild(op1);
-    for(var i=0;i<q.nums[1];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.sc.e;sp.style.animationDelay=(q.nums[0]+i)*.1+'s';vis.appendChild(sp)}
-    var op2=document.createElement('span');op2.className='vop';op2.textContent='-';vis.appendChild(op2);
-    for(var i=0;i<q.nums[2];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.sc.e;sp.style.opacity='.4';sp.style.animationDelay=(q.nums[0]+q.nums[1]+i)*.1+'s';vis.appendChild(sp)}
+  for(var i=0;i<q.nums[0];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.sc.e;sp.style.animationDelay=i*.12+'s';vis.appendChild(sp)}
+  var opEl=document.createElement('span');opEl.className='vop';opEl.textContent=q.op;vis.appendChild(opEl);
+  if(q.op==='+'){
+    for(var i=0;i<q.nums[1];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.sc.e;sp.style.animationDelay=(q.nums[0]+i)*.12+'s';vis.appendChild(sp)}
+  }else{
+    for(var i=0;i<q.nums[1];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.sc.e;sp.style.opacity='.4';sp.style.animationDelay=(q.nums[0]+i)*.12+'s';vis.appendChild(sp)}
   }
 
   // 算式
   var eq=document.getElementById('qEq');
-  if(q.nums.length===2){
-    var opS=m==='sub'?'-':'+';
-    eq.innerHTML='<div class="q-num">'+q.nums[0]+'</div><div class="q-op">'+opS+'</div><div class="q-num">'+q.nums[1]+'</div><div class="q-op">=</div><div class="q-ab" id="ab">?</div>';
-  }else{
-    var ops=m==='sc'?['-','-']:['+','+'];
-    eq.innerHTML='<div class="q-num">'+q.nums[0]+'</div><div class="q-op">'+ops[0]+'</div><div class="q-num">'+q.nums[1]+'</div><div class="q-op">'+ops[1]+'</div><div class="q-num">'+q.nums[2]+'</div><div class="q-op">=</div><div class="q-ab" id="ab">?</div>';
-  }
+  eq.innerHTML='<div class="q-num">'+q.nums[0]+'</div><div class="q-op">'+q.op+'</div><div class="q-num">'+q.nums[1]+'</div><div class="q-op">=</div><div class="q-ab" id="ab">?</div>';
 
   // 选项
   var oc=document.getElementById('qOpts');oc.innerHTML='';
@@ -394,7 +381,7 @@ function chk(num,btn){
     pS('ok');box.textContent=num;box.classList.add('ok');btn.classList.add('ok-opt');QS.correct++;
     var ps=['太棒了！🎉','你真聪明！🌟','答对了！💪','好厉害！👏','完美！✨','真棒！🏆'];
     document.getElementById('qFb').textContent=ps[ri(0,ps.length-1)];document.getElementById('qFb').className='q-fb ok-fb';
-    var xg=10+S.mc*2;S.xp+=xg;S.totalXp+=xg;S.coins+=3;S.combo++;if(S.combo>S.mc)S.mc=S.combo;
+    var xg=20+S.mc*3;S.xp+=xg;S.totalXp+=xg;S.coins+=5;S.combo++;if(S.combo>S.mc)S.mc=S.combo;
     chkLU();QS.cur++;saveS();setTimeout(nextQ,1100);
   }else{
     pS('no');box.textContent=num;box.classList.add('no');btn.classList.add('no-opt');S.combo=0;
@@ -411,6 +398,7 @@ function finishQ(){
     var streak=S.daily.streak||0;
     var bonus=streak>=7?3:streak>=3?2:streak>=1?1:0;
     S.coins+=bonus;S.xp+=bonus;S.totalXp+=bonus;
+    saveS();show('island-screen');updIsland();
   }else if(QS.mode==='story'){
     storyNextChapter();
   }else if(QS.mode==='emergency'){
