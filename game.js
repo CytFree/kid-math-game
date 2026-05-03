@@ -9,19 +9,16 @@ var soundMuted=false;
 var soundBtn=document.getElementById('soundToggle');
 
 function gA(){
-  if(!ax)ax=new AC();
-  // 恢复 suspended 状态（Android/国产浏览器需要用户交互后才能 resume）
-  if(ax.state==='suspended')ax.resume();
-  else if(ax.state==='closed')ax=new AC();
-  return ax
+  try{
+    if(!ax||ax.state==='closed')ax=new AC();
+    if(ax.state==='suspended')ax.resume();
+    return ax;
+  }catch(e){return null}
 }
 
 // 延迟初始化：首次用户交互时创建 AudioContext（绕过 autoplay 策略）
-var audioInitDone=false;
 function ensureAudioInit(){
-  if(audioInitDone)return;
-  audioInitDone=true;
-  try{var c=gA();if(c.state==='suspended')c.resume()}catch(e){}
+  try{var c=gA();if(c&&c.state==='suspended')c.resume()}catch(e){}
 }
 
 function pS(t){
@@ -104,34 +101,37 @@ function toggleSound(){
 var speechReady=false;
 var speechPendingText='';
 var speechRetryTimer=null;
+var speechRetryCount=0;
+var speechMaxRetry=3;
+
+function canUseSpeech(){
+  return typeof SpeechSynthesisUtterance!=='undefined'&&!!window.speechSynthesis;
+}
 
 function speak(text){
   if(!text||soundMuted)return;
-  // 确保 AudioContext 已初始化（部分浏览器要求先有音频交互）
   ensureAudioInit();
-  // 检测 SpeechSynthesis 支持
-  if(!window.speechSynthesis){
-    // 降级：用 Web Audio 播放简短提示音
+  if(!canUseSpeech()){
     try{pS('pop')}catch(e){}
     return;
   }
-  window.speechSynthesis.cancel();
-  // 如果语音列表还没加载完，等待后重试
-  var voices=[];
-  try{voices=window.speechSynthesis.getVoices()}catch(e){}
-  if(voices.length===0&&!speechReady){
+  try{window.speechSynthesis.cancel()}catch(e){}
+  // 检测语音支持（最多重试 3 次）
+  if(!speechReady&&speechRetryCount<speechMaxRetry){
     speechPendingText=text;
+    speechRetryCount++;
     if(speechRetryTimer)clearTimeout(speechRetryTimer);
     speechRetryTimer=setTimeout(function(){speak(speechPendingText)},300);
     return;
   }
+  speechRetryCount=0;
+  speechPendingText='';
   try{
     var u=new SpeechSynthesisUtterance(text);
     u.lang='zh-CN';u.rate=0.7;u.pitch=1.05;
-    try{var cv=voices.find(function(v){return v.lang.indexOf('zh')>=0});if(cv)u.voice=cv}catch(e){}
+    try{var v=window.speechSynthesis.getVoices();var cv=v.find(function(v){return v.lang.indexOf('zh')>=0});if(cv)u.voice=cv}catch(e){}
     window.speechSynthesis.speak(u);
   }catch(e){
-    // 如果 speak 失败（如中文语音缺失），用提示音降级
     try{pS('pop')}catch(e2){}
   }
 }
@@ -139,17 +139,11 @@ function speak(text){
 // 监听语音列表异步加载（Android 浏览器需要）
 if(window.speechSynthesis){
   try{
-    // 先检查是否已有语音
     var initVoices=window.speechSynthesis.getVoices();
-    if(initVoices.length>0)speechReady=true;
-    // 监听异步加载事件
+    if(initVoices.length>0){speechReady=true}
     window.speechSynthesis.onvoiceschanged=function(){
       speechReady=true;
-      var v=window.speechSynthesis.getVoices();
-      if(v.length>0&&speechPendingText){
-        speak(speechPendingText);
-        speechPendingText='';
-      }
+      if(speechPendingText){speak(speechPendingText);speechPendingText=''}
     };
   }catch(e){}
 }
