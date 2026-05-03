@@ -51,9 +51,24 @@
   - Bug 9: 升级强制改伴侣 — Lv.2 无条件 S.companion='chick'，改为仅无伴侣时设置
   - 额外: placedDecos 改对象格式后渲染中的 indexOf/some 不兼容，修复 renderDecoGrid 两处调用
 
+## 会话：2026-05-03 — 趣味性增强
+
+### 阶段 4：答题动画 + Lv.7 分解树枝图
+- **状态：** complete
+- **执行的操作：**
+  - 在 nextQ() 中给图标添加组标记（vi-ga/vi-gb/vi-sub），为动画做准备
+  - 新增 animateQ(q) 函数：答对时加法图标合并动画、减法图标消失动画
+  - 新增 renderDecompTree(q) 函数：Lv.7 满级时用分解树枝图替代图标展示
+  - 新增 CSS keyframes 动画（qMerge 800ms / qSubtract 700ms）
+  - 新增分解树枝图样式（圆形节点、SVG连接线、答案徽章）
+  - 延时从 1100ms 增加到 2000ms，让动画有足够时间展示
+- **修改的文件：**
+  - game.js（nextQ/chk/animateQ/renderDecompTree）
+  - style.css（动画 keyframes + 分解树样式）
+
 ## 测试结果
 | 测试 | 输入 | 预期结果 | 实际结果 | 状态 |
 |------|------|---------|---------|------|
-| genQ 1260题 | 6动物×7级×30次 | 2个数、≤10、正确op | 1260/1260通过 | ✅ |
-| game-data.js模板 | 检查所有TPL | 无{c}、无parts | 全部通过 | ✅ |
-| 语法验证 | game-data.js+game.js | 无语法错误 | 通过 | ✅ |
+| genQ 1470题 | 7动物×7级×30次 | 2个数、≤10、正确op | 1470/1470通过 | ✅ |
+| game-data.js+game.js语法 | Node.js new Function | 无语法错误 | 通过 | ✅ |
+| 动画+分解树 | 浏览器验证 | 动画流畅、树图正确 | - | 🔲 |

@@ -325,13 +325,15 @@ function nextQ(){
   document.getElementById('qStory').textContent=q.story;
 
   // 可视化
-  var vis=document.getElementById('qVis');vis.innerHTML='';
-  for(var i=0;i<q.nums[0];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.emoji;sp.style.animationDelay=i*.12+'s';vis.appendChild(sp)}
-  var opEl=document.createElement('span');opEl.className='vop';opEl.textContent=q.op;vis.appendChild(opEl);
-  if(q.op==='+'){
-    for(var i=0;i<q.nums[1];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.emoji;sp.style.animationDelay=(q.nums[0]+i)*.12+'s';vis.appendChild(sp)}
-  }else{
-    for(var i=0;i<q.nums[1];i++){var sp=document.createElement('span');sp.className='vi';sp.textContent=q.emoji;sp.style.opacity='.4';sp.style.animationDelay=(q.nums[0]+i)*.12+'s';vis.appendChild(sp)}
+  var vis=document.getElementById('qVis');vis.innerHTML='';vis.classList.remove('vis-merging','vis-subtracting');
+  if(S.level>=7){renderDecompTree(q);}else{
+    for(var i=0;i<q.nums[0];i++){var sp=document.createElement('span');sp.className='vi vi-ga';sp.textContent=q.emoji;sp.style.animationDelay=i*.12+'s';vis.appendChild(sp)}
+    var opEl=document.createElement('span');opEl.className='vop';opEl.textContent=q.op;vis.appendChild(opEl);
+    if(q.op==='+'){
+      for(var i=0;i<q.nums[1];i++){var sp=document.createElement('span');sp.className='vi vi-gb';sp.textContent=q.emoji;sp.style.animationDelay=(q.nums[0]+i)*.12+'s';vis.appendChild(sp)}
+    }else{
+      for(var i=0;i<q.nums[1];i++){var sp=document.createElement('span');sp.className='vi vi-sub';sp.textContent=q.emoji;sp.style.opacity='.4';sp.style.animationDelay=(q.nums[0]+i)*.12+'s';vis.appendChild(sp)}
+    }
   }
 
   // 算式
@@ -353,6 +355,49 @@ function nextQ(){
   speak(q.story);
 }
 
+function renderDecompTree(q){
+  var vis=document.getElementById('qVis');
+  var topV,lV,rV,isAns=false;
+  if(q.op==='+'){topV='?';lV=q.nums[0];rV=q.nums[1]}
+  else{topV=q.nums[0];lV='?';rV=q.nums[1];isAns=true}
+  var el=document.createElement('div');el.className='decomp-tree';
+  el.innerHTML='<div class="dt-node dt-root" data-ans="'+(q.op==='+'?q.answer:'')+'">'+topV+'</div>'+
+    '<svg class="dt-lines" width="130" height="25" viewBox="0 0 130 25">'+
+    '<line x1="65" y1="0" x2="65" y2="8" stroke="#bbb" stroke-width="2.5" stroke-linecap="round"/>'+
+    '<line x1="65" y1="8" x2="28" y2="22" stroke="#bbb" stroke-width="2.5" stroke-linecap="round"/>'+
+    '<line x1="65" y1="8" x2="102" y2="22" stroke="#bbb" stroke-width="2.5" stroke-linecap="round"/>'+
+    '</svg>'+
+    '<div class="dt-children">'+
+    '<div class="dt-node dt-child" data-ans="'+(isAns?q.answer:'')+'">'+lV+'</div>'+
+    '<div class="dt-node dt-child">'+rV+'</div>'+
+    '</div>';
+  vis.appendChild(el);
+}
+
+function animateQ(q){
+  var vis=document.getElementById('qVis');
+  var dt=vis.querySelector('.decomp-tree');
+  if(dt){
+    dt.querySelectorAll('[data-ans]').forEach(function(el){
+      if(el.dataset.ans){el.textContent=el.dataset.ans;el.classList.add('dt-reveal');if(!el.classList.contains('dt-root'))el.classList.add('dt-answer')}
+    });
+    return;
+  }
+  if(q.op==='+'){
+    var ga=vis.querySelectorAll('.vi-ga'),gb=vis.querySelectorAll('.vi-gb');
+    if(!ga.length||!gb.length)return;
+    var tr=ga[ga.length-1].getBoundingClientRect();
+    gb.forEach(function(el){
+      var r=el.getBoundingClientRect();
+      el.style.setProperty('--tx',(tr.left-r.left+(tr.width-r.width)/2)+'px');
+      el.style.setProperty('--ty',(tr.top-r.top+(tr.height-r.height)/2)+'px');
+    });
+    vis.classList.add('vis-merging');
+  }else if(q.op==='-'){
+    vis.classList.add('vis-subtracting');
+  }
+}
+
 function updProg(){
   var c=document.getElementById('qProg');c.innerHTML='';
   for(var i=0;i<QS.total;i++){var d=document.createElement('div');d.className='q-dot';if(i<QS.cur)d.classList.add('done');if(i===QS.cur)d.classList.add('current');c.appendChild(d)}
@@ -369,8 +414,9 @@ function chk(num,btn){
     pS('ok');box.textContent=num;box.classList.add('ok');btn.classList.add('ok-opt');QS.correct++;
     var ps=['太棒了！🎉','你真聪明！🌟','答对了！💪','好厉害！👏','完美！✨','真棒！🏆'];
     document.getElementById('qFb').textContent=ps[ri(0,ps.length-1)];document.getElementById('qFb').className='q-fb ok-fb';
+                    animateQ(q);
     var xg=20+S.mc*3;S.xp+=xg;S.totalXp+=xg;S.coins+=5;S.combo++;if(S.combo>S.mc)S.mc=S.combo;
-    chkLU();QS.cur++;saveS();setTimeout(nextQ,1100);
+    chkLU();QS.cur++;saveS();setTimeout(nextQ,2000);
   }else{
     pS('no');box.textContent=num;box.classList.add('no');btn.classList.add('no-opt');btn.disabled=true;S.combo=0;
     document.getElementById('qFb').textContent='再想想哦，你可以的！💪';document.getElementById('qFb').className='q-fb no-fb';
@@ -387,6 +433,8 @@ function resetGame(){
 function finishQ(){
   if(QS.mode==='story'){
     storyNextChapter();
+    show('island-screen');
+    document.getElementById('storyOv').classList.add('show');
   }else if(QS.mode==='adv'){
     finishAdv();
   }else{
@@ -435,8 +483,10 @@ function showStory(stId){
   var st=STORIES.find(function(x){return x.id===stId});if(!st)return;
   if(S.level<st.ul)return;
   var key='story_'+stId;
-  if(S.stories&&S.stories[key]&&S.stories[key].done)return;
-  storySt={id:stId,chapter:0,active:true,answers:[]};
+  var saved=S.stories&&S.stories[key];
+  if(saved&&saved.done)return;
+  var startCh=saved&&saved.chapter!==undefined?saved.chapter:0;
+  storySt={id:stId,chapter:startCh,active:true,answers:saved?saved.answers||[]:[]};
   renderStoryChapter(st);
   document.getElementById('storyOv').classList.add('show');
 }
@@ -467,6 +517,7 @@ function doStoryTask(){
   if(!st)return;
   var ch=st.chapters[storySt.chapter];
   var mode=ch.mode||st.tm;
+  document.getElementById('storyOv').classList.remove('show');
   startQ('story',st.aid,mode,1);
   QS.storyId=st.id;
   QS.storyChapter=storySt.chapter;
@@ -476,7 +527,13 @@ function storyNextChapter(){
   storySt.chapter++;
   var st=STORIES.find(function(x){return x.id===storySt.id});
   if(!st||storySt.chapter>=st.chapters.length){finishStory(st)}
-  else{renderStoryChapter(st)}
+  else{
+    var key='story_'+st.id;
+    if(!S.stories)S.stories={};
+    S.stories[key]={chapter:storySt.chapter,answers:storySt.answers.slice()};
+    saveS();
+    renderStoryChapter(st);
+  }
 }
 
 function finishStory(st){
