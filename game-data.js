@@ -73,19 +73,6 @@ var ACCESSORIES=[
   {level:7,hat:'👑',cape:'🔥',shoes:'✨',name:'王冠+火焰披风+闪光鞋'}
 ];
 
-/* ===== 宠物 ===== */
-var PT=[
-  {id:'chick',name:'小黄',emoji:'🐥',bonus:'首次通关'},
-  {id:'bunny',name:'雪球',emoji:'🐇',bonus:'连击+1XP'},
-  {id:'foxp',name:'小火',emoji:'🦊',bonus:'难题+2XP'},
-  {id:'pandap',name:'团团宝',emoji:'🐼',bonus:'学习+1XP'},
-  {id:'lionp',name:'小狮',emoji:'🦁',bonus:'所有+2XP'},
-  {id:'dragp',name:'闪闪宝',emoji:'🐲',bonus:'所有+3XP'},
-  {id:'butterfly',name:'花花',emoji:'🦋',bonus:'收集花朵'},
-  {id:'fishp',name:'泡泡',emoji:'🐠',bonus:'收集珍珠'},
-  {id:'parrot',name:'小鹦',emoji:'🦜',bonus:'游乐场解锁'}
-];
-
 /* ===== 题目生成引擎 ===== */
 var TPL={
   add:{mode:'add',maxSum:10,scenes:[

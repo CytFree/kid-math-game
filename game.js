@@ -208,7 +208,6 @@ function renderPlayerAccessories(){
 function defState(){
   return{
     name:'小宝',avatar:'boy',xp:0,level:1,totalXp:0,coins:0,combo:0,mc:0,
-    pets:[],companion:null,
     adventures:{},stories:{},decos:[],placedDecos:[],areas:['home']
   }
 }
@@ -319,7 +318,6 @@ function updIsland(){
   document.getElementById('hudCoins').textContent='💰'+S.coins;
   document.getElementById('playerChar').textContent=aEmojis[S.avatar]||'👦';
   renderPlayerAccessories();
-  if(S.companion){var p=PT.find(function(x){return x.id===S.companion});document.getElementById('hudPet').textContent=p?p.emoji:''}else{document.getElementById('hudPet').textContent=''}
   // 区域锁定
   ['orchard','beach','park','castle'].forEach(function(a){
     var el=document.getElementById('area-'+a);if(!el)return;
@@ -514,8 +512,6 @@ function showLU(lv){
   var prevAreas=prevLv?prevLv.areas:[];
   var newAreas=lv.areas.filter(function(a){return prevAreas.indexOf(a)<0});
   if(newAreas.length){var an={home:'🏠 家',orchard:'🌳 果园',beach:'🏖️ 海滩',park:'🎪 游乐场',castle:'🏰 城堡'};msgs.push('解锁：'+newAreas.map(function(a){return an[a]||a}).join('、'))}
-  if(lv.l===2&&S.pets.indexOf('chick')<0){S.pets.push('chick');if(!S.companion)S.companion='chick';msgs.push('🐥 获得宠物：小黄！')}
-  if(lv.l===4&&S.pets.indexOf('parrot')<0){S.pets.push('parrot');msgs.push('🦜 获得宠物：小鹦！')}
   saveS();
   document.getElementById('luDetail').textContent=msgs.join('\n')||'继续加油！';
   document.getElementById('luOv').classList.add('show');
@@ -675,11 +671,7 @@ function finishAdv(){
     var stars=QS.correct>=5?3:(QS.correct>=4?2:1);
     if(stars>pr.stars)pr.stars=stars;
     S.adventures[a.id]=pr;
-    var pm={fishing:'chick',carrots:'bunny',maze:'foxp',bamboo:'pandap'};
-    if(pm[a.id]&&S.pets.indexOf(pm[a.id])<0)S.pets.push(pm[a.id]);
     S.coins+=20;saveS();
-    var allDone=ADS.every(function(x){var p=S.adventures[x.id];return p&&p.done});
-    if(allDone&&S.pets.indexOf('dragp')<0){S.pets.push('dragp');saveS()}
     fw(3);
   }
   if(isBoss&&QS.correct<3){
@@ -807,29 +799,6 @@ function initDecoSystem(){
   if(!S.decos)S.decos=[];
   if(!S.placedDecos)S.placedDecos=[];
   renderIslandDecos();
-}
-
-/* ===== 宠物 ===== */
-function showPets(){pS('click');show('pet-screen');renderPets()}
-
-function renderPets(){
-  var g=document.getElementById('pGrid');g.innerHTML='';
-  PT.forEach(function(p){
-    var owned=S.pets.indexOf(p.id)>=0;
-    var isCompanion=S.companion===p.id;
-    var c=document.createElement('div');c.className='p-card'+(owned?(isCompanion?' companion':''):' empty');
-    if(owned){
-      c.innerHTML='<div class="p-icon">'+p.emoji+(isCompanion?'💕':'')+'</div><div class="p-name">'+p.name+'</div><div class="p-bonus">'+p.bonus+'</div>';
-      c.onclick=(function(id){return function(){togComp(id)}})(p.id);
-    }else{
-      c.innerHTML='<div class="p-icon">❓</div><div class="p-name">???</div><div class="p-bonus">待解锁</div>';
-    }
-    g.appendChild(c);
-  });
-}
-
-function togComp(id){
-  pS('click');S.companion=S.companion===id?null:id;saveS();renderPets();updIsland();
 }
 
 /* ===== 玩家行走 ===== */

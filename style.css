@@ -31,7 +31,6 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .hud-xp-wrap{flex:1;margin:0 8px;height:10px;background:#E0E0E0;border-radius:5px;overflow:hidden;min-width:50px}
 .hud-xp-bar{height:100%;background:linear-gradient(90deg,#FFD54F,#FF8F00);border-radius:5px;transition:width .5s ease}
 .hud-coins{font-size:14px;color:#FF8F00;font-weight:bold}
-.hud-pet{font-size:18px;margin-left:6px}
 .hud-task-btn{font-size:18px;background:none;border:none;cursor:pointer;padding:8px;border-radius:8px;min-height:44px;transition:all .2s}
 .hud-task-btn:active{transform:scale(.9);background:rgba(255,152,0,.15)}
 
@@ -223,20 +222,6 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 /* ===== 烟花 ===== */
 .fw{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:99}
 .fp{position:absolute;border-radius:50%}
-
-/* ===== 宠物 ===== */
-#pet-screen{background:linear-gradient(180deg,#E8F5E9 0%,#FFF9C4 50%,#FFECB3 100%)}
-.p-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;flex-shrink:0}
-.p-house{flex:1;padding:12px;overflow-y:auto}
-.p-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.p-card{background:white;border-radius:16px;padding:12px 8px;text-align:center;box-shadow:0 3px 10px rgba(0,0,0,.07);transition:transform .2s}
-.p-card:active{transform:scale(.95)}
-.p-card .p-icon{font-size:36px;margin-bottom:4px}
-.p-card .p-name{font-size:12px;font-weight:bold;color:#333}
-.p-card .p-bonus{font-size:10px;color:#888;margin-top:2px}
-.p-card.empty{background:#F5F5F5;opacity:.45}
-.p-card.empty .p-icon{font-size:28px;opacity:.3}
-.p-card.companion{border:2px solid #FF9800;background:#FFF8E1}
 
 /* ===== 故事任务 ===== */
 .story-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:70;display:none;justify-content:center;align-items:center;padding:16px}
