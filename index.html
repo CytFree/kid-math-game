@@ -36,6 +36,7 @@
     </div>
     <div class="hud-xp-wrap"><div class="hud-xp-bar" id="hudXp" style="width:0%"></div></div>
     <span class="hud-coins" id="hudCoins">💰0</span>
+    <span class="hud-pet" id="hudPet"></span>
     <button class="hud-task-btn" id="hudStoryBtn" onclick="showAvailableStory()" style="font-size:18px;background:none;border:none;cursor:pointer;display:none">📖</button>
     <button class="hud-task-btn" onclick="showDecoPanel()" style="font-size:18px;background:none;border:none;cursor:pointer">🏠</button>
     <button class="hud-task-btn" onclick="resetGame()" style="font-size:14px;background:none;border:none;cursor:pointer;opacity:.5" title="重置进度">⚙️</button>
@@ -54,6 +55,13 @@
     <div class="flower" style="left:72%;bottom:9%">🌻</div>
     <div class="flower" style="left:88%;bottom:10%">🌷</div>
     <div class="area area-home" onclick="goArea('home')"><span class="area-icon">🏠</span><span class="area-label">家</span></div>
+    <div class="area area-pet locked" id="area-pet" onclick="petClickArea()">
+      <span class="area-icon" id="petAreaIcon">🏡</span>
+      <span class="area-label" id="petAreaLabel">宠物</span>
+      <span class="pet-mood" id="petAreaMood"></span>
+      <span class="pet-house" id="petAreaHouse">🏠</span>
+      <canvas class="pet-canvas" id="petCanvas" width="130" height="100"></canvas>
+    </div>
     <div class="area area-orchard locked" id="area-orchard" onclick="goArea('orchard')"><span class="area-icon">🌳</span><span class="area-label">果园</span></div>
     <div class="area area-beach locked" id="area-beach" onclick="goArea('beach')"><span class="area-icon">🏖️</span><span class="area-label">海滩</span></div>
     <div class="area area-park locked" id="area-park" onclick="goArea('park')"><span class="area-icon">🎪</span><span class="area-label">游乐场</span></div>
@@ -136,6 +144,7 @@
     <div class="q-equation" id="qEq"></div>
     <div class="q-options" id="qOpts"></div>
     <div class="q-fb" id="qFb"></div>
+    <div class="pet-reaction" id="petReaction"></div>
   </div>
 </div>
 
@@ -226,7 +235,66 @@
 
 <div class="fw" id="fw"></div>
 
+<!-- 宠物选择（Lv.2） -->
+<div class="pet-choice-overlay" id="petChoiceOv">
+  <div class="pet-choice-card">
+    <h2>🥚 选择你的伙伴</h2>
+    <p class="pc-sub">只能选一只，选定后不可更改哦！</p>
+    <div class="pc-grid" id="petChoiceGrid"></div>
+    <div class="pc-name-input-wrap" style="display:none" id="petChoiceConfirm">
+      <input class="pc-name-input" id="petNameInput" type="text" placeholder="给宠物取个名字吧" maxlength="10">
+      <button class="btn pc-btn" onclick="petConfirmChoice()">确定选择！</button>
+    </div>
+  </div>
+</div>
+
+<!-- 孵化动画 -->
+<div class="pet-hatch-overlay" id="petHatchOv" onclick="if(event.target===this)petCloseHatch()">
+  <div class="pet-hatch-card">
+    <div class="hatch-scene">
+      <span class="hatch-egg" id="hatchEmoji">🥚</span>
+      <span class="hatch-arrow">→</span>
+      <span class="hatch-result" id="hatchResultEmoji">🐱</span>
+    </div>
+    <div class="hatch-title">🎉 孵化成功！</div>
+    <div class="hatch-name"><span id="hatchPetName">小喵</span> · <span id="hatchName">名字</span></div>
+    <button class="btn hatch-btn" onclick="petCloseHatch()">太棒了！🎉</button>
+  </div>
+</div>
+
+<!-- 宠物互动 -->
+<div class="pet-detail-overlay" id="petDetailOv" onclick="if(event.target===this)petCloseDetail()">
+  <div class="pet-detail-card" onclick="event.stopPropagation()">
+    <div class="pd-handle"></div>
+    <div class="pd-header">
+      <span class="pd-emoji" id="pdEmoji">🐱</span>
+      <div class="pd-info">
+        <span class="pd-name" id="pdName">名字</span>
+        <span class="pd-stage" id="pdStage">幼年</span>
+      </div>
+    </div>
+    <div class="pd-desc" id="pdDesc"></div>
+    <div class="pd-stats">
+      <div class="pd-stat"><span class="pd-stat-label">❤️ 亲密度</span><div class="pd-bar-wrap"><div class="pd-bar" id="pdAffBar" style="width:0%"></div></div></div>
+      <div class="pd-stat"><span class="pd-stat-label">🍽️ 饱腹度</span><div class="pd-bar-wrap"><div class="pd-bar pd-bar-food" id="pdFullBar" style="width:80%"></div></div></div>
+      <div class="pd-stat"><span class="pd-stat-label" id="pdGrowthLabel">成长值</span><div class="pd-bar-wrap"><div class="pd-bar pd-bar-grow" id="pdGrowthBar" style="width:0%"></div></div></div>
+    </div>
+    <div class="pd-bonus" id="pdBonus"></div>
+    <div class="pd-btns">
+      <button class="btn pd-btn" id="pdFeedBtn" onclick="petFeed()">🍗 喂食</button>
+      <button class="btn pd-btn pd-btn-pet" id="pdPetBtn" onclick="petPet()">🤗 抚摸</button>
+      <button class="btn pd-btn pd-btn-play" id="pdPlayBtn" onclick="petPlay()">🎾 玩耍</button>
+    </div>
+    <button class="btn pd-close" onclick="petCloseDetail()">关闭</button>
+    <div class="pet-effects" id="petEffects"></div>
+  </div>
+</div>
+
+<!-- 宠物通知 -->
+<div class="pet-notify" id="petNotify"></div>
+
 <script src="game-data.js"></script>
+<script src="pet.js"></script>
 <script src="game.js"></script>
 </body>
 </html>

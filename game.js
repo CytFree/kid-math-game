@@ -208,6 +208,7 @@ function renderPlayerAccessories(){
 function defState(){
   return{
     name:'小宝',avatar:'boy',xp:0,level:1,totalXp:0,coins:0,combo:0,mc:0,
+    pet:null,
     adventures:{},stories:{},decos:[],placedDecos:[],areas:['home']
   }
 }
@@ -244,6 +245,7 @@ function genQ(mode,level,aid){
   }else if(tp.mode==='sub'||tp.mode==='sc'){
     var a=ri(1,ms);
     var b=ri(0,a);
+    if(b===0&&a>2&&Math.random()<0.85)b=ri(1,a);
     nums=[a,b];ans=a-b;op='-';
   }else if(tp.mode==='mix'){
     if(Math.random()<0.5){
@@ -253,6 +255,7 @@ function genQ(mode,level,aid){
     }else{
       var a=ri(1,ms);
       var b=ri(0,a);
+      if(b===0&&a>2&&Math.random()<0.85)b=ri(1,a);
       nums=[a,b];ans=a-b;op='-';
     }
   }else{
@@ -318,6 +321,8 @@ function updIsland(){
   document.getElementById('hudCoins').textContent='💰'+S.coins;
   document.getElementById('playerChar').textContent=aEmojis[S.avatar]||'👦';
   renderPlayerAccessories();
+  if(petUpdateHud)petUpdateHud();
+  if(petRenderIsland)petRenderIsland();
   // 区域锁定
   ['orchard','beach','park','castle'].forEach(function(a){
     var el=document.getElementById('area-'+a);if(!el)return;
@@ -464,12 +469,14 @@ function chk(num,btn){
     pS('ok');box.textContent=num;box.classList.add('ok');btn.classList.add('ok-opt');QS.correct++;
     var ps=['太棒了！🎉','你真聪明！🌟','答对了！💪','好厉害！👏','完美！✨','真棒！🏆'];
     document.getElementById('qFb').textContent=ps[ri(0,ps.length-1)];document.getElementById('qFb').className='q-fb ok-fb';
+    if(petReaction)petReaction(true);
                     animateQ(q);
-    var xg=20+S.mc*3;S.xp+=xg;S.totalXp+=xg;S.coins+=5;S.combo++;if(S.combo>S.mc)S.mc=S.combo;
-    chkLU();QS.cur++;saveS();setTimeout(nextQ,2000);
+    var xg=20+S.mc*3;if(petGetBonus)xg+=petGetBonus();S.xp+=xg;S.totalXp+=xg;S.coins+=5;S.combo++;if(S.combo>S.mc)S.mc=S.combo;
+    if(petOnCorrect)petOnCorrect();chkLU();QS.cur++;saveS();setTimeout(nextQ,2000);
   }else{
     pS('no');box.textContent=num;box.classList.add('no');btn.classList.add('no-opt');btn.disabled=true;S.combo=0;
     document.getElementById('qFb').textContent='再想想哦，你可以的！💪';document.getElementById('qFb').className='q-fb no-fb';
+    if(petReaction)petReaction(false);
   }
 }
 
@@ -512,6 +519,7 @@ function showLU(lv){
   var prevAreas=prevLv?prevLv.areas:[];
   var newAreas=lv.areas.filter(function(a){return prevAreas.indexOf(a)<0});
   if(newAreas.length){var an={home:'🏠 家',orchard:'🌳 果园',beach:'🏖️ 海滩',park:'🎪 游乐场',castle:'🏰 城堡'};msgs.push('解锁：'+newAreas.map(function(a){return an[a]||a}).join('、'))}
+  if(lv.l===2&&!S.pet){setTimeout(function(){if(petShowChoice)petShowChoice()},1200)}
   saveS();
   document.getElementById('luDetail').textContent=msgs.join('\n')||'继续加油！';
   document.getElementById('luOv').classList.add('show');
@@ -890,8 +898,8 @@ function updateAreaBadges(area){
 function init(){
   initPlayerWalk();
   var saved=loadS();
-  if(saved&&saved.name){S=saved;show('island-screen');updIsland();initDecoSystem();renderPlayerAccessories()}
-  else{show('create-screen')}
+  if(saved&&saved.name){S=saved;show('island-screen');updIsland();initDecoSystem();renderPlayerAccessories();if(petInit)petInit()}
+  else{show('create-screen');if(petInit)petInit()}
   // 首次用户交互时初始化音频（绕过 autoplay 策略）
   var audioInitEvents=['click','touchstart'];
   audioInitEvents.forEach(function(evt){
