@@ -8,7 +8,21 @@ var AC=window.AudioContext||window.webkitAudioContext,ax;
 var soundMuted=false;
 var soundBtn=document.getElementById('soundToggle');
 
-function gA(){if(!ax)ax=new AC();return ax}
+function gA(){
+  if(!ax)ax=new AC();
+  // 恢复 suspended 状态（Android/国产浏览器需要用户交互后才能 resume）
+  if(ax.state==='suspended')ax.resume();
+  else if(ax.state==='closed')ax=new AC();
+  return ax
+}
+
+// 延迟初始化：首次用户交互时创建 AudioContext（绕过 autoplay 策略）
+var audioInitDone=false;
+function ensureAudioInit(){
+  if(audioInitDone)return;
+  audioInitDone=true;
+  try{var c=gA();if(c.state==='suspended')c.resume()}catch(e){}
+}
 
 function pS(t){
   if(soundMuted)return;
@@ -86,14 +100,58 @@ function toggleSound(){
   else{setTimeout(playBgMusic,500)}
 }
 
-/* ===== 语音朗读 ===== */
+/* ===== 语音朗读（跨浏览器兼容） ===== */
+var speechReady=false;
+var speechPendingText='';
+var speechRetryTimer=null;
+
 function speak(text){
   if(!text||soundMuted)return;
-  window.speechSynthesis && window.speechSynthesis.cancel();
-  var u=new SpeechSynthesisUtterance(text);
-  u.lang='zh-CN';u.rate=0.7;u.pitch=1.05;
-  try{var voices=window.speechSynthesis.getVoices();var cv=voices.find(function(v){return v.lang.indexOf('zh')>=0});if(cv)u.voice=cv}catch(e){}
-  window.speechSynthesis.speak(u);
+  // 确保 AudioContext 已初始化（部分浏览器要求先有音频交互）
+  ensureAudioInit();
+  // 检测 SpeechSynthesis 支持
+  if(!window.speechSynthesis){
+    // 降级：用 Web Audio 播放简短提示音
+    try{pS('pop')}catch(e){}
+    return;
+  }
+  window.speechSynthesis.cancel();
+  // 如果语音列表还没加载完，等待后重试
+  var voices=[];
+  try{voices=window.speechSynthesis.getVoices()}catch(e){}
+  if(voices.length===0&&!speechReady){
+    speechPendingText=text;
+    if(speechRetryTimer)clearTimeout(speechRetryTimer);
+    speechRetryTimer=setTimeout(function(){speak(speechPendingText)},300);
+    return;
+  }
+  try{
+    var u=new SpeechSynthesisUtterance(text);
+    u.lang='zh-CN';u.rate=0.7;u.pitch=1.05;
+    try{var cv=voices.find(function(v){return v.lang.indexOf('zh')>=0});if(cv)u.voice=cv}catch(e){}
+    window.speechSynthesis.speak(u);
+  }catch(e){
+    // 如果 speak 失败（如中文语音缺失），用提示音降级
+    try{pS('pop')}catch(e2){}
+  }
+}
+
+// 监听语音列表异步加载（Android 浏览器需要）
+if(window.speechSynthesis){
+  try{
+    // 先检查是否已有语音
+    var initVoices=window.speechSynthesis.getVoices();
+    if(initVoices.length>0)speechReady=true;
+    // 监听异步加载事件
+    window.speechSynthesis.onvoiceschanged=function(){
+      speechReady=true;
+      var v=window.speechSynthesis.getVoices();
+      if(v.length>0&&speechPendingText){
+        speak(speechPendingText);
+        speechPendingText='';
+      }
+    };
+  }catch(e){}
 }
 
 /* ===== 烟花 ===== */
@@ -871,6 +929,14 @@ function init(){
   var saved=loadS();
   if(saved&&saved.name){S=saved;show('island-screen');updIsland();initDecoSystem();renderPlayerAccessories()}
   else{show('create-screen')}
+  // 首次用户交互时初始化音频（绕过 autoplay 策略）
+  var audioInitEvents=['click','touchstart'];
+  audioInitEvents.forEach(function(evt){
+    document.addEventListener(evt,function initAudioOnce(){
+      ensureAudioInit();
+      audioInitEvents.forEach(function(e){document.removeEventListener(e,initAudioOnce)});
+    },{once:true});
+  });
   // 背景音乐
   setTimeout(playBgMusic,1000);
 }
