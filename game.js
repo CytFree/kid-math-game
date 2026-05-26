@@ -430,7 +430,7 @@ function startCustom(){
   var teach=CS.type==='sub'?'sub':(CS.type==='mix'?'mix':'add');
   var mode=(CS.type==='mix')?'mix':teach;
   QS.customNums=[CS.num1,CS.num2];QS.customType=CS.type;
-  startQ('custom',CS.aid,teach,999);
+  startQ('custom',CS.aid,teach,1);
 }
 
 /* ===== 家长门控 ===== */
