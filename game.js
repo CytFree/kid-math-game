@@ -239,7 +239,10 @@ function genQ(mode,level,aid,custom){
   var nums=[],ans=0,op='+';
   if(custom){
     nums=custom.nums.slice();op=custom.op;
-    if(op==='mix'){op=Math.random()<0.5?'+':'-';}
+    if(op==='add')op='+';
+    else if(op==='sub')op='-';
+    else if(op==='mix')op=Math.random()<0.5?'+':'-';
+    if(op==='-'&&nums[0]<nums[1]){var t=nums[0];nums[0]=nums[1];nums[1]=t;}
     ans=op==='+'?nums[0]+nums[1]:nums[0]-nums[1];
     ms=Math.max(ms,ans);
   }else{
@@ -389,6 +392,7 @@ function openCustom(aid){
   renderCNums();
   document.querySelectorAll('#cTypes .ct-btn').forEach(function(b){b.classList.remove('sel')});
   document.querySelector('#cTypes .ct-btn[data-t="add"]').classList.add('sel');
+  updateCPreview();
   show('custom-screen');
 }
 function pickType(t,el){
@@ -498,6 +502,7 @@ function generatePraticeSet(){
   localStorage.setItem('mi2_practice_set',JSON.stringify(set));
   document.getElementById('psMsg').textContent='✅ 已生成 '+questions.length+' 道题！';
   var hudBtn=document.getElementById('hudPSBtn');if(hudBtn)hudBtn.style.display='';
+  var startBtn=document.getElementById('psStartBtn');if(startBtn)startBtn.style.display='';
 }
 function startPracticeSet(){
   var raw=localStorage.getItem('mi2_practice_set');
