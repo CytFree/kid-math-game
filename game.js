@@ -371,6 +371,8 @@ function initManip(q){
   MS.rows=q.op==='+'?[[],[]]:[[]];
   MS.sourceUsed=0;MS.stage='place';
   MS.subtractTarget=q.op==='-'?q.nums[1]:0;
+  var manip=document.getElementById('qManip');
+  manip.innerHTML='<div class="qm-hint" id="qmHint"></div><div class="qm-source" id="qmSource"></div><div class="qm-rows" id="qmRows"></div>';
   renderManipSource();renderManipRows();updateManipHint();
 }
 function renderManipSource(){
@@ -471,9 +473,9 @@ function nextQ(){
   document.getElementById('qStory').textContent=q.story;
 
   // 可视化
-  var manip=document.getElementById('qManip');manip.innerHTML='';
-  if(S.level>=7){manip.style.display='';renderDecompTree(q);}
-  else{manip.style.display='';initManip(q);}
+  var manip=document.getElementById('qManip');manip.style.display='';
+  if(S.level>=7){renderDecompTree(q);}
+  else{initManip(q);}
 
   // 算式
   var eq=document.getElementById('qEq');
