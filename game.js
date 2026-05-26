@@ -499,6 +499,14 @@ function generatePraticeSet(){
   document.getElementById('psMsg').textContent='✅ 已生成 '+questions.length+' 道题！';
   var hudBtn=document.getElementById('hudPSBtn');if(hudBtn)hudBtn.style.display='';
 }
+function startPracticeSet(){
+  var raw=localStorage.getItem('mi2_practice_set');
+  if(!raw)return;
+  var set=JSON.parse(raw);
+  set.progress={done:0,correct:0};
+  localStorage.setItem('mi2_practice_set',JSON.stringify(set));
+  startQ('practice','cat',set.type,set.questions.length);
+}
 
 function initManip(q){
   MS.op=q.op;MS.emoji=q.emoji;MS.nums=q.nums;
@@ -601,7 +609,11 @@ function nextQ(){
   if(QS.cur>=QS.total){finishQ();return}
   QS.answered=false;
   var q;
-  if(QS.mode==='custom'){
+  if(QS.mode==='practice'){
+    var psRaw=localStorage.getItem('mi2_practice_set');
+    var psSet=JSON.parse(psRaw);
+    q=psSet.questions[QS.cur];QS.curQ=q;
+  }else if(QS.mode==='custom'){
     var custom={nums:QS.customNums,op:QS.customType};
     q=genQ(QS.teach,S.level,QS.aid,custom);QS.curQ=q;
   }else{
@@ -693,6 +705,13 @@ function chk(num,btn){
     QS.answered=true;
     document.querySelectorAll('.q-opt').forEach(function(b){b.disabled=true});
     pS('ok');box.textContent=num;box.classList.add('ok');btn.classList.add('ok-opt');QS.correct++;
+    if(QS.mode==='practice'){
+      var psRaw=localStorage.getItem('mi2_practice_set');
+      var psSet=JSON.parse(psRaw);
+      psSet.progress.correct++;
+      psSet.progress.done=QS.cur;
+      localStorage.setItem('mi2_practice_set',JSON.stringify(psSet));
+    }
     var ps=['太棒了！🎉','你真聪明！🌟','答对了！💪','好厉害！👏','完美！✨','真棒！🏆'];
     document.getElementById('qFb').textContent=ps[ri(0,ps.length-1)];document.getElementById('qFb').className='q-fb ok-fb';
     if(petReaction)petReaction(true);
@@ -701,6 +720,12 @@ function chk(num,btn){
     if(petOnCorrect)petOnCorrect();chkLU();QS.cur++;saveS();setTimeout(nextQ,2000);
   }else{
     pS('no');box.textContent=num;box.classList.add('no');btn.classList.add('no-opt');btn.disabled=true;S.combo=0;
+    if(QS.mode==='practice'){
+      var psRaw2=localStorage.getItem('mi2_practice_set');
+      var psSet2=JSON.parse(psRaw2);
+      psSet2.progress.done=QS.cur;
+      localStorage.setItem('mi2_practice_set',JSON.stringify(psSet2));
+    }
     document.getElementById('qFb').textContent='再想想哦，你可以的！💪';document.getElementById('qFb').className='q-fb no-fb';
     if(petReaction)petReaction(false);
   }
@@ -714,7 +739,9 @@ function resetGame(){
 }
 
 function finishQ(){
-  if(QS.mode==='story'){
+  if(QS.mode==='practice'){
+    showPSSummary();
+  }else if(QS.mode==='story'){
     storyNextChapter();
     show('island-screen');
     document.getElementById('storyOv').classList.add('show');
@@ -726,6 +753,30 @@ function finishQ(){
 }
 
 function exitQ(){pS('click');if(QS.mode==='adv')exitAdv();else show('island-screen')}
+
+function showPSSummary(){
+  var raw=localStorage.getItem('mi2_practice_set');
+  var set=JSON.parse(raw);
+  var correct=set.progress.correct||0;
+  var total=set.questions.length;
+  var pct=total>0?correct/total:0;
+  var stars=pct>=1?'⭐⭐⭐':(pct>=0.8?'⭐⭐':'⭐');
+  var icon=pct>=1?'🎉':(pct>=0.8?'😊':'💪');
+  var title=pct>=1?'完美！全对！':(pct>=0.8?'很棒！':'加油！');
+  document.getElementById('psSumIcon').textContent=icon;
+  document.getElementById('psSumTitle').textContent=title;
+  document.getElementById('psSumScore').textContent=correct+' / '+total;
+  document.getElementById('psSumStars').textContent=stars;
+  document.getElementById('psSummaryOv').classList.add('show');
+}
+function closePSSummary(){
+  document.getElementById('psSummaryOv').classList.remove('show');
+  show('island-screen');
+}
+function retryPracticeSet(){
+  document.getElementById('psSummaryOv').classList.remove('show');
+  startPracticeSet();
+}
 
 /* ===== 升级 ===== */
 function chkLU(){
