@@ -364,6 +364,72 @@ function doTask(){pS('click');closeDlg();if(dlgData.aid)startQ('',dlgData.aid,dl
 
 /* ===== 题目系统 ===== */
 var QS={mode:'',aid:'',teach:'',total:1,cur:0,correct:0,answered:false,curQ:null,advId:'',advNode:0};
+var MS={op:'',emoji:'',nums:[],rows:[],sourceUsed:0,stage:'place',subtractTarget:0};
+
+function initManip(q){
+  MS.op=q.op;MS.emoji=q.emoji;MS.nums=q.nums;
+  MS.rows=q.op==='+'?[[],[]]:[[]];
+  MS.sourceUsed=0;MS.stage='place';
+  MS.subtractTarget=q.op==='-'?q.nums[1]:0;
+  renderManipSource();renderManipRows();updateManipHint();
+}
+function renderManipSource(){
+  var src=document.getElementById('qmSource');src.innerHTML='';
+  for(var i=0;i<10;i++){
+    var sp=document.createElement('span');
+    sp.className='si'+(i<MS.sourceUsed?' used':'');
+    sp.textContent=MS.emoji;
+    if(i>=MS.sourceUsed)sp.onclick=function(){manipPlace()};
+    src.appendChild(sp);
+  }
+}
+function renderManipRows(){
+  var ct=document.getElementById('qmRows');ct.innerHTML='';
+  for(var r=0;r<MS.rows.length;r++){
+    var row=MS.rows[r];
+    var isSub=MS.op==='-';
+    var inSubtract=isSub&&MS.stage==='subtract';
+    var rowEl=document.createElement('div');
+    rowEl.className='qm-row';
+    if(inSubtract)rowEl.className+=' subtract-mode';
+    else if(!isSub&&MS.rows.length===2)rowEl.className+=(r===0&&MS.rows[0].length<MS.nums[0]||r===1&&MS.rows[0].length>=MS.nums[0]&&MS.rows[1].length<MS.nums[1]?' active':'');
+    else if(isSub&&MS.stage==='place')rowEl.className+=' active';
+    if(inSubtract&&MS.subtractTarget>0&&getSubtractRemaining()===0)rowEl.className=rowEl.className.replace('subtract-mode','complete');
+    if(MS.rows.length===2){
+      var lb=document.createElement('div');lb.className='qm-row-label';
+      lb.textContent='第'+(r+1)+'个数 → 放 '+MS.nums[r]+' 个';
+      ct.appendChild(lb);
+    }
+    for(var j=0;j<row.length;j++){
+      var ri=document.createElement('span');
+      ri.className='ri';
+      if(inSubtract&&isSubtractRemoved(j))ri.className+=' removed';
+      ri.textContent=MS.emoji;
+      ri.onclick=(function(rr,jj){return function(){manipRemove(rr,jj)}})(r,j);
+      rowEl.appendChild(ri);
+    }
+    ct.appendChild(rowEl);
+  }
+  if(MS.op==='-'){
+    var lb=document.createElement('div');lb.className='qm-row-label';
+    if(MS.stage==='place')lb.textContent='放 '+MS.nums[0]+' 个';
+    else lb.textContent='点掉 '+MS.subtractTarget+' 个（还剩 '+getSubtractRemaining()+' 个）';
+    ct.insertBefore(lb,ct.firstChild);
+  }
+}
+function updateManipHint(){
+  var h=document.getElementById('qmHint');
+  if(MS.op==='+'){
+    h.textContent='从上方取 '+MS.emoji+'，先放第1行（'+MS.nums[0]+'个），再放第2行（'+MS.nums[1]+'个）';
+  }else if(MS.stage==='place'){
+    h.textContent='从上方取 '+MS.emoji+'，放 '+MS.nums[0]+' 个';
+  }else{
+    h.textContent='点掉 '+MS.subtractTarget+' 个 → 理解"减"就是拿走';
+  }
+}
+var MS_REMOVED=[];
+function isSubtractRemoved(idx){return MS_REMOVED.indexOf(idx)>=0}
+function getSubtractRemaining(){return MS.subtractTarget-MS_REMOVED.length}
 
 function startQ(mode,aid,teach,total){
   QS.mode=mode;QS.aid=aid||'cat';QS.teach=teach||'add';QS.cur=0;QS.correct=0;QS.answered=false;QS.total=total||1;QS.advId='';QS.advNode=0;
