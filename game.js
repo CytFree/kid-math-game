@@ -346,6 +346,11 @@ function updIsland(){
     if(avail.length>0){storyBtn.style.display='';storyBtn.textContent='📖 ('+avail.length+')'}
     else{storyBtn.style.display='none'}
   }
+  var psBtn=document.getElementById('hudPSBtn');
+  if(psBtn){
+    var psRaw=localStorage.getItem('mi2_practice_set');
+    psBtn.style.display=psRaw?'':'none';
+  }
 }
 
 /* ===== 对话 ===== */
@@ -422,6 +427,77 @@ function startCustom(){
   var mode=(CS.type==='mix')?'mix':teach;
   startQ('custom',CS.aid,teach,999);
   QS.customNums=[CS.num1,CS.num2];QS.customType=CS.type;
+}
+
+/* ===== 家长门控 ===== */
+var settingsPressTimer=null;
+function initSettingsLongPress(){
+  var btn=document.getElementById('hudSettingsBtn');
+  if(!btn)return;
+  btn.addEventListener('mousedown',function(e){e.preventDefault();startSettingsPress()});
+  btn.addEventListener('touchstart',function(e){e.preventDefault();startSettingsPress()},{passive:false});
+  btn.addEventListener('mouseup',cancelSettingsPress);
+  btn.addEventListener('touchend',cancelSettingsPress);
+  btn.addEventListener('mouseleave',cancelSettingsPress);
+  btn.addEventListener('touchcancel',cancelSettingsPress);
+}
+function startSettingsPress(){
+  cancelSettingsPress();
+  settingsPressTimer=setTimeout(function(){openPracticeSetScreen()},3000);
+}
+function cancelSettingsPress(){if(settingsPressTimer){clearTimeout(settingsPressTimer);settingsPressTimer=null}}
+function openPracticeSetScreen(){pS('click');show('practice-set-screen')}
+
+/* ===== 练习集 ===== */
+var PS={type:'add',min1:1,max1:10,min2:0,max2:9,count:5};
+
+function pickPSType(t,el){
+  PS.type=t;
+  document.querySelectorAll('#psTypes .pt-btn').forEach(function(b){b.classList.remove('sel')});
+  el.classList.add('sel');
+}
+function updPSRange(){
+  PS.min1=parseInt(document.getElementById('psMin1').value);
+  PS.max1=parseInt(document.getElementById('psMax1').value);
+  PS.min2=parseInt(document.getElementById('psMin2').value);
+  PS.max2=parseInt(document.getElementById('psMax2').value);
+  if(PS.min1>PS.max1)PS.min1=PS.max1;if(PS.min2>PS.max2)PS.min2=PS.max2;
+  document.getElementById('psMin1').value=PS.min1;document.getElementById('psMax1').value=PS.max1;
+  document.getElementById('psMin2').value=PS.min2;document.getElementById('psMax2').value=PS.max2;
+  document.getElementById('psR1').textContent=PS.min1+' ~ '+PS.max1;
+  document.getElementById('psR2').textContent=PS.min2+' ~ '+PS.max2;
+}
+function pickPSCount(n,el){
+  PS.count=n;
+  document.querySelectorAll('#psCounts .pc-btn').forEach(function(b){b.classList.remove('sel')});
+  el.classList.add('sel');
+}
+function generatePraticeSet(){
+  var questions=[];var fails=0;
+  var tmpAid=PS.type==='sub'?'dog':'cat';
+  var teach=PS.type==='sub'?'sub':(PS.type==='mix'?'mix':'add');
+  while(questions.length<PS.count&&fails<200){
+    var a=ri(PS.min1,PS.max1);
+    var b=ri(PS.min2,PS.max2);
+    if(PS.type==='sub'&&b>a){var t=a;a=b;b=t;}
+    if(PS.type==='mix'){
+      var isAdd=Math.random()<0.5;
+      if(isAdd&&a+b>10){fails++;continue}
+      if(!isAdd&&b>a){var t=a;a=b;b=t;}
+      if(!isAdd&&a-b<0){fails++;continue}
+    }
+    if(PS.type==='add'&&a+b>10){fails++;continue}
+    if(PS.type==='sub'&&(a<b||a-b<0)){fails++;continue}
+    var custom={nums:[a,b],op:PS.type==='mix'?(Math.random()<0.5?'+':'-'):(PS.type==='sub'?'-':'+')};
+    var q=genQ(teach,1,tmpAid,custom);
+    questions.push(q);fails=0;
+    fails++;
+  }
+  if(questions.length===0){document.getElementById('psMsg').textContent='无法生成题目，请调整范围';return}
+  var set={type:PS.type,questions:questions,progress:{done:0,correct:0},createdAt:Date.now()};
+  localStorage.setItem('mi2_practice_set',JSON.stringify(set));
+  document.getElementById('psMsg').textContent='✅ 已生成 '+questions.length+' 道题！';
+  var hudBtn=document.getElementById('hudPSBtn');if(hudBtn)hudBtn.style.display='';
 }
 
 function initManip(q){
@@ -1047,6 +1123,7 @@ function updateAreaBadges(area){
 /* ===== 初始化 ===== */
 function init(){
   initPlayerWalk();
+  initSettingsLongPress();
   var saved=loadS();
   if(saved&&saved.name){S=saved;show('island-screen');updIsland();initDecoSystem();renderPlayerAccessories();if(petInit)petInit()}
   else{show('create-screen');if(petInit)petInit()}
