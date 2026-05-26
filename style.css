@@ -417,3 +417,39 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .hud-pet-2{color:#FF9800}
 .hud-pet-3{color:#F44336;animation:hudPetGlow 2s ease-in-out infinite}
 @keyframes hudPetGlow{0%,100%{text-shadow:0 0 4px rgba(244,67,54,.3)}50%{text-shadow:0 0 12px rgba(244,67,54,.6)}}
+
+/* ===== 自定义出题 ===== */
+.custom-section{margin:6px 0;width:100%}
+.custom-label{font-size:14px;font-weight:bold;color:#666;margin-bottom:6px;text-align:center}
+.custom-types{display:flex;gap:8px;justify-content:center}
+.ct-btn{padding:10px 18px;border:2px solid #E0E0E0;border-radius:14px;background:#fff;font-size:18px;cursor:pointer;transition:all .2s}
+.ct-btn.sel{border-color:#42A5F5;background:#E3F2FD;color:#1565C0;font-weight:bold;box-shadow:0 0 0 3px rgba(66,165,245,.2)}
+.custom-nums{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.cn-btn{width:44px;height:44px;border:2px solid #E0E0E0;border-radius:12px;background:#fff;font-size:20px;font-weight:bold;color:#555;cursor:pointer;transition:all .15s}
+.cn-btn.sel{border-color:#42A5F5;background:#1565C0;color:#fff;box-shadow:0 2px 8px rgba(21,101,192,.3)}
+.cn-btn.dis{opacity:.25;pointer-events:none}
+.custom-preview{text-align:center;font-size:28px;font-weight:bold;color:#333;margin:12px 0;padding:10px;background:#F5F5F5;border-radius:12px}
+.custom-btn{background:linear-gradient(135deg,#42A5F5,#1E88E5)!important;margin-top:4px}
+
+/* ===== 练习集设置（家长） ===== */
+.ps-section{margin:6px 0;width:100%}
+.ps-label{font-size:14px;font-weight:bold;color:#666;margin-bottom:6px;text-align:center}
+.ps-types{display:flex;gap:8px;justify-content:center}
+.pt-btn{padding:10px 18px;border:2px solid #E0E0E0;border-radius:14px;background:#fff;font-size:18px;cursor:pointer;transition:all .2s}
+.pt-btn.sel{border-color:#AB47BC;background:#F3E5F5;color:#7B1FA2;font-weight:bold;box-shadow:0 0 0 3px rgba(171,71,188,.2)}
+.ps-range{width:100%;margin:4px 0;-webkit-appearance:none;height:6px;border-radius:3px;background:#E0E0E0;outline:none}
+.ps-range::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#AB47BC;cursor:pointer}
+.ps-counts{display:flex;gap:8px;justify-content:center}
+.pc-btn{width:48px;height:48px;border:2px solid #E0E0E0;border-radius:12px;background:#fff;font-size:20px;font-weight:bold;color:#555;cursor:pointer;transition:all .15s}
+.pc-btn.sel{border-color:#AB47BC;background:#7B1FA2;color:#fff}
+.ps-msg{text-align:center;font-size:14px;color:#4CAF50;margin-top:8px;min-height:20px}
+
+/* ===== 练习集总结弹窗 ===== */
+.ps-summary-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:100;display:none;justify-content:center;align-items:center}
+.ps-summary-overlay.show{display:flex}
+.ps-summary-card{background:white;border-radius:28px;padding:32px 24px;text-align:center;max-width:280px;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:luPop .6s ease}
+.ps-summary-icon{font-size:60px;margin-bottom:8px}
+.ps-summary-title{font-size:22px;font-weight:bold;color:#333;margin-bottom:12px}
+.ps-summary-score{font-size:36px;font-weight:bold;color:#1565C0;margin-bottom:8px}
+.ps-summary-stars{font-size:32px;margin-bottom:20px}
+.ps-summary-card .btn{margin:6px 0;width:100%}
