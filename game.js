@@ -438,12 +438,20 @@ var settingsPressTimer=null;
 function initSettingsLongPress(){
   var btn=document.getElementById('hudSettingsBtn');
   if(!btn)return;
+  btn.addEventListener('click',function(e){e.preventDefault();settingsClick()});
   btn.addEventListener('mousedown',function(e){e.preventDefault();startSettingsPress()});
   btn.addEventListener('touchstart',function(e){e.preventDefault();startSettingsPress()},{passive:false});
   btn.addEventListener('mouseup',cancelSettingsPress);
   btn.addEventListener('touchend',cancelSettingsPress);
   btn.addEventListener('mouseleave',cancelSettingsPress);
   btn.addEventListener('touchcancel',cancelSettingsPress);
+}
+function settingsClick(){
+  var hint=document.createElement('div');hint.className='settings-toast';
+  hint.textContent='⏱️ 长按3秒进入家长设置';
+  hint.style.cssText='position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.82);color:#fff;padding:14px 24px;border-radius:14px;font-size:16px;z-index:200;pointer-events:none;transition:opacity .4s';
+  document.body.appendChild(hint);
+  setTimeout(function(){hint.style.opacity='0';setTimeout(function(){hint.remove()},400)},2000);
 }
 function startSettingsPress(){
   cancelSettingsPress();
