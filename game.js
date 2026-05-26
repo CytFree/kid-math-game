@@ -536,7 +536,7 @@ function renderManipSource(){
     var sp=document.createElement('span');
     sp.className='si'+(i<MS.sourceUsed?' used':'');
     sp.textContent=MS.emoji;
-    if(i>=MS.sourceUsed){sp.onclick=function(){manipPlace()};sp.ontouchstart=function(e){e.preventDefault();manipPlace()}}
+    if(i>=MS.sourceUsed)sp.onclick=function(){manipPlace()};
     src.appendChild(sp);
   }
 }
@@ -563,7 +563,6 @@ function renderManipRows(){
       if(inSubtract&&isSubtractRemoved(j))ri.className+=' removed';
       ri.textContent=MS.emoji;
       ri.onclick=(function(rr,jj){return function(){manipRemove(rr,jj)}})(r,j);
-      ri.ontouchstart=(function(rr,jj){return function(e){e.preventDefault();manipRemove(rr,jj)}})(r,j);
       rowEl.appendChild(ri);
     }
     ct.appendChild(rowEl);
