@@ -430,7 +430,32 @@ function updateManipHint(){
 var MS_REMOVED=[];
 function isSubtractRemoved(idx){return MS_REMOVED.indexOf(idx)>=0}
 function getSubtractRemaining(){return MS.subtractTarget-MS_REMOVED.length}
-
+function manipPlace(){
+  if(MS.sourceUsed>=10)return;
+  if(MS.op==='-'&&MS.stage==='subtract')return;
+  var targetRow=0;
+  if(MS.op==='+'){
+    targetRow=MS.rows[0].length<MS.nums[0]?0:1;
+  }
+  MS.rows[targetRow].push(MS.emoji);
+  MS.sourceUsed++;
+  renderManipSource();renderManipRows();updateManipHint();
+  if(MS.op==='-'&&MS.stage==='place'&&MS.rows[0].length>=MS.nums[0]){
+    MS.stage='subtract';MS_REMOVED=[];
+    renderManipRows();updateManipHint();
+  }
+}
+function manipRemove(rowIdx,itemIdx){
+  if(MS.op==='-'&&MS.stage==='subtract'){
+    var pos=MS_REMOVED.indexOf(itemIdx);
+    if(pos>=0)MS_REMOVED.splice(pos,1);else MS_REMOVED.push(itemIdx);
+    renderManipRows();updateManipHint();
+    return;
+  }
+  MS.rows[rowIdx].splice(itemIdx,1);
+  MS.sourceUsed--;
+  renderManipSource();renderManipRows();updateManipHint();
+}
 function startQ(mode,aid,teach,total){
   QS.mode=mode;QS.aid=aid||'cat';QS.teach=teach||'add';QS.cur=0;QS.correct=0;QS.answered=false;QS.total=total||1;QS.advId='';QS.advNode=0;
   show('q-screen');nextQ();
