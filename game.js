@@ -229,7 +229,7 @@ function saveS(){
 }
 
 /* ===== 题目生成 ===== */
-function genQ(mode,level,aid){
+function genQ(mode,level,aid,custom){
   var an=AN[aid]||AN.cat;
   var tk=mode||an.teach;
   var tp=TPL[tk];
@@ -237,7 +237,12 @@ function genQ(mode,level,aid){
   var sc;
   var ms=Math.min(tp.maxSum||10,10);
   var nums=[],ans=0,op='+';
-
+  if(custom){
+    nums=custom.nums.slice();op=custom.op;
+    if(op==='mix'){op=Math.random()<0.5?'+':'-';}
+    ans=op==='+'?nums[0]+nums[1]:nums[0]-nums[1];
+    ms=Math.max(ms,ans);
+  }else{
   if(tp.mode==='add'||tp.mode==='ac'){
     var a=ri(1,Math.min(9,ms-1));
     var b=ri(1,ms-a);
@@ -262,6 +267,7 @@ function genQ(mode,level,aid){
     var a=ri(1,Math.min(9,ms-1));
     var b=ri(1,ms-a);
     nums=[a,b];ans=a+b;op='+';
+  }
   }
 
   // 选场景：优先用动物专属，再回退到 TPL
@@ -355,6 +361,7 @@ function talk(aid){
   document.getElementById('dText').textContent=greeting+(story?'\n'+story:'');
   document.getElementById('dEmoji').textContent=an.emoji+' ❓';
   document.getElementById('dAction').style.display='';
+  document.getElementById('dCustom').style.display='';
   dlgData={aid:aid,teach:an.teach};
   document.getElementById('dialogOv').classList.add('show');
 }
@@ -365,6 +372,57 @@ function doTask(){pS('click');closeDlg();if(dlgData.aid)startQ('',dlgData.aid,dl
 /* ===== 题目系统 ===== */
 var QS={mode:'',aid:'',teach:'',total:1,cur:0,correct:0,answered:false,curQ:null,advId:'',advNode:0};
 var MS={op:'',emoji:'',nums:[],rows:[],sourceUsed:0,stage:'place',subtractTarget:0};
+/* ===== 自定义出题 ===== */
+var CS={type:'add',num1:3,num2:2,aid:'cat'};
+
+function openCustom(aid){
+  CS.aid=aid||curAnimal||'cat';CS.type='add';CS.num1=3;CS.num2=2;
+  var an=AN[CS.aid];
+  document.getElementById('cAnimal').textContent=an.emoji;
+  document.getElementById('cSpeech').textContent='选好数字，我陪你做题！';
+  closeDlg();
+  renderCNums();
+  document.querySelectorAll('#cTypes .ct-btn').forEach(function(b){b.classList.remove('sel')});
+  document.querySelector('#cTypes .ct-btn[data-t="add"]').classList.add('sel');
+  show('custom-screen');
+}
+function pickType(t,el){
+  CS.type=t;CS.num2=Math.min(CS.num2,CS.num1);
+  document.querySelectorAll('#cTypes .ct-btn').forEach(function(b){b.classList.remove('sel')});
+  el.classList.add('sel');
+  renderCNums();updateCPreview();
+}
+function renderCNums(){
+  var ct1=document.getElementById('cNums1');ct1.innerHTML='';
+  for(var i=1;i<=10;i++){
+    var b=document.createElement('button');b.className='cn-btn'+(i===CS.num1?' sel':'');
+    b.textContent=i;b.onclick=(function(n){return function(){CS.num1=n;if(CS.type==='sub')CS.num2=Math.min(CS.num2,CS.num1);renderCNums();updateCPreview()}})(i);
+    ct1.appendChild(b);
+  }
+  var ct2=document.getElementById('cNums2');ct2.innerHTML='';
+  for(var i=0;i<=10;i++){
+    var b=document.createElement('button');b.className='cn-btn'+(i===CS.num2?' sel':'');
+    if(CS.type==='sub'&&i>CS.num1)b.className+=' dis';
+    b.textContent=i;
+    if(CS.type!=='sub'||i<=CS.num1)b.onclick=(function(n){return function(){CS.num2=n;renderCNums();updateCPreview()}})(i);
+    ct2.appendChild(b);
+  }
+  document.getElementById('cNum1Label').textContent='第一个数 ('+CS.num1+')';
+  document.getElementById('cNum2Label').textContent='第二个数 ('+CS.num2+')';
+}
+function updateCPreview(){
+  var op=CS.type==='sub'?'−':'+';if(CS.type==='mix')op='?';
+  var an=AN[CS.aid];var em=(an.items&&an.items.length)?an.items[0]:'🍎';
+  document.getElementById('cPreview').textContent=CS.num1+' '+op+' '+CS.num2+' = ? '+em;
+  var start=document.getElementById('cStart');
+  start.disabled=false;
+}
+function startCustom(){
+  var teach=CS.type==='sub'?'sub':(CS.type==='mix'?'mix':'add');
+  var mode=(CS.type==='mix')?'mix':teach;
+  startQ('custom',CS.aid,teach,999);
+  QS.customNums=[CS.num1,CS.num2];QS.customType=CS.type;
+}
 
 function initManip(q){
   MS.op=q.op;MS.emoji=q.emoji;MS.nums=q.nums;
@@ -466,7 +524,13 @@ function startQ(mode,aid,teach,total){
 function nextQ(){
   if(QS.cur>=QS.total){finishQ();return}
   QS.answered=false;
-  var q=genQ(QS.teach,S.level,QS.aid);QS.curQ=q;
+  var q;
+  if(QS.mode==='custom'){
+    var custom={nums:QS.customNums,op:QS.customType};
+    q=genQ(QS.teach,S.level,QS.aid,custom);QS.curQ=q;
+  }else{
+    q=genQ(QS.teach,S.level,QS.aid);QS.curQ=q;
+  }
 
   document.getElementById('qAnimal').textContent=q.an.emoji;
   document.getElementById('qTitle').textContent='帮'+q.an.name+'解题';
