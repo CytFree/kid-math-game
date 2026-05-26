@@ -37,9 +37,10 @@
     <div class="hud-xp-wrap"><div class="hud-xp-bar" id="hudXp" style="width:0%"></div></div>
     <span class="hud-coins" id="hudCoins">💰0</span>
     <span class="hud-pet" id="hudPet"></span>
+    <button class="hud-task-btn" id="hudPSBtn" onclick="startPracticeSet()" style="font-size:18px;background:none;border:none;cursor:pointer;display:none">📝</button>
     <button class="hud-task-btn" id="hudStoryBtn" onclick="showAvailableStory()" style="font-size:18px;background:none;border:none;cursor:pointer;display:none">📖</button>
     <button class="hud-task-btn" onclick="showDecoPanel()" style="font-size:18px;background:none;border:none;cursor:pointer">🏠</button>
-    <button class="hud-task-btn" onclick="resetGame()" style="font-size:14px;background:none;border:none;cursor:pointer;opacity:.5" title="重置进度">⚙️</button>
+    <button class="hud-task-btn" id="hudSettingsBtn" style="font-size:14px;background:none;border:none;cursor:pointer;opacity:.5" title="设置">⚙️</button>
   </div>
   <div class="island-scene" id="islandScene">
     <div class="sun"></div>
@@ -88,7 +89,82 @@
     <div class="dialog-text" id="dText"></div>
     <div class="dialog-emoji" id="dEmoji"></div>
     <button class="btn dialog-btn" id="dAction" onclick="doTask()">我来帮你！💪</button>
+    <button class="btn dialog-btn custom-btn" id="dCustom" onclick="openCustom()" style="display:none">✏️ 我想自己出题</button>
     <button class="btn dialog-close" onclick="closeDlg()">下次吧</button>
+  </div>
+</div>
+
+<!-- 自定义出题 -->
+<div class="screen" id="custom-screen">
+  <div class="q-header">
+    <button class="q-back" onclick="show('island-screen')">✕ 返回</button>
+    <span class="q-title">✏️ 自由出题</span>
+    <span></span>
+  </div>
+  <div class="q-card">
+    <div class="q-bubble">
+      <div class="q-animal" id="cAnimal">🐱</div>
+      <div class="q-speech" id="cSpeech">选好数字，我陪你做题！</div>
+      <button class="q-speak-btn" id="cSpeakBtn" onclick="speak('选好数字，我陪你做题！')">🔊</button>
+    </div>
+    <div class="custom-section">
+      <div class="custom-label">运算类型</div>
+      <div class="custom-types" id="cTypes">
+        <button class="ct-btn sel" data-t="add" onclick="pickType('add',this)">➕ 加法</button>
+        <button class="ct-btn" data-t="sub" onclick="pickType('sub',this)">➖ 减法</button>
+        <button class="ct-btn" data-t="mix" onclick="pickType('mix',this)">🎲 混合</button>
+      </div>
+    </div>
+    <div class="custom-section">
+      <div class="custom-label" id="cNum1Label">第一个数</div>
+      <div class="custom-nums" id="cNums1"></div>
+    </div>
+    <div class="custom-section">
+      <div class="custom-label" id="cNum2Label">第二个数</div>
+      <div class="custom-nums" id="cNums2"></div>
+    </div>
+    <div class="custom-preview" id="cPreview">3 + 2 = ? 🐟</div>
+    <button class="btn start-btn" id="cStart" onclick="startCustom()" disabled>🚀 开始做题</button>
+  </div>
+</div>
+
+<!-- 练习集设置（家长） -->
+<div class="screen" id="practice-set-screen">
+  <div class="q-header">
+    <button class="q-back" onclick="show('island-screen')">✕ 返回</button>
+    <span class="q-title">📋 练习集</span>
+    <span></span>
+  </div>
+  <div class="q-card">
+    <div class="ps-section">
+      <div class="ps-label">运算类型</div>
+      <div class="ps-types" id="psTypes">
+        <button class="pt-btn sel" data-t="add" onclick="pickPSType('add',this)">➕ 加法</button>
+        <button class="pt-btn" data-t="sub" onclick="pickPSType('sub',this)">➖ 减法</button>
+        <button class="pt-btn" data-t="mix" onclick="pickPSType('mix',this)">🎲 混合</button>
+      </div>
+    </div>
+    <div class="ps-section">
+      <div class="ps-label">第1个数字范围: <span id="psR1">1 ~ 10</span></div>
+      <input type="range" class="ps-range" id="psMin1" min="1" max="10" value="1" oninput="updPSRange()">
+      <input type="range" class="ps-range" id="psMax1" min="1" max="10" value="10" oninput="updPSRange()">
+    </div>
+    <div class="ps-section">
+      <div class="ps-label">第2个数字范围: <span id="psR2">0 ~ 9</span></div>
+      <input type="range" class="ps-range" id="psMin2" min="0" max="10" value="0" oninput="updPSRange()">
+      <input type="range" class="ps-range" id="psMax2" min="0" max="10" value="9" oninput="updPSRange()">
+    </div>
+    <div class="ps-section">
+      <div class="ps-label">题目数量</div>
+      <div class="ps-counts" id="psCounts">
+        <button class="pc-btn sel" data-n="5" onclick="pickPSCount(5,this)">5</button>
+        <button class="pc-btn" data-n="10" onclick="pickPSCount(10,this)">10</button>
+        <button class="pc-btn" data-n="15" onclick="pickPSCount(15,this)">15</button>
+        <button class="pc-btn" data-n="20" onclick="pickPSCount(20,this)">20</button>
+      </div>
+    </div>
+    <button class="btn start-btn" onclick="generatePraticeSet()">📋 生成练习集</button>
+    <div class="ps-msg" id="psMsg"></div>
   </div>
 </div>
 
@@ -149,6 +225,18 @@
     <div class="q-options" id="qOpts"></div>
     <div class="q-fb" id="qFb"></div>
     <div class="pet-reaction" id="petReaction"></div>
+  </div>
+</div>
+
+<!-- 练习集完成总结 -->
+<div class="ps-summary-overlay" id="psSummaryOv">
+  <div class="ps-summary-card">
+    <div class="ps-summary-icon" id="psSumIcon">🌟</div>
+    <div class="ps-summary-title" id="psSumTitle">太棒了！</div>
+    <div class="ps-summary-score" id="psSumScore">10 / 10</div>
+    <div class="ps-summary-stars" id="psSumStars">⭐⭐⭐</div>
+    <button class="btn start-btn" onclick="retryPracticeSet()">🔄 再来一次</button>
+    <button class="btn dialog-close" onclick="closePSSummary()">🏝️ 返回岛屿</button>
   </div>
 </div>
 
