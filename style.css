@@ -310,7 +310,7 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .q-manipulative{display:flex;flex-direction:column;align-items:center;gap:8px;margin:8px 0}
 .qm-hint{font-size:14px;color:#888;text-align:center;min-height:20px}
 .qm-source{display:flex;justify-content:center;gap:3px;padding:6px 8px;background:#FFF8E1;border-radius:12px;flex-wrap:wrap;min-height:40px}
-.qm-source .si{font-size:32px;cursor:pointer;transition:transform .1s, opacity .15s;user-select:none;-webkit-user-select:none}
+.qm-source .si{font-size:32px;cursor:pointer;transition:transform .1s, opacity .15s;user-select:none;-webkit-user-select:none;touch-action:manipulation}
 .qm-source .si:active{transform:scale(.85)}
 .qm-source .si.used{opacity:.18;pointer-events:none}
 .qm-rows{display:flex;flex-direction:column;gap:6px;width:100%}
@@ -318,7 +318,7 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;use
 .qm-row.active{border-color:#42A5F5;background:#E3F2FD;box-shadow:0 0 8px rgba(66,165,245,.25)}
 .qm-row.subtract-mode{border-color:#EF5350;background:#FFEBEE}
 .qm-row.complete{border-color:#66BB6A;background:#E8F5E9}
-.qm-row .ri{font-size:32px;transition:transform .1s, opacity .2s;cursor:pointer;user-select:none;-webkit-user-select:none}
+.qm-row .ri{font-size:32px;transition:transform .1s, opacity .2s;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation}
 .qm-row .ri:active{transform:scale(.85)}
 .qm-row .ri.removed{opacity:.2;transform:scale(.6)}
 .qm-row-label{font-size:12px;font-weight:bold;color:#666;text-align:center}
