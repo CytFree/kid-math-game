@@ -471,16 +471,9 @@ function nextQ(){
   document.getElementById('qStory').textContent=q.story;
 
   // 可视化
-  var vis=document.getElementById('qVis');vis.innerHTML='';vis.classList.remove('vis-merging','vis-subtracting');
-  if(S.level>=7){renderDecompTree(q);}else{
-    for(var i=0;i<q.nums[0];i++){var sp=document.createElement('span');sp.className='vi vi-ga';sp.textContent=q.emoji;sp.style.animationDelay=i*.12+'s';vis.appendChild(sp)}
-    var opEl=document.createElement('span');opEl.className='vop';opEl.textContent=q.op;vis.appendChild(opEl);
-    if(q.op==='+'){
-      for(var i=0;i<q.nums[1];i++){var sp=document.createElement('span');sp.className='vi vi-gb';sp.textContent=q.emoji;sp.style.animationDelay=(q.nums[0]+i)*.12+'s';vis.appendChild(sp)}
-    }else{
-      for(var i=0;i<q.nums[1];i++){var sp=document.createElement('span');sp.className='vi vi-sub';sp.textContent=q.emoji;sp.style.opacity='.4';sp.style.animationDelay=(q.nums[0]+i)*.12+'s';vis.appendChild(sp)}
-    }
-  }
+  var manip=document.getElementById('qManip');manip.innerHTML='';
+  if(S.level>=7){manip.style.display='';renderDecompTree(q);}
+  else{manip.style.display='';initManip(q);}
 
   // 算式
   var eq=document.getElementById('qEq');
@@ -502,7 +495,7 @@ function nextQ(){
 }
 
 function renderDecompTree(q){
-  var vis=document.getElementById('qVis');
+  var vis=document.getElementById('qManip');vis.innerHTML='';vis.style.display='';
   var topV,lV,rV,isAns=false;
   if(q.op==='+'){topV='?';lV=q.nums[0];rV=q.nums[1]}
   else{topV=q.nums[0];lV='?';rV=q.nums[1];isAns=true}
@@ -521,7 +514,7 @@ function renderDecompTree(q){
 }
 
 function animateQ(q){
-  var vis=document.getElementById('qVis');
+  var vis=document.getElementById('qManip');
   var dt=vis.querySelector('.decomp-tree');
   if(dt){
     dt.querySelectorAll('[data-ans]').forEach(function(el){
