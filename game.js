@@ -399,22 +399,43 @@ function pickType(t,el){
   CS.type=t;CS.num2=Math.min(CS.num2,CS.num1);
   document.querySelectorAll('#cTypes .ct-btn').forEach(function(b){b.classList.remove('sel')});
   el.classList.add('sel');
-  renderCNums();updateCPreview();
+  _updNum2Disabled();_updateCNumSel();updateCPreview();
+}
+function _updNum2Disabled(){
+  if(!CS._num2Btns)return;
+  for(var i=0;i<=10;i++){
+    if(CS.type==='sub'&&i>CS.num1)CS._num2Btns[i].classList.add('dis');
+    else CS._num2Btns[i].classList.remove('dis');
+  }
+}
+function _updateCNumSel(){
+  if(!CS._num1Btns)return;
+  for(var i=1;i<=10;i++){CS._num1Btns[i].classList.toggle('sel',i===CS.num1)}
+  for(var i=0;i<=10;i++){CS._num2Btns[i].classList.toggle('sel',i===CS.num2)}
+  document.getElementById('cNum1Label').textContent='第一个数 ('+CS.num1+')';
+  document.getElementById('cNum2Label').textContent='第二个数 ('+CS.num2+')';
+}
+function _pickNum1(n){
+  CS.num1=n;if(CS.type==='sub')CS.num2=Math.min(CS.num2,CS.num1);
+  _updateCNumSel();_updNum2Disabled();updateCPreview();
+}
+function _pickNum2(n){
+  CS.num2=n;_updateCNumSel();updateCPreview();
 }
 function renderCNums(){
-  var ct1=document.getElementById('cNums1');ct1.innerHTML='';
+  var ct1=document.getElementById('cNums1');ct1.innerHTML='';CS._num1Btns=[];
   for(var i=1;i<=10;i++){
     var b=document.createElement('button');b.className='cn-btn'+(i===CS.num1?' sel':'');
-    b.textContent=i;b.onclick=(function(n){return function(){CS.num1=n;if(CS.type==='sub')CS.num2=Math.min(CS.num2,CS.num1);renderCNums();updateCPreview()}})(i);
-    ct1.appendChild(b);
+    b.textContent=i;b.onclick=(function(n){return function(){_pickNum1(n)}})(i);
+    ct1.appendChild(b);CS._num1Btns[i]=b;
   }
-  var ct2=document.getElementById('cNums2');ct2.innerHTML='';
+  var ct2=document.getElementById('cNums2');ct2.innerHTML='';CS._num2Btns=[];
   for(var i=0;i<=10;i++){
     var b=document.createElement('button');b.className='cn-btn'+(i===CS.num2?' sel':'');
     if(CS.type==='sub'&&i>CS.num1)b.className+=' dis';
     b.textContent=i;
-    if(CS.type!=='sub'||i<=CS.num1)b.onclick=(function(n){return function(){CS.num2=n;renderCNums();updateCPreview()}})(i);
-    ct2.appendChild(b);
+    if(CS.type!=='sub'||i<=CS.num1)b.onclick=(function(n){return function(){_pickNum2(n)}})(i);
+    ct2.appendChild(b);CS._num2Btns[i]=b;
   }
   document.getElementById('cNum1Label').textContent='第一个数 ('+CS.num1+')';
   document.getElementById('cNum2Label').textContent='第二个数 ('+CS.num2+')';
@@ -528,20 +549,29 @@ function initManip(q){
   MS.subtractTarget=q.op==='-'?q.nums[1]:0;
   var manip=document.getElementById('qManip');
   manip.innerHTML='<div class="qm-hint" id="qmHint"></div><div class="qm-source" id="qmSource"></div><div class="qm-rows" id="qmRows"></div>';
-  renderManipSource();renderManipRows();updateManipHint();
+  MS._sourceEls=[];MS._rowEls=[];MS._rowLabels=[];
+  _buildManipSource();_buildManipRows();updateManipHint();
 }
-function renderManipSource(){
-  var src=document.getElementById('qmSource');src.innerHTML='';
+function _buildManipSource(){
+  var src=document.getElementById('qmSource');src.innerHTML='';MS._sourceEls=[];
   for(var i=0;i<10;i++){
     var sp=document.createElement('span');
     sp.className='si'+(i<MS.sourceUsed?' used':'');
     sp.textContent=MS.emoji;
     if(i>=MS.sourceUsed)sp.onclick=function(){manipPlace()};
-    src.appendChild(sp);
+    else sp.onclick=null;
+    src.appendChild(sp);MS._sourceEls.push(sp);
   }
 }
-function renderManipRows(){
-  var ct=document.getElementById('qmRows');ct.innerHTML='';
+function _updateSourceUsed(){
+  for(var i=0;i<10;i++){
+    var el=MS._sourceEls[i];
+    if(i<MS.sourceUsed){el.classList.add('used');el.onclick=null}
+    else{el.classList.remove('used');el.onclick=function(){manipPlace()}}
+  }
+}
+function _buildManipRows(){
+  var ct=document.getElementById('qmRows');ct.innerHTML='';MS._rowEls=[];MS._rowLabels=[];
   for(var r=0;r<MS.rows.length;r++){
     var row=MS.rows[r];
     var isSub=MS.op==='-';
@@ -555,7 +585,7 @@ function renderManipRows(){
     if(MS.rows.length===2){
       var lb=document.createElement('div');lb.className='qm-row-label';
       lb.textContent='第'+(r+1)+'个数 → 放 '+MS.nums[r]+' 个';
-      ct.appendChild(lb);
+      ct.appendChild(lb);MS._rowLabels.push(lb);
     }
     for(var j=0;j<row.length;j++){
       var ri=document.createElement('span');
@@ -565,14 +595,51 @@ function renderManipRows(){
       ri.onclick=(function(rr,jj){return function(){manipRemove(rr,jj)}})(r,j);
       rowEl.appendChild(ri);
     }
-    ct.appendChild(rowEl);
+    ct.appendChild(rowEl);MS._rowEls.push(rowEl);
   }
   if(MS.op==='-'){
     var lb=document.createElement('div');lb.className='qm-row-label';
     if(MS.stage==='place')lb.textContent='放 '+MS.nums[0]+' 个';
     else lb.textContent='点掉 '+MS.subtractTarget+' 个（还剩 '+getSubtractRemaining()+' 个）';
-    ct.insertBefore(lb,ct.firstChild);
+    ct.insertBefore(lb,ct.firstChild);MS._rowLabels.unshift(lb);
   }
+}
+function _addRowEmoji(r){
+  var row=MS.rows[r];var idx=row.length-1;
+  var isSub=MS.op==='-';var inSubtract=isSub&&MS.stage==='subtract';
+  var ri=document.createElement('span');ri.className='ri';
+  if(inSubtract&&isSubtractRemoved(idx))ri.className+=' removed';
+  ri.textContent=MS.emoji;
+  ri.onclick=(function(rr,jj){return function(){manipRemove(rr,jj)}})(r,idx);
+  MS._rowEls[r].appendChild(ri);
+}
+function _removeRowEmoji(r,idx){
+  var rowEl=MS._rowEls[r];var children=rowEl.children;
+  if(idx<children.length)children[idx].remove();
+}
+function _rebuildRowEmoji(r){
+  var rowEl=MS._rowEls[r];rowEl.innerHTML='';
+  var row=MS.rows[r];var isSub=MS.op==='-';var inSubtract=isSub&&MS.stage==='subtract';
+  for(var j=0;j<row.length;j++){
+    var ri=document.createElement('span');ri.className='ri';
+    if(inSubtract&&isSubtractRemoved(j))ri.className+=' removed';
+    ri.textContent=MS.emoji;
+    ri.onclick=(function(rr,jj){return function(){manipRemove(rr,jj)}})(r,j);
+    rowEl.appendChild(ri);
+  }
+}
+function _updateRowStates(){
+  if(MS.op!=='+')return;
+  for(var r=0;r<2;r++){
+    var el=MS._rowEls[r];
+    el.classList.remove('active','complete');
+    if(MS.rows[0].length<MS.nums[0]&&r===0)el.classList.add('active');
+    else if(MS.rows[0].length>=MS.nums[0]&&MS.rows[1].length<MS.nums[1]&&r===1)el.classList.add('active');
+  }
+}
+function _updateSubtractLabel(){
+  var lb=MS._rowLabels[0];if(!lb)return;
+  lb.textContent=MS.stage==='place'?'放 '+MS.nums[0]+' 个':'点掉 '+MS.subtractTarget+' 个（还剩 '+getSubtractRemaining()+' 个）';
 }
 function updateManipHint(){
   var h=document.getElementById('qmHint');
@@ -596,22 +663,45 @@ function manipPlace(){
   }
   MS.rows[targetRow].push(MS.emoji);
   MS.sourceUsed++;
-  renderManipSource();renderManipRows();updateManipHint();
+  // 增量: 只改被用的那一个 source emoji
+  var si=MS._sourceEls[MS.sourceUsed-1];
+  if(si){si.classList.add('used');si.onclick=null}
+  // 增量: 只加一个 emoji 到目标行
+  _addRowEmoji(targetRow);
+  _updateRowStates();updateManipHint();
   if(MS.op==='-'&&MS.stage==='place'&&MS.rows[0].length>=MS.nums[0]){
     MS.stage='subtract';MS_REMOVED=[];
-    renderManipRows();updateManipHint();
+    var rowEl=MS._rowEls[0];
+    rowEl.className='qm-row subtract-mode';
+    _rebuildRowEmoji(0);_updateSubtractLabel();updateManipHint();
   }
 }
 function manipRemove(rowIdx,itemIdx){
   if(MS.op==='-'&&MS.stage==='subtract'){
     var pos=MS_REMOVED.indexOf(itemIdx);
     if(pos>=0)MS_REMOVED.splice(pos,1);else MS_REMOVED.push(itemIdx);
-    renderManipRows();updateManipHint();
+    // 增量: 只重建当前行的 emoji (toggle removed 状态)
+    _rebuildRowEmoji(rowIdx);
+    var rowEl=MS._rowEls[0];
+    if(getSubtractRemaining()===0)rowEl.className='qm-row complete';
+    else rowEl.className='qm-row subtract-mode';
+    _updateSubtractLabel();updateManipHint();
     return;
   }
   MS.rows[rowIdx].splice(itemIdx,1);
   MS.sourceUsed--;
-  renderManipSource();renderManipRows();updateManipHint();
+  // 增量: 只改被释放的那一个 source emoji + 移除行的那个 emoji
+  var si=MS._sourceEls[MS.sourceUsed];
+  if(si){si.classList.remove('used');si.onclick=function(){manipPlace()}}
+  // 行: 如果 item 被删后索引变了，重建这一行（索引少时重建很快）
+  _rebuildRowEmoji(rowIdx);
+  _updateRowStates();updateManipHint();
+  // 减法 place 阶段: 放够了又撤回, 回到 place
+  if(MS.op==='-'&&MS.stage==='subtract'&&MS.rows[0].length<MS.nums[0]){
+    MS.stage='place';MS_REMOVED=[];
+    MS._rowEls[0].className='qm-row active';
+    _updateSubtractLabel();updateManipHint();
+  }
 }
 function startQ(mode,aid,teach,total){
   QS.mode=mode;QS.aid=aid||'cat';QS.teach=teach||'add';QS.cur=0;QS.correct=0;QS.answered=false;QS.total=total||1;QS.advId='';QS.advNode=0;
