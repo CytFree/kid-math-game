@@ -405,6 +405,7 @@ function _updNum2Disabled(){
   if(!CS._num2Btns)return;
   for(var i=0;i<=10;i++){
     if(CS.type==='sub'&&i>CS.num1)CS._num2Btns[i].classList.add('dis');
+    else if(CS.type==='add'&&CS.num1+i>10)CS._num2Btns[i].classList.add('dis');
     else CS._num2Btns[i].classList.remove('dis');
   }
 }
@@ -417,6 +418,7 @@ function _updateCNumSel(){
 }
 function _pickNum1(n){
   CS.num1=n;if(CS.type==='sub')CS.num2=Math.min(CS.num2,CS.num1);
+  else if(CS.type==='add')CS.num2=Math.min(CS.num2,10-CS.num1);
   _updateCNumSel();_updNum2Disabled();updateCPreview();
 }
 function _pickNum2(n){
@@ -433,8 +435,9 @@ function renderCNums(){
   for(var i=0;i<=10;i++){
     var b=document.createElement('button');b.className='cn-btn'+(i===CS.num2?' sel':'');
     if(CS.type==='sub'&&i>CS.num1)b.className+=' dis';
+    else if(CS.type==='add'&&CS.num1+i>10)b.className+=' dis';
     b.textContent=i;
-    if(CS.type!=='sub'||i<=CS.num1)b.onclick=(function(n){return function(){_pickNum2(n)}})(i);
+    if((CS.type!=='sub'||i<=CS.num1)&&!(CS.type==='add'&&CS.num1+i>10))b.onclick=(function(n){return function(){_pickNum2(n)}})(i);
     ct2.appendChild(b);CS._num2Btns[i]=b;
   }
   document.getElementById('cNum1Label').textContent='第一个数 ('+CS.num1+')';
@@ -449,6 +452,7 @@ function updateCPreview(){
 }
 function startCustom(){
   var teach=CS.type==='sub'?'sub':(CS.type==='mix'?'mix':'add');
+  if(teach==='add'&&CS.num1+CS.num2>10)return;
   var mode=(CS.type==='mix')?'mix':teach;
   QS.customNums=[CS.num1,CS.num2];QS.customType=CS.type;
   startQ('custom',CS.aid,teach,1);
