@@ -129,7 +129,7 @@ function speak(text){
   try{
     var u=new SpeechSynthesisUtterance(text);
     u.lang='zh-CN';u.rate=0.7;u.pitch=1.05;
-    try{var v=window.speechSynthesis.getVoices();var cv=v.find(function(v){return v.lang.indexOf('zh')>=0});if(cv)u.voice=cv}catch(e){}
+    try{var v=window.speechSynthesis.getVoices();var cv=v.find(function(v){return v.lang.indexOf('zh-CN')>=0})||v.find(function(v){return v.lang.indexOf('zh')>=0});if(cv)u.voice=cv}catch(e){}
     window.speechSynthesis.speak(u);
   }catch(e){
     try{pS('pop')}catch(e2){}
